@@ -186,8 +186,8 @@ function AccessControl() {
                 </Col>
               </Row>
             </Card.Header>
-            <Card.Body>
-              <DataTable columns={columns} data={users} pagination />
+            <Card.Body> 
+              <DataTable columns={columns} data={users} pagination /> 
             </Card.Body>
           </Card>
         </Col>

@@ -869,6 +869,15 @@ export const BasicCell = [
   ]
 
 
+  
+    // Select membership Type
+export const membershipTypes = [
+  { value: 'PRINCIPAL', label: 'Principal' },
+  { value: ' DEPENDENT', label: ' Dependent' },
+ 
+]
+
+
 
 // select2
 export const CitiesData = [

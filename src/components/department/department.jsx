@@ -22,12 +22,26 @@ import {
 import DataTable from "react-data-table-component";
 
 const columns = [
-    {
-      name: "NAME",
-      selector: (row) => [row.name],
-      sortable: true,
-    },
-  ];
+  {
+    name: "NAME",
+    selector: (row) => [row.name],
+    sortable: true,
+  },
+
+  {
+    name: "Actions",
+    cell: (row) => (
+      <Link
+        to="/specialists"
+        state={{
+          data:row.id,
+        }}
+      >
+        <Button className="btn btn-secondary">View Details</Button>
+      </Link>
+    ),
+  },
+];
 
 function Department() {
   //useState must be declared between the function and  return   //creating useState is the first step
@@ -70,14 +84,12 @@ function Department() {
       .post(`http://www.ubuzima.rw/rec/medical/department`) //declare api Path
       .then((res) => {
         setShow(false);
-        if( res.data.status  === true){
-            alert("Department Added successfully");
-        fetchDepartments()
-        }else{
-            alert("something went wrong")
+        if (res.data.status === true) {
+          alert("Department Added successfully");
+          fetchDepartments();
+        } else {
+          alert("something went wrong");
         }
-
-
       })
       .catch((error) => {
         setLoading(false);
@@ -103,34 +115,33 @@ function Department() {
       setDepartments(response.data.response);
       console.log(response.data);
       setDepartments_(response.data.response);
-      fetchRoles();
     } catch (error) {
       console.error("Error fetching payrolls:", error);
     }
   };
 
-//   const fetchRoles = async () => {
-//     let my_token = await localStorage.getItem("token");
-//     const config = {
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${my_token}`,
-//       },
-//     }; //incase you have to deal with ID or Options
-//     axios
-//       .get(`http://www.ubuzima.rw/rec/access/roles`, config)
-//       .then((res) => {
-//         const myRoles = res.data.response.map((el) => {
-//           return { label: el.roleName, value: el.id };
-//         }); //const that assign value to the property
-//         setRoles(myRoles);
-//       })
-//       .catch((error) => {
-//         setLoading(false);
-//         setShow(false);
-//         console.log(error.message);
-//       });
-//   };
+  //   const fetchRoles = async () => {
+  //     let my_token = await localStorage.getItem("token");
+  //     const config = {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${my_token}`,
+  //       },
+  //     }; //incase you have to deal with ID or Options
+  //     axios
+  //       .get(`http://www.ubuzima.rw/rec/access/roles`, config)
+  //       .then((res) => {
+  //         const myRoles = res.data.response.map((el) => {
+  //           return { label: el.roleName, value: el.id };
+  //         }); //const that assign value to the property
+  //         setRoles(myRoles);
+  //       })
+  //       .catch((error) => {
+  //         setLoading(false);
+  //         setShow(false);
+  //         console.log(error.message);
+  //       });
+  //   };
 
   useEffect(() => {
     fetchDepartments();
@@ -160,7 +171,9 @@ function Department() {
                 </Col>
               </Row>
             </Card.Header>
-            <Card.Body><DataTable columns={columns} data={departments} pagination /></Card.Body>
+            <Card.Body>
+              <DataTable columns={columns} data={departments} pagination />
+            </Card.Body>
           </Card>
         </Col>
       </Row>

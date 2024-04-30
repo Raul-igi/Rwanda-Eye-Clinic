@@ -93,19 +93,6 @@ const MenuItems = [
         badgetxt: "",
         path: `${import.meta.env.BASE_URL}visits`,
       },
-
-      {
-        icon: <i class="side-menu__icon fa fa-user"></i>,
-        type: "sub",
-        Name: "",
-        active: false,
-        selected: false,
-        title: "Specialists",
-        class: "",
-        color: "",
-        badgetxt: "",
-        path: `${import.meta.env.BASE_URL}specialists`,
-      },
     ],
   },
 ];

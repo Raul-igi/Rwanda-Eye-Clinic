@@ -132,19 +132,6 @@ export default function Sidebar() {
       condition: true,
     },
 
-    {
-      icon: <i class="side-menu__icon fa fa-map-signs"></i>,
-      type: "sub",
-      Name: "",
-      active: false,
-      selected: false,
-      title: "Specialists",
-      class: "",
-      color: "",
-      badgetxt: "",
-      path: `${import.meta.env.BASE_URL}specialists`,
-      condition: true,
-    },
   ]);
 
   // every chnage this effect calls

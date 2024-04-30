@@ -18,7 +18,6 @@ export const Routingdata=[
 {path:`${import.meta.env.BASE_URL}New-Patient` ,element:<NewPatient />},
 {path:`${import.meta.env.BASE_URL}formvalidation` ,element:<FormValidation />},
 {path:`${import.meta.env.BASE_URL}DataTables` ,element:<DataTables />},
-{path:`${import.meta.env.BASE_URL}taskboard` ,element:<Taskboard />},
 {path:`${import.meta.env.BASE_URL}profile` ,element:<Profile />},
 
 

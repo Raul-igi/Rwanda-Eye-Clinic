@@ -19,33 +19,8 @@ const Outhover = () => {
 
 export default function Sidebar() {
   const [menuItems, setMenuItems] = useState([
-    {
-      icon: <i class="side-menu__icon fa fa-tasks"></i>,
-      type: "sub",
-      Name: "",
-      active: false,
-      selected: false,
-      title: "Task Board",
-      class: "",
-      color: "",
-      badgetxt: "",
-      path: `${import.meta.env.BASE_URL}taskboard`,
-      condition: true,
-    },
-
-    {
-      icon: <i className="side-menu__icon fa fa-user" ></i>, 
-      type: "sub",
-      Name: "",
-      active: false,
-      selected: false,
-      title: "My Profile",
-      class: "",
-      color: "",
-      badgetxt: "",
-      path: `${import.meta.env.BASE_URL}profile`,
-      condition: true,
-    },
+   
+    
 
     {
       icon: <i class="side-menu__icon fa fa-unlock-alt"></i>,
@@ -89,19 +64,7 @@ export default function Sidebar() {
       condition: true,
     },
 
-    {
-      icon: <i class="side-menu__icon fa fa-database"></i>,
-      type: "sub",
-      Name: "",
-      active: false,
-      selected: false,
-      title: "Data Table",
-      class: "",
-      color: "",
-      badgetxt: "",
-      path: `${import.meta.env.BASE_URL}DataTables`,
-      condition: true,
-    },
+
 
     {
       icon: <i class="side-menu__icon fa fa-heartbeat"></i>,
@@ -127,6 +90,19 @@ export default function Sidebar() {
       color: "",
       badgetxt: "",
       path: `${import.meta.env.BASE_URL}Department`,
+      condition: true,
+    },
+    {
+      icon: <i className="side-menu__icon fa fa-user" ></i>, 
+      type: "sub",
+      Name: "",
+      active: false,
+      selected: false,
+      title: "My Profile",
+      class: "",
+      color: "",
+      badgetxt: "",
+      path: `${import.meta.env.BASE_URL}profile`,
       condition: true,
     },
   ]);

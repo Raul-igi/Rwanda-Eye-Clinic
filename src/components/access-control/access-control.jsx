@@ -36,6 +36,11 @@ const columns = [
     selector: (row) => [row.email],
     sortable: true,
   },
+  {
+    name: "ROLE",
+    selector: (row) => [row.roles[0].roleName],
+    sortable: true,
+  },
 ];
 
 import {
@@ -97,6 +102,7 @@ function AccessControl() {
     axios
       .post(`http://www.ubuzima.rw/rec/access/user`, postObj) //declare api Path
       .then((res) => {
+        console.log(res.data)
         setShow(false);
         if (res.data.status === true) {
           alert("Department Added successfully");
@@ -269,9 +275,10 @@ function AccessControl() {
                 <Form.Group className="form-group">
                   <Form.Label>Roles</Form.Label>
                   <Select
-                    isMulti
+                    // isMulti
                     options={roles}
-                    onChange={(e) => setSelectedRoles(e.map((r) => r.value))}
+                    onChange={(e) => setSelectedRoles(e.value)}
+
                     classNamePrefix="Select2"
                     className="multi-select"
                     placeholder="Select them"

@@ -25,11 +25,11 @@ const columns = [
     selector: (row) => [row.names],
     sortable: true,
   },
-  {
-    name: "Insurance",
-    selector: (row) => [row.insuranceId],
-    sortable: true,
-  },
+  // {
+  //   name: "Insurance",
+  //   selector: (row) => [row.insuranceId],
+  //   sortable: true,
+  // },
   {
     name: " Email",
     selector: (row) => [row.email],
@@ -52,51 +52,51 @@ const columns = [
     sortable: true,
   },
 
-  {
-    name: "Contact Person",
-    selector: (row) => [row.contactPerson],
-    sortable: true,
-  },
+  // {
+  //   name: "Contact Person",
+  //   selector: (row) => [row.contactPerson],
+  //   sortable: true,
+  // },
 
-  {
-    name: "Contact Person Phone Number",
-    selector: (row) => [row.contactPersonPhoneNumber],
-    sortable: true,
-  },
+  // {
+  //   name: "Contact Person Phone Number",
+  //   selector: (row) => [row.contactPersonPhoneNumber],
+  //   sortable: true,
+  // },
 
-  {
-    name: "Affiliation Card Number",
-    selector: (row) => [row.affiliationCardNumber],
-    sortable: true,
-  },
-  {
-    name: "Membership Type",
-    selector: (row) => [row.membershipType],
-    sortable: true,
-  },
-  {
-    name: "Principal Names",
-    selector: (row) => [row.principalNames],
-    sortable: true,
-  },
+  // {
+  //   name: "Affiliation Card Number",
+  //   selector: (row) => [row.affiliationCardNumber],
+  //   sortable: true,
+  // },
+  // {
+  //   name: "Membership Type",
+  //   selector: (row) => [row.membershipType],
+  //   sortable: true,
+  // },
+  // {
+  //   name: "Principal Names",
+  //   selector: (row) => [row.principalNames],
+  //   sortable: true,
+  // },
   
-  {
-    name: "Card Number",
-    selector: (row) => [row.cardNumber],
-    sortable: true,
-  },
+  // {
+  //   name: "Card Number",
+  //   selector: (row) => [row.cardNumber],
+  //   sortable: true,
+  // },
 
-  {
-    name: "Employee",
-    selector: (row) => [row.employer],
-    sortable: true,
-  },
+  // {
+  //   name: "Employee",
+  //   selector: (row) => [row.employer],
+  //   sortable: true,
+  // },
 
-  {
-    name: "Expiry Date",
-    selector: (row) => [row.expiryDate],
-    sortable: true,
-  },
+  // {
+  //   name: "Expiry Date",
+  //   selector: (row) => [row.expiryDate],
+  //   sortable: true,
+  // },
   
 ];
 
@@ -177,7 +177,7 @@ function NewPatient() {  //useState must be declared between the function and  r
       dob: dob,
       contactPerson: contactPerson,
       contactPersonPhoneNumber: contactPersonPhoneNumber,
-      locationId:"",
+      locationId:null,
       status:"INDIGENT",
       patientInsuranceDto:{
         insuranceId: insuranceId,
@@ -231,9 +231,7 @@ function NewPatient() {  //useState must be declared between the function and  r
         config
       );
       setPatients_(response.data.response);
-      console.log(res.data);
       setPatients(response.data.response);
-      fetchPatients();
     } catch (error) {
       console.error("Error fetching payrolls:", error);
     }

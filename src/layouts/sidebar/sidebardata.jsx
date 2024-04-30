@@ -55,18 +55,7 @@ const MenuItems = [
         path: `${import.meta.env.BASE_URL}formvalidation`,
       },
 
-      {
-        icon: <i class="side-menu__icon fa fa-user"></i>,
-        type: "sub",
-        Name: "",
-        active: false,
-        selected: false,
-        title: "Data Tables",
-        class: "",
-        color: "",
-        badgetxt: "",
-        path: `${import.meta.env.BASE_URL}DataTables`,
-      },
+      
       {
         icon: <i class="side-menu__icon fa fa-user"></i>,
         type: "sub",
@@ -90,6 +79,32 @@ const MenuItems = [
         color: "",
         badgetxt: "",
         path: `${import.meta.env.BASE_URL}department`,
+      },
+
+      {
+        icon: <i class="side-menu__icon fa fa-user"></i>,
+        type: "sub",
+        Name: "",
+        active: false,
+        selected: false,
+        title: "Visits",
+        class: "",
+        color: "",
+        badgetxt: "",
+        path: `${import.meta.env.BASE_URL}visits`,
+      },
+
+      {
+        icon: <i class="side-menu__icon fa fa-user"></i>,
+        type: "sub",
+        Name: "",
+        active: false,
+        selected: false,
+        title: "Specialists",
+        class: "",
+        color: "",
+        badgetxt: "",
+        path: `${import.meta.env.BASE_URL}specialists`,
       },
     ],
   },

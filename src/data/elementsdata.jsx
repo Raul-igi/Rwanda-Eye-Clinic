@@ -1,22 +1,25 @@
-import React, { useState } from 'react'
-import { MultiSelect } from 'react-multi-select-component'
-import Creatable from 'react-select/creatable'
-import Select from 'react-select'
-import makeAnimated from 'react-select/animated'
+import React, { useState } from "react";
+import { MultiSelect } from "react-multi-select-component";
+import Creatable from "react-select/creatable";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
 
 // Country
 const countries = [
-  { value: 'Brazil', label: 'Brazil' },
-  { value: 'Czech Republic', label: 'Czech Republic' },
-  { value: ' Germany', label: ' Germany' },
-  { value: 'Poland', label: 'Poland' }
-
-]
-export function Country () {
+  { value: "Brazil", label: "Brazil" },
+  { value: "Czech Republic", label: "Czech Republic" },
+  { value: " Germany", label: " Germany" },
+  { value: "Poland", label: "Poland" },
+];
+export function Country() {
   return (
-    <Select options={countries} classNamePrefix="Select2" className="multi-select" placeholder="" />
-
-  )
+    <Select
+      options={countries}
+      classNamePrefix="Select2"
+      className="multi-select"
+      placeholder=""
+    />
+  );
 }
 // date
 const date = [
@@ -50,18 +53,23 @@ const date = [
   { value: 28, label: 28 },
   { value: 29, label: 29 },
   { value: 30, label: 30 },
-  { value: 31, label: 31 }
-
-]
-export function Daydata () {
+  { value: 31, label: 31 },
+];
+export function Daydata() {
   return (
-    <Select options={date} classNamePrefix='Select2' className="multi-select" placeholder="" selected={20} defaultValue={date[19]}/>
-
-  )
+    <Select
+      options={date}
+      classNamePrefix="Select2"
+      className="multi-select"
+      placeholder=""
+      selected={20}
+      defaultValue={date[19]}
+    />
+  );
 }
 // yeardata
 const yeardata = [
-  { value: 'Year', label: 'year' },
+  { value: "Year", label: "year" },
   { value: 2014, label: 2014 },
   { value: 2013, label: 2013 },
   { value: 2012, label: 2012 },
@@ -179,143 +187,149 @@ const yeardata = [
   { value: 1900, label: 1900 },
   { value: 1899, label: 1899 },
   { value: 1898, label: 1898 },
-  { value: 1897, label: 1897 }
-]
-export function Yeardata () {
+  { value: 1897, label: 1897 },
+];
+export function Yeardata() {
   return (
-    <Select options={yeardata} classNamePrefix='Select2' className="multi-select" placeholder="" selected={1989} defaultValue={yeardata[118]} />
-
-  )
+    <Select
+      options={yeardata}
+      classNamePrefix="Select2"
+      className="multi-select"
+      placeholder=""
+      selected={1989}
+      defaultValue={yeardata[118]}
+    />
+  );
 }
 
 //
 export const Options = [
-  { value: 'January', label: 'January' },
-  { value: 'February', label: 'February' },
-  { value: 'March', label: 'March' },
-  { value: 'April', label: 'April' },
-  { value: 'May', label: 'May' },
-  { value: 'June', label: 'June' },
-  { value: 'July', label: 'July' },
-  { value: 'August', label: 'August' },
-  { value: 'September', label: 'September' },
-  { value: 'October', label: 'October' },
-  { value: 'November', label: 'November' },
-  { value: 'Decemeber', label: 'Decemeber' }
-]
+  { value: "January", label: "January" },
+  { value: "February", label: "February" },
+  { value: "March", label: "March" },
+  { value: "April", label: "April" },
+  { value: "May", label: "May" },
+  { value: "June", label: "June" },
+  { value: "July", label: "July" },
+  { value: "August", label: "August" },
+  { value: "September", label: "September" },
+  { value: "October", label: "October" },
+  { value: "November", label: "November" },
+  { value: "Decemeber", label: "Decemeber" },
+];
 //   Single Group Disabled MutipleSelect
 
 const Group1 = [
   {
-    value: 'Option 1',
-    label: 'Option 1',
-    isDisabled: 'isDisabled'
+    value: "Option 1",
+    label: "Option 1",
+    isDisabled: "isDisabled",
   },
   {
-    value: 'Option 2',
-    label: 'Option 2',
-    isDisabled: 'isDisabled'
+    value: "Option 2",
+    label: "Option 2",
+    isDisabled: "isDisabled",
   },
   {
-    value: 'Option 3',
-    label: 'Option 3',
-    isDisabled: 'isDisabled'
+    value: "Option 3",
+    label: "Option 3",
+    isDisabled: "isDisabled",
   },
   {
-    value: 'Option 4',
-    label: 'Option 4',
-    isDisabled: 'isDisabled'
+    value: "Option 4",
+    label: "Option 4",
+    isDisabled: "isDisabled",
   },
   {
-    value: 'Option 5',
-    label: 'Option 5',
-    isDisabled: 'isDisabled'
-  }
-]
+    value: "Option 5",
+    label: "Option 5",
+    isDisabled: "isDisabled",
+  },
+];
 const Group2 = [
-  { value: 'Option 1', label: 'Option 1' },
+  { value: "Option 1", label: "Option 1" },
   {
-    value: 'Option 2',
-    label: 'Option 2'
+    value: "Option 2",
+    label: "Option 2",
   },
   {
-    value: 'Option 3',
-    label: 'Option 3'
+    value: "Option 3",
+    label: "Option 3",
   },
   {
-    value: 'Option 4',
-    label: 'Option 4'
+    value: "Option 4",
+    label: "Option 4",
   },
   {
-    value: 'Option 5',
-    label: 'Option 5'
+    value: "Option 5",
+    label: "Option 5",
   },
   {
-    value: 'Option 6',
-    label: 'Option 6'
+    value: "Option 6",
+    label: "Option 6",
   },
   {
-    value: 'Option 7',
-    label: 'Option 7'
+    value: "Option 7",
+    label: "Option 7",
   },
   {
-    value: 'Option 8',
-    label: 'Option 8'
-  }
-]
+    value: "Option 8",
+    label: "Option 8",
+  },
+];
 
 const Group3 = [
-  { value: 'Option 1', label: 'Option 1' },
+  { value: "Option 1", label: "Option 1" },
   {
-    value: 'Option 2',
-    label: 'Option 2'
+    value: "Option 2",
+    label: "Option 2",
   },
   {
-    value: 'Option 3',
-    label: 'Option 3'
+    value: "Option 3",
+    label: "Option 3",
   },
   {
-    value: 'Option 4',
-    label: 'Option 4'
+    value: "Option 4",
+    label: "Option 4",
   },
   {
-    value: 'Option 5',
-    label: 'Option 5'
+    value: "Option 5",
+    label: "Option 5",
   },
   {
-    value: 'Option 6',
-    label: 'Option 6'
+    value: "Option 6",
+    label: "Option 6",
   },
   {
-    value: 'Option 7',
-    label: 'Option 7'
+    value: "Option 7",
+    label: "Option 7",
   },
   {
-    value: 'Option 8',
-    label: 'Option 8'
+    value: "Option 8",
+    label: "Option 8",
   },
   {
-    value: 'Option 9',
-    label: 'Option 9'
-  }
-]
+    value: "Option 9",
+    label: "Option 9",
+  },
+];
 const groupeddata = [
   {
-    label: 'Group 1',
-    options: Group1
+    label: "Group 1",
+    options: Group1,
   },
   {
-    label: 'Group 2',
-    options: Group2
+    label: "Group 2",
+    options: Group2,
   },
   {
-    label: 'Group 3',
-    options: Group3
-  }
-]
+    label: "Group 3",
+    options: Group3,
+  },
+];
 
-export function SingleGroup () {
-  const [selected, setSelected] = useState([])
+export function SingleGroup() {
+  const [selected, setSelected] = useState([]);
 
   return (
     <div>
@@ -326,114 +340,114 @@ export function SingleGroup () {
         onChange={setSelected}
       />
     </div>
-  )
-};
+  );
+}
 
 // Multiple items with Group Option
 
 const Group4 = [
-  { value: '1', label: '1' },
+  { value: "1", label: "1" },
   {
-    value: '2',
-    label: '2'
+    value: "2",
+    label: "2",
   },
   {
-    value: '3',
-    label: '3'
+    value: "3",
+    label: "3",
   },
   {
-    value: '4',
-    label: '4'
+    value: "4",
+    label: "4",
   },
   {
-    value: '5',
-    label: '5'
-  }
-]
+    value: "5",
+    label: "5",
+  },
+];
 const Group5 = [
-  { value: '11', label: '11' },
+  { value: "11", label: "11" },
   {
-    value: '2',
-    label: '2'
+    value: "2",
+    label: "2",
   },
   {
-    value: '3',
-    label: '3'
+    value: "3",
+    label: "3",
   },
   {
-    value: '4',
-    label: '4'
+    value: "4",
+    label: "4",
   },
   {
-    value: '5',
-    label: '5'
+    value: "5",
+    label: "5",
   },
   {
-    value: '6',
-    label: '6'
+    value: "6",
+    label: "6",
   },
   {
-    value: '7',
-    label: '7'
+    value: "7",
+    label: "7",
   },
   {
-    value: '8',
-    label: '8'
-  }
-]
+    value: "8",
+    label: "8",
+  },
+];
 
 const Group6 = [
-  { value: '1', label: '1' },
+  { value: "1", label: "1" },
   {
-    value: '2',
-    label: '2'
+    value: "2",
+    label: "2",
   },
   {
-    value: '3',
-    label: '3'
+    value: "3",
+    label: "3",
   },
   {
-    value: '4',
-    label: '4'
+    value: "4",
+    label: "4",
   },
   {
-    value: '5',
-    label: '5'
+    value: "5",
+    label: "5",
   },
   {
-    value: '6',
-    label: '6'
+    value: "6",
+    label: "6",
   },
   {
-    value: '7',
-    label: '7'
+    value: "7",
+    label: "7",
   },
   {
-    value: '8',
-    label: '8'
+    value: "8",
+    label: "8",
   },
   {
-    value: '9',
-    label: '9'
-  }
-]
+    value: "9",
+    label: "9",
+  },
+];
 const Groupeddata = [
   {
-    label: 'Group 1',
-    options: Group4
+    label: "Group 1",
+    options: Group4,
   },
   {
-    label: 'Group 2',
-    options: Group5
+    label: "Group 2",
+    options: Group5,
   },
   {
-    label: 'Group 3',
-    options: Group6
-  }
-]
+    label: "Group 3",
+    options: Group6,
+  },
+];
 
-export function MultipleGroup () {
-  const [selected, setSelected] = useState([])
+export function MultipleGroup() {
+  const [selected, setSelected] = useState([]);
 
   return (
     <div>
@@ -445,264 +459,262 @@ export function MultipleGroup () {
         onChange={setSelected}
       />
     </div>
-  )
-};
+  );
+}
 
 // Group-Option Filter
 
 export const GroupFilterOption = () => {
-  const [selected, setSelected] = useState([])
+  const [selected, setSelected] = useState([]);
   const options = [
-    { value: 'January', label: 'January' },
-    { value: 'Febuary', label: 'Febuary', disabled: true },
-    { value: 'March', label: 'March', disabled: true },
-    { value: 'April', label: 'April', disabled: true },
-    { value: 'May', label: 'May' },
-    { value: 'June', label: 'June' },
-    { value: 'July', label: 'July' },
-    { value: 'August', label: 'August' },
-    { value: 'September', label: 'September' },
-    { value: 'October', label: 'October' },
-    { value: 'November', label: 'November' },
-    { value: 'December', label: 'December' }
-
-  ]
+    { value: "January", label: "January" },
+    { value: "Febuary", label: "Febuary", disabled: true },
+    { value: "March", label: "March", disabled: true },
+    { value: "April", label: "April", disabled: true },
+    { value: "May", label: "May" },
+    { value: "June", label: "June" },
+    { value: "July", label: "July" },
+    { value: "August", label: "August" },
+    { value: "September", label: "September" },
+    { value: "October", label: "October" },
+    { value: "November", label: "November" },
+    { value: "December", label: "December" },
+  ];
   return (
-
     <MultiSelect
-      value={selected} className="multi-select"
+      value={selected}
+      className="multi-select"
       onChange={setSelected}
       labelledBy="Select"
       disableSearch={true}
       options={options}
     />
-  )
-}
+  );
+};
 
 // Single Custom Style
 
 export class CustomisedSelector extends React.Component {
   options = [
-    { value: 'January', label: 'January' },
-    { value: 'Febuary', label: 'Febuary' },
-    { value: 'March', label: 'March' },
-    { value: 'April', label: 'April' },
-    { value: 'May', label: 'May', color: '#6c5ffc' },
-    { value: 'June', label: 'June' },
-    { value: 'July', label: 'July', color: '#05c3fb' },
-    { value: 'August', label: 'August' },
-    { value: 'September', label: 'September' },
-    { value: 'October', label: 'October', color: '#498205' },
-    { value: 'November', label: 'November' },
-    { value: 'December', label: 'December' }
-  ]
+    { value: "January", label: "January" },
+    { value: "Febuary", label: "Febuary" },
+    { value: "March", label: "March" },
+    { value: "April", label: "April" },
+    { value: "May", label: "May", color: "#6c5ffc" },
+    { value: "June", label: "June" },
+    { value: "July", label: "July", color: "#05c3fb" },
+    { value: "August", label: "August" },
+    { value: "September", label: "September" },
+    { value: "October", label: "October", color: "#498205" },
+    { value: "November", label: "November" },
+    { value: "December", label: "December" },
+  ];
 
   styles = {
     option: (provided, state) => ({
       ...provided,
-      fontWeight: state.isSelected ? 'bold' : 'normal',
-      color: 'black',
+      fontWeight: state.isSelected ? "bold" : "normal",
+      color: "black",
       backgroundColor: state.data.color,
-      fontSize: state.selectProps.myFontSize
+      fontSize: state.selectProps.myFontSize,
     }),
     singleValue: (provided, state) => ({
       ...provided,
       color: state.data.color,
-      fontSize: state.selectProps.myFontSize
-    })
-  }
+      fontSize: state.selectProps.myFontSize,
+    }),
+  };
 
-  render () {
+  render() {
     return (
-      <Select classNamePrefix='Select2' options={this.options} styles={this.styles} />
-    )
+      <Select
+        classNamePrefix="Select2"
+        options={this.options}
+        styles={this.styles}
+      />
+    );
   }
 }
 //
 const multipleitem = [
-  { value: '1', label: '1' },
-  { value: '2', label: '2' },
-  { value: '3', label: '3' },
-  { value: '4', label: '4' },
-  { value: '5', label: '5' },
-  { value: '6', label: '6' },
-  { value: '7', label: '7' },
-  { value: '8', label: '8' },
-  { value: '9', label: '9' },
-  { value: '10', label: '10' },
-  { value: '11', label: '11' },
-  { value: '12', label: '12' },
-  { value: '13', label: '13' },
-  { value: '14', label: '14' },
-  { value: '15', label: '15' },
-  { value: '16', label: '16' },
-  { value: '17', label: '17' },
-  { value: '18', label: '18' },
-  { value: '19', label: '19' },
-  { value: '20', label: '20' },
-  { value: '21', label: '21' }
-]
-export function Multiple () {
-  const [selected, setSelected] = useState([])
+  { value: "1", label: "1" },
+  { value: "2", label: "2" },
+  { value: "3", label: "3" },
+  { value: "4", label: "4" },
+  { value: "5", label: "5" },
+  { value: "6", label: "6" },
+  { value: "7", label: "7" },
+  { value: "8", label: "8" },
+  { value: "9", label: "9" },
+  { value: "10", label: "10" },
+  { value: "11", label: "11" },
+  { value: "12", label: "12" },
+  { value: "13", label: "13" },
+  { value: "14", label: "14" },
+  { value: "15", label: "15" },
+  { value: "16", label: "16" },
+  { value: "17", label: "17" },
+  { value: "18", label: "18" },
+  { value: "19", label: "19" },
+  { value: "20", label: "20" },
+  { value: "21", label: "21" },
+];
+export function Multiple() {
+  const [selected, setSelected] = useState([]);
   return (
-  <MultiSelect
-  value={selected} className="multi-select"
-  onChange={setSelected}
-  labelledBy="Select"
-  disableSearch={true}
-  options={multipleitem}
-/>
-  )
+    <MultiSelect
+      value={selected}
+      className="multi-select"
+      onChange={setSelected}
+      labelledBy="Select"
+      disableSearch={true}
+      options={multipleitem}
+    />
+  );
 }
 //
 export const multiDisable = [
-  { value: ' 1', label: ' 1' },
-  { value: ' 2', label: ' 2' },
-  { value: ' 3', label: ' 3' },
-  { value: ' 4', label: ' 4' },
-  { value: '5', label: '5' },
-  { value: '6', label: '6' },
-  { value: '7', label: '7' },
-  { value: '8', label: '8' },
-  { value: '9', label: '9' },
-  { value: '10', label: '10' },
-  { value: '11', label: '11' },
-  { value: '12', label: '12' },
-  { value: '13', label: '13' },
-  { value: ' 14', label: '14' },
-  { value: '15', label: '15' },
-  { value: ' 16', label: ' 16' },
-  { value: '17', label: '17' },
-  { value: '18', label: '18 ' },
-  { value: '19', label: '19' },
-  { value: '20', label: '20' }
-
-]
+  { value: " 1", label: " 1" },
+  { value: " 2", label: " 2" },
+  { value: " 3", label: " 3" },
+  { value: " 4", label: " 4" },
+  { value: "5", label: "5" },
+  { value: "6", label: "6" },
+  { value: "7", label: "7" },
+  { value: "8", label: "8" },
+  { value: "9", label: "9" },
+  { value: "10", label: "10" },
+  { value: "11", label: "11" },
+  { value: "12", label: "12" },
+  { value: "13", label: "13" },
+  { value: " 14", label: "14" },
+  { value: "15", label: "15" },
+  { value: " 16", label: " 16" },
+  { value: "17", label: "17" },
+  { value: "18", label: "18 " },
+  { value: "19", label: "19" },
+  { value: "20", label: "20" },
+];
 export const Hide = [
-  { value: 'First', label: 'First' },
-  { value: 'Second', label: 'Second' },
-  { value: 'Third', label: 'Third' },
-  { value: 'Fourth', label: 'Fourth' }
-]
+  { value: "First", label: "First" },
+  { value: "Second", label: "Second" },
+  { value: "Third", label: "Third" },
+  { value: "Fourth", label: "Fourth" },
+];
 export const Singlerow = [
-  { value: 'First', label: 'First' },
-  { value: 'Second', label: 'Second' },
-  { value: 'Third', label: 'Third' },
-  { value: 'Fourth', label: 'Fourth' }
-]
+  { value: "First", label: "First" },
+  { value: "Second", label: "Second" },
+  { value: "Third", label: "Third" },
+  { value: "Fourth", label: "Fourth" },
+];
 //  Group option
 
 const Groupopt1 = [
   {
-    value: 'Option 1',
-    label: 'Option 1'
-
+    value: "Option 1",
+    label: "Option 1",
   },
   {
-    value: 'Option 2',
-    label: 'Option 2'
-
+    value: "Option 2",
+    label: "Option 2",
   },
   {
-    value: 'Option 3',
-    label: 'Option 3'
-
+    value: "Option 3",
+    label: "Option 3",
   },
   {
-    value: 'Option 4',
-    label: 'Option 4'
-
+    value: "Option 4",
+    label: "Option 4",
   },
   {
-    value: 'Option 5',
-    label: 'Option 5'
-
-  }
-]
+    value: "Option 5",
+    label: "Option 5",
+  },
+];
 const Groupopt2 = [
-  { value: 'Option 1', label: 'Option 1' },
+  { value: "Option 1", label: "Option 1" },
   {
-    value: 'Option 2',
-    label: 'Option 2'
+    value: "Option 2",
+    label: "Option 2",
   },
   {
-    value: 'Option 3',
-    label: 'Option 3'
+    value: "Option 3",
+    label: "Option 3",
   },
   {
-    value: 'Option 4',
-    label: 'Option 4'
+    value: "Option 4",
+    label: "Option 4",
   },
   {
-    value: 'Option 5',
-    label: 'Option 5'
+    value: "Option 5",
+    label: "Option 5",
   },
   {
-    value: 'Option 6',
-    label: 'Option 6'
+    value: "Option 6",
+    label: "Option 6",
   },
   {
-    value: 'Option 7',
-    label: 'Option 7'
+    value: "Option 7",
+    label: "Option 7",
   },
   {
-    value: 'Option 8',
-    label: 'Option 8'
-  }
-]
+    value: "Option 8",
+    label: "Option 8",
+  },
+];
 
 const Groupopt3 = [
-  { value: 'Option 1', label: 'Option 1' },
+  { value: "Option 1", label: "Option 1" },
   {
-    value: 'Option 2',
-    label: 'Option 2'
+    value: "Option 2",
+    label: "Option 2",
   },
   {
-    value: 'Option 3',
-    label: 'Option 3'
+    value: "Option 3",
+    label: "Option 3",
   },
   {
-    value: 'Option 4',
-    label: 'Option 4'
+    value: "Option 4",
+    label: "Option 4",
   },
   {
-    value: 'Option 5',
-    label: 'Option 5'
+    value: "Option 5",
+    label: "Option 5",
   },
   {
-    value: 'Option 6',
-    label: 'Option 6'
+    value: "Option 6",
+    label: "Option 6",
   },
   {
-    value: 'Option 7',
-    label: 'Option 7'
+    value: "Option 7",
+    label: "Option 7",
   },
   {
-    value: 'Option 8',
-    label: 'Option 8'
+    value: "Option 8",
+    label: "Option 8",
   },
   {
-    value: 'Option 9',
-    label: 'Option 9'
-  }
-]
+    value: "Option 9",
+    label: "Option 9",
+  },
+];
 const groupoption = [
   {
-    label: 'Group 1',
-    options: Groupopt1
+    label: "Group 1",
+    options: Groupopt1,
   },
   {
-    label: 'Group 2',
-    options: Groupopt2
+    label: "Group 2",
+    options: Groupopt2,
   },
   {
-    label: 'Group 3',
-    options: Groupopt3
-  }
-]
+    label: "Group 3",
+    options: Groupopt3,
+  },
+];
 
-export function Groupoption () {
-  const [selected, setSelected] = useState([])
+export function Groupoption() {
+  const [selected, setSelected] = useState([]);
 
   return (
     <div>
@@ -713,245 +725,247 @@ export function Groupoption () {
         onChange={setSelected}
       />
     </div>
-  )
+  );
 }
 
 //  Group option
 
 const filter1 = [
   {
-    value: 'Option 1',
-    label: 'Option 1'
-
+    value: "Option 1",
+    label: "Option 1",
   },
   {
-    value: 'Option 2',
-    label: 'Option 2'
-
+    value: "Option 2",
+    label: "Option 2",
   },
   {
-    value: 'Option 3',
-    label: 'Option 3'
-
+    value: "Option 3",
+    label: "Option 3",
   },
   {
-    value: 'Option 4',
-    label: 'Option 4'
-
+    value: "Option 4",
+    label: "Option 4",
   },
   {
-    value: 'Option 5',
-    label: 'Option 5'
-
-  }
-]
+    value: "Option 5",
+    label: "Option 5",
+  },
+];
 const filter2 = [
-  { value: 'Option 1', label: 'Option 1' },
+  { value: "Option 1", label: "Option 1" },
   {
-    value: 'Option 2',
-    label: 'Option 2'
+    value: "Option 2",
+    label: "Option 2",
   },
   {
-    value: 'Option 3',
-    label: 'Option 3'
+    value: "Option 3",
+    label: "Option 3",
   },
   {
-    value: 'Option 4',
-    label: 'Option 4'
+    value: "Option 4",
+    label: "Option 4",
   },
   {
-    value: 'Option 5',
-    label: 'Option 5'
+    value: "Option 5",
+    label: "Option 5",
   },
   {
-    value: 'Option 6',
-    label: 'Option 6'
+    value: "Option 6",
+    label: "Option 6",
   },
   {
-    value: 'Option 7',
-    label: 'Option 7'
+    value: "Option 7",
+    label: "Option 7",
   },
   {
-    value: 'Option 8',
-    label: 'Option 8'
-  }
-]
+    value: "Option 8",
+    label: "Option 8",
+  },
+];
 
 const filter3 = [
-  { value: 'Option 1', label: 'Option 1' },
+  { value: "Option 1", label: "Option 1" },
   {
-    value: 'Option 2',
-    label: 'Option 2'
+    value: "Option 2",
+    label: "Option 2",
   },
   {
-    value: 'Option 3',
-    label: 'Option 3'
+    value: "Option 3",
+    label: "Option 3",
   },
   {
-    value: 'Option 4',
-    label: 'Option 4'
+    value: "Option 4",
+    label: "Option 4",
   },
   {
-    value: 'Option 5',
-    label: 'Option 5'
+    value: "Option 5",
+    label: "Option 5",
   },
   {
-    value: 'Option 6',
-    label: 'Option 6'
+    value: "Option 6",
+    label: "Option 6",
   },
   {
-    value: 'Option 7',
-    label: 'Option 7'
+    value: "Option 7",
+    label: "Option 7",
   },
   {
-    value: 'Option 8',
-    label: 'Option 8'
+    value: "Option 8",
+    label: "Option 8",
   },
   {
-    value: 'Option 9',
-    label: 'Option 9'
-  }
-]
+    value: "Option 9",
+    label: "Option 9",
+  },
+];
 export const groupfilter = [
   {
-    label: 'Group 1',
-    value: 'Group 1',
-    options: Groupopt1
+    label: "Group 1",
+    value: "Group 1",
+    options: Groupopt1,
   },
   {
-    label: 'Group 2',
-    value: 'Group 2',
-    options: Groupopt2
+    label: "Group 2",
+    value: "Group 2",
+    options: Groupopt2,
   },
   {
-    label: 'Group 3',
-    value: 'Group 3',
-    options: Groupopt3
-  }
-]
+    label: "Group 3",
+    value: "Group 3",
+    options: Groupopt3,
+  },
+];
 // Select2 Elements
 // Select province
 export const BasicProvince = [
-  { value: 'Southern Province', label: 'Southern Province' },
-  { value: 'Northern Province', label: 'Northern Province' },
-  { value: 'Eastern Province', label: 'Eastern Province' },
-  { value: 'Western Province', label: 'Western Province' },
-  { value: 'Kigali City', label: 'Kigali City' }
-]
+  { value: "Southern Province", label: "Southern Province" },
+  { value: "Northern Province", label: "Northern Province" },
+  { value: "Eastern Province", label: "Eastern Province" },
+  { value: "Western Province", label: "Western Province" },
+  { value: "Kigali City", label: "Kigali City" },
+];
 
 // Select District
 export const BasicDistrict = [
-    { value: 'Gasabo', label: 'Gasabo' },
-    { value: 'Kicukiro', label: 'Kicukiro' },
-    { value: 'Nyarugenge', label: 'Nyarugenge' },
-    { value: 'Bugesera', label: 'Bugesera' },
-    { value: 'Nyanza', label: 'Nyanza' }
-  ]
+  { value: "Gasabo", label: "Gasabo" },
+  { value: "Kicukiro", label: "Kicukiro" },
+  { value: "Nyarugenge", label: "Nyarugenge" },
+  { value: "Bugesera", label: "Bugesera" },
+  { value: "Nyanza", label: "Nyanza" },
+];
 
-
-  // Select Sectors
+// Select Sectors
 export const BasicSectors = [
-    { value: 'Kagarama', label: 'Kagarama' },
-    { value: ' Niboye', label: ' Niboye' },
-    { value: 'Kanombe', label: 'Kanombe' },
-    { value: 'Masaka', label: 'Masaka' },
-    { value: 'Nyarugunga', label: 'Nyarugunga' }
-  ]
+  { value: "Kagarama", label: "Kagarama" },
+  { value: " Niboye", label: " Niboye" },
+  { value: "Kanombe", label: "Kanombe" },
+  { value: "Masaka", label: "Masaka" },
+  { value: "Nyarugunga", label: "Nyarugunga" },
+];
 
-
-    // Select Cell
+// Select Cell
 export const BasicCell = [
-    { value: 'Kinyinya', label: 'Kinyinya' },
-    { value: ' Ndera', label: ' Ndera' },
-    { value: 'Kacyiru', label: 'Kacyiru' },
-    { value: ' Kimihurura', label: ' Kimihurura' },
-    { value: 'Kimironko', label: 'Kimironko' }
-  ]
+  { value: "Kinyinya", label: "Kinyinya" },
+  { value: " Ndera", label: " Ndera" },
+  { value: "Kacyiru", label: "Kacyiru" },
+  { value: " Kimihurura", label: " Kimihurura" },
+  { value: "Kimironko", label: "Kimironko" },
+];
 
-
-  
-    // Select membership Type
+// Select membership Type
 export const membershipTypes = [
-  { value: 'PRINCIPAL', label: 'Principal' },
-  { value: ' DEPENDENT', label: ' Dependent' },
- 
-]
+  { value: "PRINCIPAL", label: "Principal" },
+  { value: " DEPENDENT", label: " Dependent" },
+];
 
+// Select Case Type
+export const ECaseType = [
+  { value: "NEW", label: "NEW" },
+  { value: " OLD", label: " OLD" },
+];
 
+// Select Visit Type
+export const EVisitType = [
+  { value: "OUTPATIENT", label: "OUTPATIENT" },
+  { value: " INPATIENT", label: " INPATIENT" },
+  { value: " EXTRA_TIME", label: " EXTRA_TIME" },
+  { value: " ONLINE", label: " ONLINE" },
+  { value: " CHRONIC", label: " CHRONIC" },
+];
 
 // select2
 export const CitiesData = [
-  { value: 'Arizona', label: 'Arizona', isDisabled: 'true' },
-  { value: 'Colorado', label: 'Colorado' },
-  { value: 'Idaho', label: 'Idaho' },
-  { value: 'Montana', label: 'Montana' },
-  { value: 'New Mexico', label: 'New Mexico' },
-  { value: 'North Dakota', label: 'North Dakota' },
-  { value: 'Utah', label: 'Utah' },
-  { value: 'Wyoming', label: 'Wyoming' }
-]
+  { value: "Arizona", label: "Arizona", isDisabled: "true" },
+  { value: "Colorado", label: "Colorado" },
+  { value: "Idaho", label: "Idaho" },
+  { value: "Montana", label: "Montana" },
+  { value: "New Mexico", label: "New Mexico" },
+  { value: "North Dakota", label: "North Dakota" },
+  { value: "Utah", label: "Utah" },
+  { value: "Wyoming", label: "Wyoming" },
+];
 
 export const TimeZone = [
-  { value: 'Alabama', label: 'Alabama' },
-  { value: 'Arkansas', label: 'Arkansas' },
-  { value: 'Illinois', label: 'Illinois' },
-  { value: 'Iowa', label: 'Iowa' },
-  { value: 'Kansas', label: 'Kansas' },
-  { value: 'Kentucky', label: 'Kentucky' },
-  { value: 'Louisiana', label: 'Louisiana' },
-  { value: 'Minnesota', label: 'Minnesota' },
-  { value: 'Mississippi', label: 'Mississippi' },
-  { value: 'Missouri', label: 'Missouri' },
-  { value: 'Oklahoma', label: 'Oklahoma' },
-  { value: 'South Dakota', label: 'South Dakota' },
-  { value: 'Texas', label: 'Texas' },
-  { value: 'Tennessee', label: 'Tennessee' },
-  { value: 'Wisconsin', label: 'Wisconsin' }
-]
+  { value: "Alabama", label: "Alabama" },
+  { value: "Arkansas", label: "Arkansas" },
+  { value: "Illinois", label: "Illinois" },
+  { value: "Iowa", label: "Iowa" },
+  { value: "Kansas", label: "Kansas" },
+  { value: "Kentucky", label: "Kentucky" },
+  { value: "Louisiana", label: "Louisiana" },
+  { value: "Minnesota", label: "Minnesota" },
+  { value: "Mississippi", label: "Mississippi" },
+  { value: "Missouri", label: "Missouri" },
+  { value: "Oklahoma", label: "Oklahoma" },
+  { value: "South Dakota", label: "South Dakota" },
+  { value: "Texas", label: "Texas" },
+  { value: "Tennessee", label: "Tennessee" },
+  { value: "Wisconsin", label: "Wisconsin" },
+];
 export const groupedOptions = [
   {
-    label: 'Cities',
-    options: CitiesData
+    label: "Cities",
+    options: CitiesData,
   },
   {
-    label: 'Central-TimeZone',
-    options: TimeZone
-  }
-]
+    label: "Central-TimeZone",
+    options: TimeZone,
+  },
+];
 //
 export const Data = [
-  { value: 'Arizona', label: 'Arizona', isDisabled: 'false' },
-  { value: 'Colorado', label: 'Colorado' },
-  { value: 'Idaho', label: 'Idaho' },
-  { value: 'Montana', label: 'Montana' },
-  { value: 'New Mexico', label: 'New Mexico' },
-  { value: 'North Dakota', label: 'North Dakota' },
-  { value: 'Utah', label: 'Utah' },
-  { value: 'Wyoming', label: 'Wyoming' },
-  { value: 'Alabama', label: 'Alabama' },
-  { value: 'Arkansas', label: 'Arkansas' },
-  { value: 'Illinois', label: 'Illinois' },
-  { value: 'Iowa', label: 'Iowa' },
-  { value: 'Kansas', label: 'Kansas' },
-  { value: 'Kentucky', label: 'Kentucky' },
-  { value: 'Louisiana', label: 'Louisiana' },
-  { value: 'Minnesota', label: 'Minnesota' },
-  { value: 'Mississippi', label: 'Mississippi' },
-  { value: 'Missouri', label: 'Missouri' },
-  { value: 'Oklahoma', label: 'Oklahoma' },
-  { value: 'South Dakota', label: 'South Dakota' },
-  { value: 'Texas', label: 'Texas' },
-  { value: 'Tennessee', label: 'Tennessee' },
-  { value: 'Wisconsin', label: 'Wisconsin' }
-]
+  { value: "Arizona", label: "Arizona", isDisabled: "false" },
+  { value: "Colorado", label: "Colorado" },
+  { value: "Idaho", label: "Idaho" },
+  { value: "Montana", label: "Montana" },
+  { value: "New Mexico", label: "New Mexico" },
+  { value: "North Dakota", label: "North Dakota" },
+  { value: "Utah", label: "Utah" },
+  { value: "Wyoming", label: "Wyoming" },
+  { value: "Alabama", label: "Alabama" },
+  { value: "Arkansas", label: "Arkansas" },
+  { value: "Illinois", label: "Illinois" },
+  { value: "Iowa", label: "Iowa" },
+  { value: "Kansas", label: "Kansas" },
+  { value: "Kentucky", label: "Kentucky" },
+  { value: "Louisiana", label: "Louisiana" },
+  { value: "Minnesota", label: "Minnesota" },
+  { value: "Mississippi", label: "Mississippi" },
+  { value: "Missouri", label: "Missouri" },
+  { value: "Oklahoma", label: "Oklahoma" },
+  { value: "South Dakota", label: "South Dakota" },
+  { value: "Texas", label: "Texas" },
+  { value: "Tennessee", label: "Tennessee" },
+  { value: "Wisconsin", label: "Wisconsin" },
+];
 //
-export const animatedComponents = makeAnimated()
+export const animatedComponents = makeAnimated();
 
 export const option = [
-  { value: 'Firefox', label: 'Firefox' },
-  { value: 'Chrome', label: 'Chrome' },
-  { value: 'Safari', label: 'Safari' },
-  { value: 'Opera', label: 'Opera' },
-  { value: 'Internet Explorer', label: 'Internet Explorer' }
-]
-
+  { value: "Firefox", label: "Firefox" },
+  { value: "Chrome", label: "Chrome" },
+  { value: "Safari", label: "Safari" },
+  { value: "Opera", label: "Opera" },
+  { value: "Internet Explorer", label: "Internet Explorer" },
+];

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, json } from "react-router-dom";
+import {Link} from 'react-router-dom'
 import {
   Card,
   Col,
@@ -7,9 +7,6 @@ import {
   Button,
   Form,
   Modal,
-  InputGroup,
-  Dropdown,
-  ButtonGroup,
 } from "react-bootstrap";
 import Select from "react-select";
 import axios from "axios";
@@ -17,71 +14,79 @@ import { ECaseType, EVisitType } from "../../data/elementsdata";
 
 const columns = [
   {
-    name: "Names",
-    selector: (row) => [row.names],
+    name: "Patient's names",
+    selector: (row) => [row.patient?.names],
     sortable: true,
+  },
+  {
+    name: "Patient's phone ",
+    selector: (row) => [row.patient?.phoneNumber],
+    sortable: true,
+  },
+  {
+    name: "Doctor's names",
+    selector: (row) => [`${row.doctor?.firstName} ${row.doctor?.lastName}`],
+    sortable: true,
+  },
+  {
+    name: "Doctor's phone",
+    selector: (row) => [row.doctor?.phoneNumber],
+    sortable: true,
+  },
+  {
+    name: "Insurance",
+    selector: (row) => [row.patientInsurance?.insuranceName],
+    sortable: true,
+  },
+  {
+    name: "Case Type",
+    selector: (row) => [row.caseType],
+    sortable: true,
+  },
+  {
+    name: "Case Type",
+    selector: (row) => [row.visitType],
+    sortable: true,
+  },
+  {
+    name: "Actions",
+    cell: (row) => (
+      <Link
+        to="/visit-details"
+        state={{
+          data:{
+            patient:row.patient,
+            doctor:`${row.doctor.firstName} ${row.doctor.lastName}`,
+            createdAt:row.createdAt,
+            visitId:row.id
+          }
+        }}
+      >
+        View Details
+      </Link>
+    ),
   },
 ];
 
-// const columns = [
-//   {
-//     name: "FIRST NAME",
-//     selector: (row) => [row.firstName],
-//     sortable: true,
-//   },
-//   {
-//     name: "LAST NAME",
-//     selector: (row) => [row.lastName],
-//     sortable: true,
-//   },
-
-//   {
-//     name: " PHONE NUMBER",
-//     selector: (row) => [row.phoneNumber],
-//     sortable: true,
-//   },
-//   {
-//     name: "EMAIL",
-//     selector: (row) => [row.email],
-//     sortable: true,
-//   },
-// ];
-
-import {
-  DataTabless,
-  ExportCSV,
-  ResponsiveDataTable,
-} from "../tables/datatables/data/responsivedatatable";
 import DataTable from "react-data-table-component";
 function Visits() {
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
-  const [patients, setPatients] = useState("");
+  const [patients, setPatients] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [department, setDepartment] = useState("");
   const [patientId, setPatientId] = useState("");
-  const [patientsInsurances,setPatientsInsurances] =useState("");
-  const [patientsInsuranceId, setpatientsInsuranceId] = useState("");
+  const [patientsInsurances,setPatientsInsurances] =useState([]);
 
   const [patientInsuranceId, setPatientInsuranceId] = useState("");
   const [visitType, setVisitType] = useState("");
   const [caseType, setCaseType] = useState("");
   const [doctorId, setDoctorId] = useState("");
-  const [visits, setVisits] = useState();
-  const [visits_, setVisits_] = useState();
+  const [visits, setVisits] = useState([]);
   const [show, setShow] = useState(false);
 
-  const searchUser = (value) => {
-    if (value === "") {
-      fetchvisits(); // Reset to the original list of projects
-    } else {
-      const filteredvisits = visits_.filter((user) => {
-        const userNameLowercase = (user.names + user.email).toLowerCase();
-        const searchTermLowercase = value.toLowerCase();
-        return userNameLowercase.includes(searchTermLowercase);
-      });
 
-      setvisits(filteredvisits);
-    }
-  };
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -92,7 +97,7 @@ function Visits() {
     setLoading(true);
     const postObj = JSON.stringify({
       patientId: patientId, // modify body properties
-      patientInsuranceId: patientInsuranceId,
+      patientInsuranceId: patientInsuranceId || null,
       visitType: visitType,
       caseType: caseType,
       doctorId: doctorId,
@@ -109,8 +114,8 @@ function Visits() {
         console.log(res.data);
         setShow(false);
         if (res.data.status === true) {
-          alert("Department Added successfully");
-          fetchvisits();
+          alert("Visit added successfully");
+          fetchVisits();
         } else {
           alert("something went wrong");
         }
@@ -122,28 +127,56 @@ function Visits() {
       });
   };
 
-  //   const fetchvisits = async () => {
-  //     let my_token = localStorage.getItem("token");
-  //     const config = {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${my_token}`,
-  //       },
-  //     };
+    const fetchDoctors = async (departmentId) => {
+      let my_token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${my_token}`,
+          "departmentId": departmentId
+        },
+      };
 
-  //     try {
-  //       const response = await axios.get(
-  //         `http://www.ubuzima.rw/rec/access/visit`,
-  //         config
-  //       );
-  //       setvisits(response.data.response);
-  //       console.log(response.data);
-  //       setvisits_(response.data.response);
-  //       //   fetchRoles();
-  //     } catch (error) {
-  //       console.error("Error fetching payrolls:", error);
-  //     }
-  //   };
+      try {
+        const response = await axios.get(
+          `http://www.ubuzima.rw/rec/medical/doctors/department-id`,
+          config
+        );
+        const doctors_=response.data.response.map(el=>{return({
+          label:`${el.doctor?.firstName} ${el.doctor?.lastName}`,value:el.doctor?.id
+        })})
+        setDoctors(doctors_);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching payrolls:", error);
+      }
+    };
+
+    const fetchVisits = async () => {
+      let my_token = await localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${my_token}`,
+          "page":1,
+          "size":20
+        },
+      }; //incase you have to deal with ID or Options
+      axios
+        .get(`http://www.ubuzima.rw/rec/visit/nurse`, config)
+        .then((res) => {
+          // console.log(res.data);
+
+          if(res.data.status){
+            setVisits(res.data.response.patientVisits);
+          }
+        })
+        .catch((error) => {
+          setLoading(false);
+          setShow(false);
+          console.log(error.message);
+        });
+    };
 
   const fetchPatients = async () => {
     let my_token = await localStorage.getItem("token");
@@ -169,6 +202,28 @@ function Visits() {
       });
   };
 
+  const fetchDepartments = async () => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+      },
+    }; //incase you have to deal with ID or Options
+    axios
+      .get(`http://www.ubuzima.rw/rec/medical/departments`, config)
+      .then((res) => {
+        const departments_ = res.data.response.map((el) => {
+          return { label: el.name, value: el.id };
+        }); //const that assign value to the property
+        setDepartments(departments_);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error.message);
+      });
+  };
+
 
 
   const fetchPatientsInsuranceID = async (id) => {
@@ -185,7 +240,7 @@ function Visits() {
       .then((res) => {
         console.log(res.data);
         const patientsInsurances = res.data.response.patientInsurances.map((el) => {
-          return { label: el.cardNumber, value: el.id };
+          return { label: `${el.insuranceName} - ${el.cardNumber}`, value: el.id };
         }); //const that assign value to the property
         setPatientsInsurances(patientsInsurances);
       })
@@ -203,8 +258,8 @@ function Visits() {
 
   useEffect(() => {
     fetchPatients();
-    // fetchvisits();
-    // fetchRoles();
+    fetchDepartments();
+    fetchVisits();
   }, []);
 
   return (
@@ -243,20 +298,6 @@ function Visits() {
           </Modal.Header>
           <Modal.Body>
             <Row>
-              {/* <Col lg={6} style={{ marginTop: 10 }}>
-                <Form.Group>
-                  <Form.Label>Patient ID</Form.Label>
-                  <Form.Control
-                    type="text"
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="Patient ID"
-                    onChange={(e) => setPatientId(e.target.value)} // value onChange on input is the third step
-                    required
-                  />
-                </Form.Group>
-              </Col> */}
-
               <Col lg={6}>
                 <Form.Group className="form-group">
                   <Form.Label>Patient ID</Form.Label>
@@ -314,19 +355,38 @@ function Visits() {
                 </Form.Group>
               </Col>
 
-              <Col lg={6} style={{ marginTop: 10 }}>
-                <Form.Group>
-                  <Form.Label>Doctor Id</Form.Label>
-                  <Form.Control
-                    type="text"
-                    className="form-control "
-                    name="example-text-input"
-                    placeholder="Doctor Id"
-                    onChange={(e) => setDoctorId(e.target.value)}
+              <Col xl={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Department</Form.Label>
+                  <Select
+                    options={departments}
+                    onChange={(e) => {setDepartment(e.value);fetchDoctors(e.value)}}
+                    EVisitType
+                    classNamePrefix="Select2"
+                    className="multi-select"
+                    placeholder="Department"
                     required
                   />
                 </Form.Group>
               </Col>
+
+              
+
+              <Col xl={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Doctor Id</Form.Label>
+                  <Select
+                    options={doctors}
+                    onChange={(e) => setDoctorId(e.value)}
+                    EVisitType
+                    classNamePrefix="Select2"
+                    className="multi-select"
+                    placeholder="Doctor Id"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
             </Row>
           </Modal.Body>
           <Modal.Footer>

@@ -13,11 +13,14 @@ import {
 } from "react-bootstrap";
 import Select from "react-select";
 import axios from "axios";
-import { BasicProvince,BasicDistrict,BasicSectors,BasicCell,membershipTypes, Country, CustomisedSelector, Data, Daydata, GroupFilterOption, Groupoption, Hide, Multiple, MultipleGroup, Options, SingleGroup, Singlerow, Yeardata, animatedComponents, groupedOptions, groupfilter, multiDisable, option } from '../../data/elementsdata'
+import {
+  BasicProvince,
+  BasicDistrict,
+  BasicSectors,
+  BasicCell,
+  membershipTypes,
+} from "../../data/elementsdata";
 import DataTable from "react-data-table-component";
-
-
-
 
 const columns = [
   {
@@ -51,56 +54,7 @@ const columns = [
     selector: (row) => [row.dob],
     sortable: true,
   },
-
-  // {
-  //   name: "Contact Person",
-  //   selector: (row) => [row.contactPerson],
-  //   sortable: true,
-  // },
-
-  // {
-  //   name: "Contact Person Phone Number",
-  //   selector: (row) => [row.contactPersonPhoneNumber],
-  //   sortable: true,
-  // },
-
-  // {
-  //   name: "Affiliation Card Number",
-  //   selector: (row) => [row.affiliationCardNumber],
-  //   sortable: true,
-  // },
-  // {
-  //   name: "Membership Type",
-  //   selector: (row) => [row.membershipType],
-  //   sortable: true,
-  // },
-  // {
-  //   name: "Principal Names",
-  //   selector: (row) => [row.principalNames],
-  //   sortable: true,
-  // },
-  
-  // {
-  //   name: "Card Number",
-  //   selector: (row) => [row.cardNumber],
-  //   sortable: true,
-  // },
-
-  // {
-  //   name: "Employee",
-  //   selector: (row) => [row.employer],
-  //   sortable: true,
-  // },
-
-  // {
-  //   name: "Expiry Date",
-  //   selector: (row) => [row.expiryDate],
-  //   sortable: true,
-  // },
-  
 ];
-
-
 
 const headers = [
   { label: "Task Name", key: "name" },
@@ -113,20 +67,34 @@ const headers = [
   { label: "description", key: "description" },
 ];
 
-
-
-import { DataTabless,ExportCSV,ResponsiveDataTable } from "../tables/datatables/data/responsivedatatable";
-function NewPatient() {  //useState must be declared between the function and  return   //creating useState is the first step
+import {
+  DataTabless,
+  ExportCSV,
+  ResponsiveDataTable,
+} from "../tables/datatables/data/responsivedatatable";
+function Patients() {
+  //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
   const [names, setName] = useState("");
-  const [patients_,setPatients_] =useState("");
-  const [patients,setPatients] =useState("");
+  const [patients_, setPatients_] = useState("");
+  const [patients, setPatients] = useState("");
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [sectors, setSectors] = useState([]);
+  const [cells, setCells] = useState([]);
+  const [villages, setVillages] = useState([]);
   const [insuranceId, setInsuranceId] = useState("");
   const [insurances, setInsurances] = useState();
   const [email, setEmail] = useState("");
   const [phoneNumber, setphoneNumber] = useState("");
   const [gender, setGender] = useState("");
   const [dob, setDob] = useState("");
+
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedSector, setSelectedSector] = useState("");
+  const [selectedCell, setSelectedCell] = useState("");
+  const [selectedVillage, setSelectedVillage] = useState(null);
 
   const [contactPerson, setcontactPerson] = useState();
   const [contactPersonPhoneNumber, setcontactPersonPhoneNumber] = useState();
@@ -141,45 +109,25 @@ function NewPatient() {  //useState must be declared between the function and  r
   const [show, setShow] = useState(false);
   const [selectedAssignees, setSelectedAssignees] = useState([]);
 
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-
-  const handleSubmit =async (e) => { //handle submit is the second step
+  const handleSubmit = async (e) => {
+    //handle submit is the second step
     e.preventDefault();
     setLoading(true);
-    const postObj = JSON.stringify({ //postObj
-      names:names,// modify body properties
+    const postObj = JSON.stringify({
+      //postObj
+      names: names, // modify body properties
       email: email,
       phoneNumber: phoneNumber,
-      gender:gender,
+      gender: gender,
       dob: dob,
       contactPerson: contactPerson,
       contactPersonPhoneNumber: contactPersonPhoneNumber,
-      locationId:null,
-      status:"INDIGENT",
-      patientInsuranceDto:{
+      locationId: selectedVillage,
+      status: "INDIGENT",
+      patientInsuranceDto: {
         insuranceId: insuranceId,
         affiliationCardNumber: affiliationCardNumber,
         membershipType: membershipType,
@@ -187,8 +135,7 @@ function NewPatient() {  //useState must be declared between the function and  r
         cardNumber: cardNumber,
         employer: employer,
         expiryDate: expiryDate,
-        ticket:0
-        
+        ticket: 0,
       },
     });
     console.log(postObj);
@@ -200,10 +147,10 @@ function NewPatient() {  //useState must be declared between the function and  r
     axios
       .post(`http://www.ubuzima.rw/rec/patient`, postObj) //declare api Path
       .then((res) => {
-       console.log(res.data)
+        console.log(res.data);
         setShow(false);
         if (res.data.status === true) {
-          alert("Department Added successfully");
+          alert("Patient added successfully");
           fetchPatients();
         } else {
           alert("something went wrong");
@@ -237,29 +184,172 @@ function NewPatient() {  //useState must be declared between the function and  r
     }
   };
 
-  // const fetchUsers = async () => {
-  //   let my_token = localStorage.getItem("token");
-  //   const config = { headers: { "Content-Type": "application/json","Authorization":`Bearer ${my_token}` } };
-    
-  //   try {
-  //     const response = await axios.get(`http://www.ubuzima.rw/rec/access/users`,config);
-  //     setUsers(response.data);
-  //     console.log(response.data)
-  //     setUsers_(response.data);
-  //     fetchRoles();
-  //   } catch (error) {
-  //     console.error("Error fetching payrolls:", error);
-  //   }
-  // };
+  const fetchProvinces = async () => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+      },
+    };
+
+    axios
+      .get(`http://www.ubuzima.rw/rec/locations/provinces`, config)
+      .then((res) => {
+        console.log(res.data);
+        const provinces_ = res.data.response.map((el) => {
+          return { label: el.name, value: el.code };
+        });
+        setProvinces(provinces_);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+
+  const fetchDistricts = async (code) => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+        "code":code
+      },
+    };
+
+    axios
+      .get(`http://www.ubuzima.rw/rec/locations/districts/province`, config)
+      .then((res) => {
+        console.log(res.data);
+        const districts_ = res.data.response.map((el) => {
+          return { label: el.name, value: el.code };
+        });
+        setDistricts(districts_);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+
+  const fetchSectors = async (code) => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+        "code":code
+      },
+    };
+
+    axios
+      .get(`http://www.ubuzima.rw/rec/locations/sectors/district`, config)
+      .then((res) => {
+        console.log(res.data);
+        const sectors_ = res.data.response.map((el) => {
+          return { label: el.name, value: el.code };
+        });
+        setSectors(sectors_);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+
+  const fetchCells = async (code) => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+        "code":code
+      },
+    };
+
+    axios
+      .get(`http://www.ubuzima.rw/rec/locations/cells/sector`, config)
+      .then((res) => {
+        console.log(res.data);
+        const cells_ = res.data.response.map((el) => {
+          return { label: el.name, value: el.code };
+        });
+        setCells(cells_);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+
+  const fetchVillages = async (code) => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+        "code":code
+      },
+    };
+
+    axios
+      .get(`http://www.ubuzima.rw/rec/locations/villages/cell`, config)
+      .then((res) => {
+        console.log(res.data);
+        const villages_ = res.data.response.map((el) => {
+          return { label: el.name, value: el.code };
+        });
+        setVillages(villages_);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+
+  const resetDistricts = () => {
+    setSelectedDistrict('');
+    setDistricts([]);
+    setSelectedSector('');
+    setSectors([]);
+    setSelectedCell('');
+    setCells([]);
+    setSelectedVillage('');
+    setVillages([]);
+  }
+
+  const resetSectors = () => {
+    setSelectedSector('');
+    setSectors([]);
+    setSelectedCell('');
+    setCells([]);
+    setSelectedVillage('');
+    setVillages([]);
+  }
+
+  const resetCells = () => {
+    setSelectedCell('');
+    setCells([]);
+    setSelectedVillage('');
+    setVillages([]);
+  }
+
+  const resetVillages = () => {
+    setSelectedVillage('');
+    setVillages([]);
+  }
 
   const fetchInsurances = async () => {
     let my_token = await localStorage.getItem("token");
-    const config = { headers: { "Content-Type": "application/json", "Authorization":`Bearer ${my_token}` } }; //incase you have to deal with ID or Options
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    }; //incase you have to deal with ID or Options
     axios
       .get(`http://www.ubuzima.rw/rec/patient/insurances`, config)
       .then((res) => {
-        const insurances = res.data.response.map(el=>{return({label:el.name,value:el.id})}) //const that assign value to the property
-        setInsurances(insurances)
+        const insurances = res.data.response.map((el) => {
+          return { label: el.name, value: el.id };
+        }); //const that assign value to the property
+        setInsurances(insurances);
       })
       .catch((error) => {
         setLoading(false);
@@ -271,6 +361,7 @@ function NewPatient() {  //useState must be declared between the function and  r
   useEffect(() => {
     fetchPatients();
     fetchInsurances();
+    fetchProvinces();
   }, []);
 
   return (
@@ -279,36 +370,33 @@ function NewPatient() {  //useState must be declared between the function and  r
         <Col lg={12}>
           <Card>
             <Card.Header className="d-flex justify-content-between align-items-center">
-              <Card.Title>New Patient</Card.Title>
+              <Card.Title>Patients</Card.Title>
               <Row>
-            <Col>
-              <input
-                type="text"
-                placeholder="Search..."
-                className="form-control"
-                onChange={(e)=>searchUser(e.target.value)}
-              />
-            </Col>
-            <Col>
-              <Button variant="primary" onClick={handleShow}>
-                Create New Patient
-              </Button>
-            </Col>
-          </Row>
-              
+                <Col>
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="form-control"
+                    onChange={(e) => searchUser(e.target.value)}
+                  />
+                </Col>
+                <Col>
+                  <Button variant="primary" onClick={handleShow}>
+                    Create New Patient
+                  </Button>
+                </Col>
+              </Row>
             </Card.Header>
             <Card.Body>
-
-            <Card.Body> 
-              <DataTable columns={columns} data={patients} pagination /> 
-            </Card.Body>
-            
+              <Card.Body>
+                <DataTable columns={columns} data={patients} pagination />
+              </Card.Body>
             </Card.Body>
           </Card>
         </Col>
       </Row>
       <Modal show={show} onHide={handleClose}>
-      <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit}>
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>
             <Col lg={12} className="col-md-">
@@ -333,24 +421,19 @@ function NewPatient() {  //useState must be declared between the function and  r
                         </Form.Group>
                       </Col>
 
-
-                      <Col lg={6} >
-                <Form.Group className="form-group">
-                  <Form.Label>Insurance</Form.Label>
-                  <Select
-                    className="basic-single"
-                    options={insurances}
-                    onChange={(e) => setInsuranceId(e.value)}
-                    classNamePrefix="Select2"
-                    placeholder="Select them"
-                    required
-                  />
-                </Form.Group>
-              </Col>
-
-
-
-
+                      <Col lg={6}>
+                        <Form.Group className="form-group">
+                          <Form.Label>Insurance</Form.Label>
+                          <Select
+                            className="basic-single"
+                            options={insurances}
+                            onChange={(e) => setInsuranceId(e.value)}
+                            classNamePrefix="Select2"
+                            placeholder="Select them"
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
 
                       <Col xl={6}>
                         <Form.Group className="form-group">
@@ -365,7 +448,6 @@ function NewPatient() {  //useState must be declared between the function and  r
                           />
                         </Form.Group>
                       </Col>
-
 
                       <Col xl={6}>
                         <Form.Group className="form-group">
@@ -382,10 +464,6 @@ function NewPatient() {  //useState must be declared between the function and  r
                         </Form.Group>
                       </Col>
 
-
-
-
-                   
                       <Col lg={6}>
                         <Form.Group className="form-group form-elements">
                           <div className="form-label">Gender</div>
@@ -413,17 +491,10 @@ function NewPatient() {  //useState must be declared between the function and  r
                                   required
                                 />
                               </Col>
-                             
                             </Row>
                           </div>
                         </Form.Group>
                       </Col>
-
-
-
-
-
-
 
                       <Col xl={6}>
                         <Form.Group>
@@ -440,8 +511,6 @@ function NewPatient() {  //useState must be declared between the function and  r
                         </Form.Group>
                       </Col>
 
-
-                      
                       <Col xl={6}>
                         <Form.Group className="form-group">
                           <Form.Label>Contact Person</Form.Label>
@@ -456,7 +525,6 @@ function NewPatient() {  //useState must be declared between the function and  r
                         </Form.Group>
                       </Col>
 
-
                       <Col xl={6}>
                         <Form.Group className="form-group">
                           <Form.Label>Contact Person Phone Number</Form.Label>
@@ -466,138 +534,129 @@ function NewPatient() {  //useState must be declared between the function and  r
                             name="example-text-input"
                             // placeholder="phone number"
 
-                            onChange={(e) => setcontactPersonPhoneNumber(e.target.value)}
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
-
-
-                     
-
-                      <Col xl={6} style={{ marginTop: 15 }}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Province</Form.Label>
-                          <Select
-                            
-                            options={BasicProvince}
                             onChange={(e) =>
-                              setSelectedAssignees(e.value)
+                              setcontactPersonPhoneNumber(e.target.value)
                             }
-                            classNamePrefix="Select2"
-                            className="multi-select"
-                            // placeholder="Select them"
                             required
                           />
                         </Form.Group>
                       </Col>
-
-
-{/* 
-                      <Col lg={6} style={{ marginTop: 10 }}>
-                <Form.Group className="form-group">
-                  <Form.Label>Insurance</Form.Label>
-                  <Select
-                    className="basic-single"
-                    options={insurances}
-                    onChange={(e) => setInsuranceId(e.value)}
-                    classNamePrefix="Select2"
-                    placeholder="Select them"
-                    required
-                  />
-                </Form.Group>
-              </Col> */}
-
-
-
-
-
-                      
-
-
-                      
-
-
-
-                              
-
-
-
-
-
-                      <Col xl={6} style={{ marginTop: 15 }}>
-                        <Form.Group className="form-group">
-                          <Form.Label>District</Form.Label>
-                          <Select
-                            
-                            options={BasicDistrict}
-                            onChange={(e) =>
-                              setSelectedAssignees(e.value)
-                            }
-                            classNamePrefix="Select2"
-                            className="multi-select"
-                            // placeholder="Select them"
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
-
-
-
-
-                      <Col xl={6} style={{ marginTop: 15 }}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Sector</Form.Label>
-                          <Select
-                          
-                            options={BasicSectors}
-                            onChange={(e) =>
-                              setSelectedAssignees(e.value)
-                            }
-                            classNamePrefix="Select2"
-                            className="multi-select"
-                            // placeholder="Select them"
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
-
-                      <Col xl={6} style={{ marginTop: 15 }}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Cell</Form.Label>
-                          <Select
-                            
-                            options={BasicCell}
-                            onChange={(e) =>
-                              setSelectedAssignees(e.value)
-                            }
-                            classNamePrefix="Select2"
-                            className="multi-select"
-                            // placeholder="Select them"
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
-
-                      
-    
-              
 
                       <Col xl={6}>
                         <Form.Group className="form-group">
-                        <Form.Label>Affiliation Card Number</Form.Label>
+                          <Form.Label>Province</Form.Label>
+                          <Select
+                            options={provinces}
+                            onChange={(e) => {
+                              setSelectedProvince(e);
+                              fetchDistricts(e.value);
+                              resetDistricts();
+                            }}
+                            value={selectedProvince}
+                            classNamePrefix="Select2"
+                            className="multi-select"
+                            // placeholder="Select them"
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
+
+                      {selectedProvince && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>District</Form.Label>
+                            <Select
+                              options={districts}
+                              onChange={(e) => {
+                                setSelectedDistrict(e);
+                                fetchSectors(e.value);
+                                resetSectors();
+                              }}
+                              value={selectedDistrict}
+                              classNamePrefix="Select2"
+                              className="multi-select"
+                              // placeholder="Select them"
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
+
+                      {selectedDistrict && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Sector</Form.Label>
+                            <Select
+                              options={sectors}
+                              value={selectedSector}
+                              onChange={(e) => {
+                                setSelectedSector(e);
+                                fetchCells(e.value);
+                                resetCells();
+                              }}
+                              classNamePrefix="Select2"
+                              className="multi-select"
+                              // placeholder="Select them"
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
+                      {selectedSector && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Cell</Form.Label>
+                            <Select
+                              options={cells}
+                              value={selectedCell}
+                              onChange={(e) => {
+                                setSelectedCell(e);
+                                fetchVillages(e.value);
+                                resetVillages();
+                              }}
+                              classNamePrefix="Select2"
+                              className="multi-select"
+                              // placeholder="Select them"
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
+
+                      {selectedCell && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Village</Form.Label>
+                            <Select
+                              options={villages}
+                              value={selectedVillage}
+                              onChange={(e) => setSelectedVillage(e)}
+                              classNamePrefix="Select2"
+                              className="multi-select"
+                              // placeholder="Select them"
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
+
+                      <Col xl={6}>
+                        <Form.Group className="form-group">
+                          <Form.Label>Affiliation Card Number</Form.Label>
                           <Form.Control
                             type="number"
                             className="form-control"
                             name="example-text-input"
                             // placeholder="Address"
-                            onChange={(e) => setaffiliationCardNumber(e.target.value)}
+                            onChange={(e) =>
+                              setaffiliationCardNumber(e.target.value)
+                            }
                             required
                           />
                         </Form.Group>
                       </Col>
 
-{/* 
+                      {/* 
                       <Col xl={6}>
                         <Form.Group className="form-group">
                           <Form.Label>Membership Type</Form.Label>
@@ -612,19 +671,12 @@ function NewPatient() {  //useState must be declared between the function and  r
                         </Form.Group>
                       </Col> */}
 
-
-
-
-
                       <Col xl={6}>
                         <Form.Group className="form-group">
                           <Form.Label>Membership Type</Form.Label>
                           <Select
-                            
                             options={membershipTypes}
-                            onChange={(e) =>
-                              setmembershipType(e.value)
-                            }
+                            onChange={(e) => setmembershipType(e.value)}
                             classNamePrefix="Select2"
                             className="multi-select"
                             // placeholder="Select them"
@@ -632,10 +684,6 @@ function NewPatient() {  //useState must be declared between the function and  r
                           />
                         </Form.Group>
                       </Col>
-
-
-                      
-
 
                       <Col xl={6}>
                         <Form.Group className="form-group">
@@ -650,8 +698,6 @@ function NewPatient() {  //useState must be declared between the function and  r
                           />
                         </Form.Group>
                       </Col>
-
-
 
                       <Col xl={6}>
                         <Form.Group className="form-group">
@@ -681,7 +727,6 @@ function NewPatient() {  //useState must be declared between the function and  r
                         </Form.Group>
                       </Col>
 
-
                       <Col xl={6}>
                         <Form.Group className="form-group">
                           <Form.Label>Expiry Date</Form.Label>
@@ -695,17 +740,6 @@ function NewPatient() {  //useState must be declared between the function and  r
                           />
                         </Form.Group>
                       </Col>
-
-
-
-
-
-                      
-
-
-                      
-
-                     
 
                       {/* <Col lg={12} style={{ marginTop: 15 }}>
                         <Form.Group className="form-group">
@@ -723,7 +757,6 @@ function NewPatient() {  //useState must be declared between the function and  r
                         </Form.Group>
                       </Col> */}
                     </Row>
-                    
 
                     {/* <Button
                       type="submit"
@@ -733,14 +766,15 @@ function NewPatient() {  //useState must be declared between the function and  r
                       Submit
                     </Button> */}
 
-                    <Button type="submit"
-                    className="btn ripple btn-primary my-3"
-                    style={{width:"40%", marginLeft:"320px"}}
-                    variant="primary" onClick={handleSubmit}>
-                    Submit
+                    <Button
+                      type="submit"
+                      className="btn ripple btn-primary my-3"
+                      style={{ width: "40%", marginLeft: "320px" }}
+                      variant="primary"
+                      onClick={handleSubmit}
+                    >
+                      Submit
                     </Button>
-
-
                   </div>
                 </Card.Body>
               </Card>
@@ -752,4 +786,4 @@ function NewPatient() {  //useState must be declared between the function and  r
   );
 }
 
-export default NewPatient;
+export default Patients;

@@ -108,8 +108,8 @@ const SideMenuIcon = () => {
                             to="#"></Link>
                   
                         <Link className="logo-horizontal" to={`${import.meta.env.BASE_URL}dashboard`}>
-                            <img src={imagesData('media')} className="header-brand-img main-logo"
-                                alt="QT logo" />
+                            {/* <img src={imagesData('media')} className="header-brand-img main-logo"
+                                alt="QT logo" /> */}
 
                         </Link>
                        

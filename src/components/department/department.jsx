@@ -34,10 +34,10 @@ const columns = [
       <Link
         to="/specialists"
         state={{
-          data:row.id,
+          data:{id:row.id,department:row.name}
         }}
       >
-        <Button className="btn btn-secondary">View Details</Button>
+        View Details
       </Link>
     ),
   },

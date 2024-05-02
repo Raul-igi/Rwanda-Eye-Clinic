@@ -11,9 +11,9 @@ import store from '../common/redux/store'
 const Togglefuction = () => {
   document.querySelector(".app")?.classList.remove("sidenav-toggled");
     //rightsidebar
-    document.querySelector(".sidebar-right").classList.remove("sidebar-open");
-    document.querySelector('.demo_changer').classList.remove('active');
-    document.querySelector(".demo_changer").style.right = "-275px";
+    document.querySelector(".sidebar-right")?.classList.remove("sidebar-open");
+    document.querySelector('.demo_changer')?.classList.remove('active');
+    // document.querySelector(".demo_changer").style.right = "-275px";
 }
 function App(props) {
   document.body.classList.remove('bg-account')

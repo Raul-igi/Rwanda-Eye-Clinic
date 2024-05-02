@@ -38,7 +38,7 @@ const columns = [
   },
   {
     name: "ROLE",
-    selector: (row) => [row.roles[0].roleName],
+    selector: (row) => [row.roles[0]?.roleName || '-'],
     sortable: true,
   },
 ];

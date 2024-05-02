@@ -94,7 +94,7 @@ function Patients() {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedSector, setSelectedSector] = useState("");
   const [selectedCell, setSelectedCell] = useState("");
-  const [selectedVillage, setSelectedVillage] = useState("");
+  const [selectedVillage, setSelectedVillage] = useState(null);
 
   const [contactPerson, setcontactPerson] = useState();
   const [contactPersonPhoneNumber, setcontactPersonPhoneNumber] = useState();
@@ -125,7 +125,7 @@ function Patients() {
       dob: dob,
       contactPerson: contactPerson,
       contactPersonPhoneNumber: contactPersonPhoneNumber,
-      locationId: null,
+      locationId: selectedVillage,
       status: "INDIGENT",
       patientInsuranceDto: {
         insuranceId: insuranceId,
@@ -150,7 +150,7 @@ function Patients() {
         console.log(res.data);
         setShow(false);
         if (res.data.status === true) {
-          alert("Department Added successfully");
+          alert("Patient added successfully");
           fetchPatients();
         } else {
           alert("something went wrong");

@@ -48,23 +48,7 @@ export default function Sidebar() {
       badgetxt: "",
       path: `${import.meta.env.BASE_URL}patients`,
       condition: true,
-    },
-
-    {
-      icon: <i class="side-menu__icon fa fa-eye"></i>,
-      type: "sub",
-      Name: "",
-      active: false,
-      selected: false,
-      title: "Visual Acuity",
-      class: "",
-      color: "",
-      badgetxt: "",
-      path: `${import.meta.env.BASE_URL}formvalidation`,
-      condition: true,
-    },
-
-    
+    },  
 
     {
       icon: <i class="side-menu__icon fa fa-heartbeat"></i>,
@@ -107,19 +91,6 @@ export default function Sidebar() {
       condition: true,
     },
 
-    {
-      icon: <i className="side-menu__icon fa fa-user" ></i>, 
-      type: "sub",
-      Name: "",
-      active: false,
-      selected: false,
-      title: "My Profile",
-      class: "",
-      color: "",
-      badgetxt: "",
-      path: `${import.meta.env.BASE_URL}profile`,
-      condition: true,
-    },
   ]);
 
   // every chnage this effect calls

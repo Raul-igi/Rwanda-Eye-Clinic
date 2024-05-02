@@ -41,6 +41,20 @@ const columns = [
       </Link>
     ),
   },
+
+
+  // {
+  //   name: "ACTION",
+  //   sortable: false,
+  //   cell: row => <div>
+  //    <Button type="button" variant='' className="btn bg-info-transparent me-1">
+  //       <i className="fe fe-edit text-info"></i>
+  //     </Button>
+  //     <Button type="button" variant='' className="btn bg-danger-transparent">
+  //       <i className="fe fe-trash-2 text-danger"></i>
+  //     </Button>
+  //   </div>
+  // },
 ];
 
 function Department() {

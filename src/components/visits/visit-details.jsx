@@ -4,20 +4,24 @@ import { useLocation } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import DataTable from "react-data-table-component";
-
+import { lensType_, dip_ } from "../../data/elementsdata";
 export default function VisitDetails() {
   const location = useLocation();
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);
   const [show3, setShow3] = useState(false);
   const [show4, setShow4] = useState(false);
+  const [show5, setShow5] = useState(false);
   const [acts, setActs] = useState([]);
   const [act, setAct] = useState("");
 
-  const [diagnostic, setDiagnostic] = useState("");
-  const [savedDiagnostic, setSavedDiagnostic] = useState("");
   const [treatment, setTreatment] = useState("");
   const [savedTreatment, setSavedTreatment] = useState("");
+  const [diagnostic, setDiagnostic] = useState("");
+  const [savedDiagnostic, setSavedDiagnostic] = useState("");
+  const [refraction, setRefraction] = useState("");
+
+  const [savedRefraction, setSavedRefraction] = useState("");
 
   const [medicalActs, setMedicalActs] = useState([]);
   const [visualAcuity, setVisualAcuity] = useState([]);
@@ -34,6 +38,15 @@ export default function VisitDetails() {
   const [glassCylindreLeftEye, setGlassCylindreLeftEye] = useState("");
   const [glassAxeRightEye, setGlassAxeRightEye] = useState("");
   const [glassAxeLeftEye, setGlassAxeLeftEye] = useState("");
+
+  const [sphereRightEye, setSphereRightEye] = useState("");
+  const [sphereLeftEye, setSphereLeftEye] = useState("");
+  const [cylindreRightEye, setCylindreRightEye] = useState("");
+  const [cylindreLeftEye, setCylindreLeftEye] = useState("");
+  const [axeRightEye, setAxeRightEye] = useState("");
+  const [axeLeftEye, setAxeLeftEye] = useState("");
+  const [lensType, setLensType] = useState("");
+  const [dip, setDip] = useState("");
 
   const vaColumns = [
     {
@@ -77,14 +90,32 @@ export default function VisitDetails() {
     },
   ];
 
+  const reColumns = [
+    {
+      name: "Name",
+      selector: (row) => [row.name],
+      sortable: true,
+    },
+    {
+      name: "Right",
+      selector: (row) => [row.right],
+      sortable: true,
+    },
+    {
+      name: "Left",
+      selector: (row) => [row.left],
+      sortable: true,
+    },
+  ];
+
   const removeAct = async (actId) => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        "patientVisitId": location.state.data.visitId,
-        "medicalActId": actId,
+        Authorization: `Bearer ${my_token}`,
+        patientVisitId: location.state.data.visitId,
+        medicalActId: actId,
       },
     };
 
@@ -132,8 +163,8 @@ export default function VisitDetails() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        "patientVisitId": location.state.data.visitId
+        Authorization: `Bearer ${my_token}`,
+        patientVisitId: location.state.data.visitId,
       },
     };
 
@@ -142,8 +173,8 @@ export default function VisitDetails() {
         `http://www.ubuzima.rw/rec/visit/nurse/diagnostic/visit-id`,
         config
       );
-      if(response.data.status){
-          setSavedDiagnostic(response.data.response.diagnostic)
+      if (response.data.status) {
+        setSavedDiagnostic(response.data.response.diagnostic);
       }
     } catch (error) {
       console.error(error);
@@ -155,8 +186,8 @@ export default function VisitDetails() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        "patientVisitId": location.state.data.visitId
+        Authorization: `Bearer ${my_token}`,
+        patientVisitId: location.state.data.visitId,
       },
     };
 
@@ -165,8 +196,8 @@ export default function VisitDetails() {
         `http://www.ubuzima.rw/rec/visit/doctor/treatment/visit-id`,
         config
       );
-      if(response.data.status){
-          setSavedTreatment(response.data.response.treatment)
+      if (response.data.status) {
+        setSavedTreatment(response.data.response.treatment);
       }
     } catch (error) {
       console.error(error);
@@ -376,11 +407,101 @@ export default function VisitDetails() {
     }
   };
 
+  const addRefraction = async (e) => {
+    e.preventDefault();
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+    const postObj = JSON.stringify({
+      patientVisitId: location.state.data.visitId,
+      sphereRightEye: sphereRightEye,
+      sphereLeftEye: sphereLeftEye,
+      cylindreRightEye: cylindreRightEye,
+      cylindreLeftEye: cylindreLeftEye,
+      axeRightEye: axeRightEye,
+      axeLeftEye: axeLeftEye,
+      lensType: lensType,
+      dip: dip,
+    });
+
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/visit/doctor/refraction`,
+        postObj,
+        config
+      );
+      setShow5(false);
+      if (response.data.status) {
+        alert("Refraction added successfully!");
+        fetchRefraction();
+      }
+    } catch (error) {
+      setShow5(false);
+      console.error(error);
+      console.log(res.data);
+    }
+  };
+
+  const fetchRefraction = async () => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+        patientVisitId: location.state.data.visitId,
+      },
+    };
+
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/visit/doctor/refraction/visit-id`,
+        config
+      );
+      const refraction_ = [
+        {
+          name: "Sphere Right Eye",
+          right: response.data.response.sphereRightEye,
+          left: response.data.response.sphereLeftEye,
+        },
+
+        {
+          name: "Cylindre Right Eye",
+          right: response.data.response.cylindreRightEye,
+          left: response.data.response.cylindreLeftEye,
+        },
+
+        {
+          name: "Axe Right Eye",
+          right: response.data.response.axeRightEye,
+          left: response.data.response.axeLeftEye,
+        },
+
+        {
+          name: "Lens Type",
+          right: response.data.response.lensType,
+        },
+
+        {
+          name: "DIP",
+          right: response.data.response.dip,
+        },
+      ];
+      setRefraction(refraction_);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     fetchActs();
     fetchVisualAcuity();
     fetchMedicalActs();
     fetchDiagnostic();
+    fetchRefraction();
     fetchTreatment();
   }, []);
 
@@ -401,68 +522,84 @@ export default function VisitDetails() {
       <Button onClick={() => setShow4(true)} style={{ marginRight: 10 }}>
         Add diagnostic
       </Button>
+      <Button onClick={() => setShow5(true)} style={{ marginRight: 10 }}>
+        Add Refraction
+      </Button>
 
       <Row>
-      <Col md={4} xl={4} style={{ marginTop: 20 }}>
-      <Card style={{minHeight:180}}>
-          <Card.Header className=" d-flex justify-content-between align-items-center">
-            <div className="">
+        <Col md={4} xl={4} style={{ marginTop: 20 }}>
+          <Card style={{ minHeight: 180 }}>
+            <Card.Header className=" d-flex justify-content-between align-items-center">
+              <div className="">
+                <Card.Title>
+                  {location.state.data?.createdAt?.slice(0, 10)}
+                </Card.Title>
+                {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
+              </div>
+            </Card.Header>
+            <Card.Body>
               <Card.Title>
-                {location.state.data?.createdAt?.slice(0, 10)}
+                Sex: {location.state.data.patient?.gender}
               </Card.Title>
-              {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
-            </div>
-          </Card.Header>
-          <Card.Body>
-            <Card.Title>Sex: {location.state.data.patient?.gender}</Card.Title>
-            <Card.Title>DOB: {location.state.data.patient?.dob}</Card.Title>
-            <Card.Title style={{ fontSize: "15px" }}>
-              Doctor: Dr {location.state.data.doctor}
-            </Card.Title>
-          </Card.Body>
-        </Card>
-      </Col>
-      <Col md={4} xl={4} style={{ marginTop: 20 }}>
-        <Card style={{minHeight:180}}>
-          <Card.Header className=" d-flex justify-content-between align-items-center">
-            <div className="">
+              <Card.Title>DOB: {location.state.data.patient?.dob}</Card.Title>
+              <Card.Title style={{ fontSize: "15px" }}>
+                Doctor: Dr {location.state.data.doctor}
+              </Card.Title>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4} xl={4} style={{ marginTop: 20 }}>
+          <Card style={{ minHeight: 180 }}>
+            <Card.Header className=" d-flex justify-content-between align-items-center">
+              <div className="">
+                <Card.Title>Treatment</Card.Title>
+                {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
+              </div>
+            </Card.Header>
+            <Card.Body>
               <Card.Title>
-                Treatment
+                {savedTreatment
+                  ? `Treatment: ${savedTreatment}`
+                  : "No treatment yet..."}
               </Card.Title>
-              {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
-            </div>
-          </Card.Header>
-          <Card.Body>
-            <Card.Title>{savedTreatment?`Treatment: ${savedTreatment}`:'No treatment yet...'}</Card.Title>
-          </Card.Body>
-        </Card>
-      </Col>
-      <Col md={4} xl={4} style={{ marginTop: 20 }}>
-      <Card style={{minHeight:180}}>
-          <Card.Header className=" d-flex justify-content-between align-items-center">
-            <div className="">
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4} xl={4} style={{ marginTop: 20 }}>
+          <Card style={{ minHeight: 180 }}>
+            <Card.Header className=" d-flex justify-content-between align-items-center">
+              <div className="">
+                <Card.Title>Diagnostic</Card.Title>
+                {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
+              </div>
+            </Card.Header>
+            <Card.Body>
               <Card.Title>
-                Diagnostic
+                {savedDiagnostic
+                  ? `Diagnostic: ${savedDiagnostic}`
+                  : "No Diagnostic yet..."}
               </Card.Title>
-              {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
-            </div>
-          </Card.Header>
-          <Card.Body>
-            <Card.Title>{savedDiagnostic?`Diagnostic: ${savedDiagnostic}`:'No Diagnostic yet...'}</Card.Title>
-          </Card.Body>
-        </Card>
-      </Col>
+            </Card.Body>
+          </Card>
+        </Col>
       </Row>
-      
+
       <Row>
         <Col md={6} xl={6} style={{ marginTop: 20 }}>
           <h1>Visual Acuity</h1>
           <DataTable columns={vaColumns} data={visualAcuity} />
         </Col>
+
+        <Col md={6} xl={6} style={{ marginTop: 20 }}>
+          <h1>Refraction</h1>
+          <DataTable columns={reColumns} data={refraction} />
+        </Col>
+
         <Col md={6} xl={6} style={{ marginTop: 20 }}>
           <h1>Medical Acts</h1>
           <DataTable columns={maColumns} data={medicalActs} />
         </Col>
+
         <Modal show={show} onHide={() => setShow(false)}>
           <Col lg={12} md={12} style={{ padding: 30 }}>
             <h1>Visual Acuity</h1>
@@ -778,6 +915,123 @@ export default function VisitDetails() {
                         Submit
                       </Button>
                     </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Modal.Body>
+          </Form>
+        </Modal>
+
+        <Modal show={show5} onHide={() => setShow5(false)}>
+          <Form onSubmit={addRefraction}>
+            <Modal.Header closeButton></Modal.Header>
+            <Modal.Body>
+              <Col lg={12} className="col-md-">
+                <Card className="custom-card">
+                  <Card.Header>
+                    <Card.Title>Add Refraction</Card.Title>
+                  </Card.Header>
+                  <Card.Body>
+                    <div className="d-flex flex-col">
+                      <Form.Group as={Col} md="6" className="form-group">
+                        <Form.Label>Sphere Right Eye</Form.Label>
+                        <Form.Control
+                          required
+                          type="text"
+                          placeholder="Enter Sphere Right Eye"
+                          onChange={(e) => setSphereRightEye(e.target.value)}
+                        />
+                      </Form.Group>
+
+                      <Form.Group as={Col} md="6" className="form-group">
+                        <Form.Label>Sphere Left Eye</Form.Label>
+                        <Form.Control
+                          required
+                          type="text"
+                          placeholder="Enter Sphere Right Eye"
+                          onChange={(e) => setSphereLeftEye(e.target.value)}
+                        />
+                      </Form.Group>
+                    </div>
+
+                    <div className="d-flex flex-col">
+                      <Form.Group as={Col} md="6" className="form-group">
+                        <Form.Label>Cylindre Right Eye</Form.Label>
+                        <Form.Control
+                          required
+                          type="text"
+                          placeholder="Enter Cylindre Right Eye"
+                          onChange={(e) => setCylindreRightEye(e.target.value)}
+                        />
+                      </Form.Group>
+
+                      <Form.Group as={Col} md="6" className="form-group">
+                        <Form.Label>Cylindre Left Eye</Form.Label>
+                        <Form.Control
+                          required
+                          type="text"
+                          placeholder="Enter Cylindre Felt Eye"
+                          onChange={(e) => setCylindreLeftEye(e.target.value)}
+                        />
+                      </Form.Group>
+                    </div>
+
+                    <div className="d-flex flex-col">
+                      <Form.Group as={Col} md="6" className="form-group">
+                        <Form.Label>Axe Right Eye</Form.Label>
+                        <Form.Control
+                          required
+                          type="text"
+                          placeholder="Enter Axe Right Eye"
+                          onChange={(e) => setAxeRightEye(e.target.value)}
+                        />
+                      </Form.Group>
+
+                      <Form.Group as={Col} md="6" className="form-group">
+                        <Form.Label>Axe Left Eye</Form.Label>
+                        <Form.Control
+                          required
+                          type="text"
+                          placeholder="Enter Axe Felt Eye"
+                          onChange={(e) => setAxeLeftEye(e.target.value)}
+                        />
+                      </Form.Group>
+                    </div>
+
+                    <div className="d-flex flex-col">
+                      <Form.Group as={Col} md="6" className="form-group">
+                        <Form.Label>Lens Type</Form.Label>
+                        <Select
+                          options={lensType_}
+                          onChange={(e) => setLensType(e.value)}
+                          classNamePrefix="Select2"
+                          className="multi-select"
+                          // placeholder="Select them"
+                          required
+                        />
+                      </Form.Group>
+
+                      <Form.Group as={Col} md="6" className="form-group">
+                        <Form.Label>Dip</Form.Label>
+                        <Select
+                          options={dip_}
+                          onChange={(e) => setDip(e.value)}
+                          classNamePrefix="Select2"
+                          className="multi-select"
+                          // placeholder="Select them"
+                          required
+                        />
+                      </Form.Group>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="btn ripple btn-primary my-3"
+                      style={{ width: "40%", marginLeft: "320px" }}
+                      variant="primary"
+                    >
+                      Submit
+                    </Button>
                   </Card.Body>
                 </Card>
               </Col>

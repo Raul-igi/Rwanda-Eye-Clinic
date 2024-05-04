@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect } from 'react'
 
 import { Outlet } from 'react-router-dom'
 
@@ -16,6 +16,8 @@ const Togglefuction = () => {
     // document.querySelector(".demo_changer").style.right = "-275px";
 }
 function App(props) {
+
+
   document.body.classList.remove('bg-account')
   return (
     <Fragment>

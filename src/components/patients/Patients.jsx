@@ -125,7 +125,7 @@ function Patients() {
       dob: dob,
       contactPerson: contactPerson,
       contactPersonPhoneNumber: contactPersonPhoneNumber,
-      locationId: selectedVillage,
+      locationId: selectedVillage.value,
       status: "INDIGENT",
       patientInsuranceDto: {
         insuranceId: insuranceId,

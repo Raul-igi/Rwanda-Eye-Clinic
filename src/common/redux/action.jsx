@@ -55,13 +55,13 @@ export const authLogin = (username, password) => {  //edit properties here
                 //console.log can be applied here if needed "console.log(res.data)".
                 if(res.data.status==true){
                     const token = res.data.response.token; //edit path here
-                const role = 'role';
+                const roles = JSON.stringify(res.data.response.roles);
                 const expirationDate = new Date(new Date().getTime() + 14400 * 1000);
                 localStorage.setItem('token', token);
-                localStorage.setItem('role', role);
+                localStorage.setItem('role', roles);
                 localStorage.setItem('reload', true);
                 localStorage.setItem('expirationDate', expirationDate);
-                dispatch(authSuccess(token,role));
+                dispatch(authSuccess(token,roles));
                 dispatch(checkAuthTimeout(14400));
                 }
                 else{

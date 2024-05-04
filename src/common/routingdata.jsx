@@ -13,15 +13,14 @@ import VisitDetails from '../components/visits/visit-details'
 
 export const Routingdata=[
 
-{path:`${import.meta.env.BASE_URL}insurance` ,element:<Insurance />},
-{path:`${import.meta.env.BASE_URL}access-control` ,element:<AccessControl />},
-{path:`${import.meta.env.BASE_URL}department` ,element:<Department />},
-{path:`${import.meta.env.BASE_URL}patients` ,element:<Patients />},
-{path:`${import.meta.env.BASE_URL}visit-details` ,element:<VisitDetails />},
-{path:`${import.meta.env.BASE_URL}visits` ,element:<Visits />},
-{path:`${import.meta.env.BASE_URL}specialists` ,element:<Specialists />},
-{path:`${import.meta.env.BASE_URL}taskboard` ,element:<Taskboard />},
-{path:`${import.meta.env.BASE_URL}profile` ,element:<Profile />},
+{path:`${import.meta.env.BASE_URL}insurance` ,element:<Insurance />, roles:['Nurse','Doctor']},
+{path:`${import.meta.env.BASE_URL}access-control` ,element:<AccessControl />, roles:['Nurse','Doctor']},
+{path:`${import.meta.env.BASE_URL}department` ,element:<Department />, roles:['Nurse','Doctor']},
+{path:`${import.meta.env.BASE_URL}patients` ,element:<Patients />, roles:['Nurse','Doctor']},
+{path:`${import.meta.env.BASE_URL}visit-details` ,element:<VisitDetails />, roles:['Nurse','Doctor']},
+{path:`${import.meta.env.BASE_URL}visits` ,element:<Visits />, roles:['Nurse','Doctor']},
+{path:`${import.meta.env.BASE_URL}specialists` ,element:<Specialists />, roles:['Nurse','Doctor']},
+{path:`${import.meta.env.BASE_URL}profile` ,element:<Profile />, roles:['Nurse','Doctor']},
 
 
 ]

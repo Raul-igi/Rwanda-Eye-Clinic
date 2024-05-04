@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { Badge } from "react-bootstrap";
 import { imagesData } from "../../common/commomimages/imagedata";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import MenuItems from "./sidebardata";
 
 
 const Onhover = () => {
@@ -18,80 +19,7 @@ const Outhover = () => {
 };
 
 export default function Sidebar() {
-  const [menuItems, setMenuItems] = useState([
-
-   
-
-    {
-      icon: <i class="side-menu__icon fa fa-unlock-alt"></i>,
-      type: "sub",
-      Name: "",
-      active: false,
-      selected: false,
-      title: "Access Control",
-      class: "",
-      color: "",
-      badgetxt: "",
-      path: `${import.meta.env.BASE_URL}access-control`,
-      condition: true,
-    },
-
-    {
-      icon: <i class="side-menu__icon fa fa-user-plus"></i>,
-      type: "sub",
-      Name: "",
-      active: false,
-      selected: false,
-      title: "Patients",
-      class: "",
-      color: "",
-      badgetxt: "",
-      path: `${import.meta.env.BASE_URL}patients`,
-      condition: true,
-    },  
-
-    {
-      icon: <i class="side-menu__icon fa fa-heartbeat"></i>,
-      type: "sub",
-      Name: "",
-      active: false,
-      selected: false,
-      title: "Insurance",
-      class: "",
-      color: "",
-      badgetxt: "",
-      path: `${import.meta.env.BASE_URL}insurance`,
-      condition: true,
-    },
-    {
-      icon: <i class="side-menu__icon fa fa-sitemap"></i>,
-      type: "sub",
-      Name: "",
-      active: false,
-      selected: false,
-      title: "Department",
-      class: "",
-      color: "",
-      badgetxt: "",
-      path: `${import.meta.env.BASE_URL}Department`,
-      condition: true,
-    },
-
-    {
-      icon: <i class="side-menu__icon fa fa-map-signs"></i>,
-      type: "sub",
-      Name: "",
-      active: false,
-      selected: false,
-      title: "Visits",
-      class: "",
-      color: "",
-      badgetxt: "",
-      path: `${import.meta.env.BASE_URL}visits`,
-      condition: true,
-    },
-
-  ]);
+  const [menuItems, setMenuItems] = useState([]);
 
   // every chnage this effect calls
   let menuIcontype;
@@ -104,6 +32,30 @@ export default function Sidebar() {
   window.addEventListener("resize", () => {
     checkHoriMenu();
   });
+
+  const checkRoles = (arrA, arrB) => {
+
+    for (let i = 0; i < arrA.length; i++) {
+
+      if (arrB.includes(arrA[i])) {
+            return true; // Return true if found
+        }
+    }
+    return false; // Return false if none found
+  }
+
+  const initializeMenus = async () => {
+    const userRoles = await localStorage.getItem('role')
+    const parsedRoles = JSON.parse(userRoles)
+    console.log(parsedRoles)
+    // MenuItems.map(item=>{console.log(checkRoles(parsedRoles,item.roles))})
+    const menus = MenuItems.map(item=>{return({...item,condition:checkRoles(parsedRoles,item.roles)})})
+    setMenuItems(menus)
+  }
+
+  useEffect(()=>{
+    initializeMenus();
+  },[])
 
   function checkHoriMenu() {
     let menuWidth = document.querySelector(".horizontal-main");
@@ -174,7 +126,8 @@ export default function Sidebar() {
               <ul className="side-menu" style={{ marginRight: "0px" }}>
                 <React.Fragment key={Math.random()}>
                   {menuItems?.map((secondlayer, two) => (
-                    <li className="slide" key={two}>
+                    secondlayer.condition&&(
+                      <li className="slide" key={two}>
                       <Link
                         to={secondlayer.path}
                         className={`side-menu__item ${
@@ -197,6 +150,7 @@ export default function Sidebar() {
                         )}
                       </Link>
                     </li>
+                    )
                   ))}
                 </React.Fragment>
               </ul>

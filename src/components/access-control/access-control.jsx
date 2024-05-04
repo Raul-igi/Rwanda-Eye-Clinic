@@ -38,16 +38,11 @@ const columns = [
   },
   {
     name: "ROLE",
-    selector: (row) => [row.roles[0]?.roleName || '-'],
+    selector: (row) => [row.roles.map(role => role.roleName).join(', ') || '-'],
     sortable: true,
   },
 ];
 
-import {
-  DataTabless,
-  ExportCSV,
-  ResponsiveDataTable,
-} from "../tables/datatables/data/responsivedatatable";
 import DataTable from "react-data-table-component";
 function AccessControl() {
   //useState must be declared between the function and  return   //creating useState is the first step
@@ -85,19 +80,19 @@ function AccessControl() {
     //handle submit is the second step
     e.preventDefault();
     setLoading(true);
-    const postObj = {
+    const postObj = JSON.stringify({
       firstName: firstName, // modify body properties
       lastName: lastName,
       phoneNumber: phone,
       email: email,
       password: password,
       roleId: selectedRoles,
-    };
+    });
     console.log(postObj);
     let my_token = await localStorage.getItem("token");
     axios.defaults.headers = {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${my_token}`,
+      "Authorization": `Bearer ${my_token}`,
     };
     axios
       .post(`http://www.ubuzima.rw/rec/access/user`, postObj) //declare api Path
@@ -105,7 +100,7 @@ function AccessControl() {
         console.log(res.data)
         setShow(false);
         if (res.data.status === true) {
-          alert("Department Added successfully");
+          alert("User Added successfully");
           fetchUsers();
         } else {
           alert("something went wrong");
@@ -114,7 +109,7 @@ function AccessControl() {
       .catch((error) => {
         setLoading(false);
         setShow(false);
-        console.log(error.message);
+        alert(error.message);
       });
   };
 

@@ -15,6 +15,7 @@ function Header () {
     const logout = () => {
             localStorage.clear()
             window.location.reload()
+            navigate('/')
         
     }
 
@@ -154,20 +155,6 @@ const SideMenuIcon = () => {
                                         </Dropdown>
                                            
                 
-                
-                                     
-                                           
-                                     
-                                        <div className="d-flex country"  onClick={() => Darkmode()}>
-                                            <Link to='#' className="nav-link icon theme-layout nav-link-bg layout-setting">
-                                                <span className="dark-layout mt-1"><i className="ri-moon-clear-line"></i></span>
-                                                <span className="light-layout mt-1"><i className="ri-sun-line"></i></span>
-                                            </Link>
-                                        </div>
-                                      
-                                       
-
-                                       
                                         
                                         <div className="dropdown d-flex">
                                             <Link className="nav-link icon full-screen-link" id="fullscreen-button" onClick={Fullscreen}>

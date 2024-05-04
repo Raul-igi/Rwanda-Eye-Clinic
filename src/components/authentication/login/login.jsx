@@ -16,7 +16,7 @@ const Login = ({authLogin,isAuthenticated,role}) => {
 
   }
   if (isAuthenticated) {
-      return <Navigate replace to={`/profile`} />
+      return <Navigate replace to={`/patients`} />
   }
 
   return (

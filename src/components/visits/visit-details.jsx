@@ -12,6 +12,7 @@ export default function VisitDetails() {
   const [show3, setShow3] = useState(false);
   const [show4, setShow4] = useState(false);
   const [acts, setActs] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [act, setAct] = useState("");
 
   const [diagnostic, setDiagnostic] = useState("");
@@ -316,6 +317,54 @@ export default function VisitDetails() {
     }
   };
 
+  const nurseSave = async (e) => {
+    e.preventDefault();
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+        "patientVisitId": location.state.data.visitId,
+      },
+    };
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/visit/nurse/save`,
+        {},
+        config
+      );
+      if (response.data.status) {
+        alert("Successfully saved!");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const doctorSave = async (e) => {
+    e.preventDefault();
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+        "patientVisitId": location.state.data.visitId,
+      },
+    };
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/visit/doctor/save`,
+        {},
+        config
+      );
+      if (response.data.status) {
+        alert("Successfully saved!");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const addTreatment = async (e) => {
     e.preventDefault();
     let my_token = localStorage.getItem("token");
@@ -382,11 +431,16 @@ export default function VisitDetails() {
     fetchMedicalActs();
     fetchDiagnostic();
     fetchTreatment();
+    const roles_ = localStorage.getItem('role')
+    const userRoles = JSON.parse(roles_)
+    setRoles(userRoles)
   }, []);
 
   return (
     <Fragment>
-      <Button
+      {(roles.includes('Nurse') && location.state.data.visitStatus==='TRANSFER_TO_NURSE')&&(
+        <>
+        <Button
         onClick={() => setShow(true)}
         style={{ marginRight: 10, marginLeft: 20 }}
       >
@@ -395,11 +449,20 @@ export default function VisitDetails() {
       <Button onClick={() => setShow2(true)} style={{ marginRight: 10 }}>
         Add medical act
       </Button>
+        </>
+      )}
+
+      {(roles.includes('Doctor') && location.state.data.visitStatus==='TRANSFER_TO_DOCTOR')&&(
       <Button onClick={() => setShow3(true)} style={{ marginRight: 10 }}>
         Add treatment
       </Button>
+      )}
+
       <Button onClick={() => setShow4(true)} style={{ marginRight: 10 }}>
         Add diagnostic
+      </Button>
+      <Button onClick={() => {if(window.confirm('Are you sure you want to save?')){roles.includes('Nurse')?nurseSave():doctorSave()}}} style={{ marginRight: 10 }}>
+       save
       </Button>
 
       <Row>

@@ -58,7 +58,8 @@ const columns = [
             patient:row.patient,
             doctor:`${row.doctor.firstName} ${row.doctor.lastName}`,
             createdAt:row.createdAt,
-            visitId:row.id
+            visitId:row.id,
+            visitStatus:row.status
           }
         }}
       >
@@ -85,7 +86,6 @@ function Visits() {
   const [doctorId, setDoctorId] = useState("");
   const [visits, setVisits] = useState([]);
   const [show, setShow] = useState(false);
-
 
 
   const handleClose = () => setShow(false);
@@ -154,6 +154,8 @@ function Visits() {
 
     const fetchVisits = async () => {
       let my_token = await localStorage.getItem("token");
+      let roles = await localStorage.getItem("role");
+      let userRoles = JSON.parse(roles);
       const config = {
         headers: {
           "Content-Type": "application/json",
@@ -163,7 +165,7 @@ function Visits() {
         },
       }; //incase you have to deal with ID or Options
       axios
-        .get(`http://www.ubuzima.rw/rec/visit/nurse`, config)
+        .get(userRoles.includes('Nurse')?`http://www.ubuzima.rw/rec/visit/nurse`:`http://www.ubuzima.rw/rec/visit/doctor`, config)
         .then((res) => {
           // console.log(res.data);
 

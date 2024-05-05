@@ -96,6 +96,7 @@ export default function Profile() {
     // setLoading(true);
     if(newPassword===confirmPassword){
       const postObj = {
+        username: profile.username,
         oldPassword: oldPassword,
         newPassword: newPassword,
       };

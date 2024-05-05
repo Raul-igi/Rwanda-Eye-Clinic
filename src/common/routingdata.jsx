@@ -16,9 +16,9 @@ export const Routingdata=[
 {path:`${import.meta.env.BASE_URL}insurance` ,element:<Insurance />, roles:['Nurse','Doctor']},
 {path:`${import.meta.env.BASE_URL}access-control` ,element:<AccessControl />, roles:['Nurse','Doctor']},
 {path:`${import.meta.env.BASE_URL}department` ,element:<Department />, roles:['Nurse','Doctor']},
-{path:`${import.meta.env.BASE_URL}patients` ,element:<Patients />, roles:['Nurse','Doctor']},
-{path:`${import.meta.env.BASE_URL}visit-details` ,element:<VisitDetails />, roles:['Nurse','Doctor']},
-{path:`${import.meta.env.BASE_URL}visits` ,element:<Visits />, roles:['Nurse','Doctor']},
+{path:`${import.meta.env.BASE_URL}patients` ,element:<Patients />, roles:['Nurse','Doctor','Receptionist']},
+{path:`${import.meta.env.BASE_URL}visit-details` ,element:<VisitDetails />, roles:['Nurse','Doctor','Receptionist']},
+{path:`${import.meta.env.BASE_URL}visits` ,element:<Visits />, roles:['Nurse','Doctor','Receptionist']},
 {path:`${import.meta.env.BASE_URL}specialists` ,element:<Specialists />, roles:['Nurse','Doctor']},
 {path:`${import.meta.env.BASE_URL}profile` ,element:<Profile />, roles:['Nurse','Doctor']},
 

@@ -893,6 +893,11 @@ export const EVisitType = [
   { value: " ONLINE", label: " ONLINE" },
   { value: " CHRONIC", label: " CHRONIC" },
 ];
+// Select lens Type
+export const lensType_ = [{ value: "BIFOCAL", label: "BIFOCAL" }];
+
+// Select dip
+export const dip_ = [{ value: "DIP_ON_DISTANCE", label: "DIP_ON_DISTANCE" }];
 
 // select2
 export const CitiesData = [

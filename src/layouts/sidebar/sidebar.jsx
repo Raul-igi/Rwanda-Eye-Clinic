@@ -35,7 +35,7 @@ export default function Sidebar() {
 
   const checkRoles = (arrA, arrB) => {
 
-    for (let i = 0; i < arrA.length; i++) {
+    for (let i = 0; i < arrA?.length||0; i++) {
 
       if (arrB.includes(arrA[i])) {
             return true; // Return true if found
@@ -47,8 +47,6 @@ export default function Sidebar() {
   const initializeMenus = async () => {
     const userRoles = await localStorage.getItem('role')
     const parsedRoles = JSON.parse(userRoles)
-    console.log(parsedRoles)
-    // MenuItems.map(item=>{console.log(checkRoles(parsedRoles,item.roles))})
     const menus = MenuItems.map(item=>{return({...item,condition:checkRoles(parsedRoles,item.roles)})})
     setMenuItems(menus)
   }
@@ -72,12 +70,12 @@ export default function Sidebar() {
     let check =
       menuItems.scrollWidth + (0 - menuWidth?.offsetWidth) + menuContainerWidth;
     if (menuWidth?.offsetWidth - menuContainerWidth >= menuItems.scrollWidth) {
-      document.querySelector(".slide-left").classList.add("d-none");
-      document.querySelector(".slide-right").classList.add("d-none");
+      document.querySelector(".slide-left")?.classList.add("d-none");
+      document.querySelector(".slide-right")?.classList.add("d-none");
       menuItems.style.marginRight = 0;
       menuItems.style.marginLeft = 0;
     } else {
-      document.querySelector(".slide-right").classList.remove("d-none");
+      document.querySelector(".slide-right")?.classList.remove("d-none");
     }
     if (document.querySelector("html").getAttribute("dir") === "rtl") {
       if (

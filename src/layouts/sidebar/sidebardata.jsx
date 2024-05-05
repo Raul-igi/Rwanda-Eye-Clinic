@@ -12,7 +12,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}patients`,
-    roles: ['Nurse','Doctor'],
+    roles: ['Nurse','Doctor','Receptionist'],
     condition: false,
   },  
   {
@@ -26,7 +26,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}visits`,
-    roles: ['Nurse','Doctor'],
+    roles: ['Nurse','Doctor','Receptionist'],
     condition: false,
   },
   {

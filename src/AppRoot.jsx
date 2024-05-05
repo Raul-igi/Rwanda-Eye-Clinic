@@ -1,6 +1,6 @@
 import React, { Fragment, Suspense, lazy, startTransition } from 'react';
 import * as actions from './common/redux/action';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './index.scss';
 import { Routingdata } from './common/routingdata';
 import { connect } from 'react-redux';
@@ -43,6 +43,7 @@ class AppRoot extends React.Component {
                   {this.roles.map(idx => (
                     <Route key={idx.path} path={idx.path} element={idx.element} />
                   ))}
+                  <Route path="*" element={<Navigate to="/" replace />} />
                 </Route>
               </Route>
             </Routes>

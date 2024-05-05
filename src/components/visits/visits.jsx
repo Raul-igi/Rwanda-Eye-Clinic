@@ -152,6 +152,8 @@ function Visits() {
       }
     };
 
+    
+
     const fetchVisits = async () => {
       let my_token = await localStorage.getItem("token");
       let roles = await localStorage.getItem("role");
@@ -165,7 +167,10 @@ function Visits() {
         },
       }; //incase you have to deal with ID or Options
       axios
-        .get(userRoles.includes('Nurse')?`http://www.ubuzima.rw/rec/visit/nurse`:`http://www.ubuzima.rw/rec/visit/doctor`, config)
+        .get(
+          userRoles.includes('Nurse')?`http://www.ubuzima.rw/rec/visit/nurse`:
+          (userRoles.includes('Doctor')?`http://www.ubuzima.rw/rec/visit/doctor`:`http://www.ubuzima.rw/rec/visit/receptionist`)
+          , config)
         .then((res) => {
           // console.log(res.data);
 

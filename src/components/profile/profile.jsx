@@ -32,24 +32,11 @@ export default function Profile() {
   const handleClose2 = () => setShow2(false);
   const handleShow2 = () => setShow2(true);
 
-  // const fetchUser = () => {
-  //   let my_token = localStorage.getItem('token');
-  //   const config = { headers: { "Authorization": `Token ${my_token}`, "Content-Type": "application/json" } };
-  //   axios
-  //     .get(`http://localhost:8000/rest-auth/user/`,config)
-  //     .then((response) => {
-  //       setProfile(response.data);
-  //       setEmail(response.data.email)
-  //       setNames(response.data.names)
-  //       setPhone(response.data.phone)
-  //       setAddress(response.data.address)
-  //       setSelectedRoles(response.data.roles)
-  //       fetchRoles();
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching data:", error);
-  //     });
-  // }
+  const fetchUser = async() => {
+   const profile_ = await localStorage.getItem('user')
+   const parsedProfile = JSON.parse(profile_)
+   setProfile(parsedProfile)
+  }
 
   // const fetchRoles = async () => {
   //   let my_token = localStorage.getItem("token");
@@ -134,9 +121,9 @@ export default function Profile() {
     }
   };
 
-  // useEffect(() => {
-  //   fetchUser();
-  // }, []);
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   return (
     <Fragment>
@@ -146,41 +133,24 @@ export default function Profile() {
             <Tab.Container defaultActiveKey="first">
               <Card className="overflow-hidden">
                 <Card.Body>
-                  <img
-                    className="profile-bg h-250 cover-image w-100"
-                    src={imagesData("banner")}
-                  />
                   <div className="py-4 position-relative">
-                    <div className="profile-img">
-                      <img
-                        src={imagesData("userIcon")}
-                        className="avatar avatar-xxl br-7"
-                        alt="person-image"
-                      />
-                    </div>
                     <div className="mt-5 d-sm-flex align-items-center">
                       <div>
                         <h3 className="fw-semibold mb-1">
-                          Email: {profile.email}
+                          Email: {profile?.email}
                         </h3>
                         <p className="mb-0 fw-semibold text-muted-dark">
-                          Role(s): {profile.roles.map(el=>el.name).join(", ")}
+                          Role(s): {profile?.roles.join(", ")}
                         </p>
                         <p className="mb-0 fw-semibold text-muted-dark">
-                          Names: {profile.names}
-                        </p>
-                        <p className="mb-0 fw-semibold text-muted-dark">
-                          Phone Number: {profile.phone}
-                        </p>
-                        <p className="mb-0 fw-semibold text-muted-dark">
-                          Address: {profile.address}
+                          Names: {profile?.firstName} {profile?.lastName}
                         </p>
                       </div>
                     </div>
                     <Row style={{marginTop:20}}>
-                      <Col lg={3}>
+                      {/* <Col lg={3}>
                         <Button onClick={handleShow}>Update</Button>
-                      </Col>
+                      </Col> */}
                       <Col lg={3}>
                         <Button onClick={handleShow2}>Change Password</Button>
                       </Col>

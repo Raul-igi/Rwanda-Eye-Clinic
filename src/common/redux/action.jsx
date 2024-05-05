@@ -58,6 +58,7 @@ export const authLogin = (username, password) => {  //edit properties here
                 const roles = JSON.stringify(res.data.response.roles);
                 const expirationDate = new Date(new Date().getTime() + 14400 * 1000);
                 localStorage.setItem('token', token);
+                localStorage.setItem('user', JSON.stringify(res.data.response));
                 localStorage.setItem('role', roles);
                 localStorage.setItem('reload', true);
                 localStorage.setItem('expirationDate', expirationDate);

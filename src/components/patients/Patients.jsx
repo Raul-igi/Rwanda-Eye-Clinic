@@ -22,6 +22,12 @@ import {
 } from "../../data/elementsdata";
 import DataTable from "react-data-table-component";
 
+import {
+  DataTabless,
+  ExportCSV,
+  ResponsiveDataTable,
+} from "../tables/datatables/data/responsivedatatable";
+
 const columns = [
   {
     name: "Names",
@@ -56,22 +62,18 @@ const columns = [
   },
 ];
 
-const headers = [
-  { label: "Task Name", key: "name" },
-  { label: "Creator", key: "created_by" },
-  { label: "assignees", key: "assignees" },
-  { label: "projects", key: "projects" },
-  { label: "start_date", key: "start_date" },
-  { label: "end_date", key: "end_date" },
-  { label: "gender", key: "gender" },
-  { label: "description", key: "description" },
-];
+// const headers = [
+//   { label: "Task Name", key: "name" },
+//   { label: "Creator", key: "created_by" },
+//   { label: "assignees", key: "assignees" },
+//   { label: "projects", key: "projects" },
+//   { label: "start_date", key: "start_date" },
+//   { label: "end_date", key: "end_date" },
+//   { label: "gender", key: "gender" },
+//   { label: "description", key: "description" },
+// ];
 
-import {
-  DataTabless,
-  ExportCSV,
-  ResponsiveDataTable,
-} from "../tables/datatables/data/responsivedatatable";
+
 function Patients() {
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
@@ -147,7 +149,7 @@ function Patients() {
     axios
       .post(`http://www.ubuzima.rw/rec/patient`, postObj) //declare api Path
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         setShow(false);
         if (res.data.status === true) {
           alert("Patient added successfully");
@@ -196,7 +198,7 @@ function Patients() {
     axios
       .get(`http://www.ubuzima.rw/rec/locations/provinces`, config)
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         const provinces_ = res.data.response.map((el) => {
           return { label: el.name, value: el.code };
         });

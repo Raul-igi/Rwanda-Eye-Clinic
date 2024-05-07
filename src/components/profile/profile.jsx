@@ -21,6 +21,7 @@ export default function Profile() {
   const [phone, setPhone] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [retypeNewPassword, setRetypeNewPassword] =useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [address, setAddress] = useState("");
   const [selectedRoles, setSelectedRoles] = useState([]);
@@ -99,12 +100,15 @@ export default function Profile() {
         username: profile.username,
         oldPassword: oldPassword,
         newPassword: newPassword,
+        retypeNewPassword:retypeNewPassword,
+
       };
       let my_token = localStorage.getItem('token');
       const config = { headers: { "Authorization": `Token ${my_token}`, "Content-Type": "application/json" } };
       axios
-        .put(`http://localhost:8000/change-password/`, postObj,config)
+        .put(`http://www.ubuzima.rw/rec/access/user/change-password`, postObj,config)
         .then((res) => {
+          console.log(res.data)
             if(res.data.code==200){
               logout();
             }
@@ -294,9 +298,11 @@ export default function Profile() {
                   />
                 </Form.Group>
               </Col>
+
+
               <Col lg={6} style={{marginTop:10}}>
                 <Form.Group>
-                  <Form.Label>Confirm Password</Form.Label>
+                  <Form.Label>Retype New Password</Form.Label>
                   <Form.Control
                     type="password"
                     className="form-control"

@@ -127,7 +127,7 @@ function Department() {
         config
       );
       setDepartments(response.data.response);
-      console.log(response.data);
+      // console.log(response.data);
       setDepartments_(response.data.response);
     } catch (error) {
       console.error("Error fetching payrolls:", error);

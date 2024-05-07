@@ -1,0 +1,21 @@
+/* html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+ */
+
+
+
+
+.background {
+    background-image: 
+    url("../../../assets/images/photos/eye1.jpg");
+
+  
+  background-size: cover; /* You can also use 'contain' depending on your needs */
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  
+}

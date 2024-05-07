@@ -3,7 +3,10 @@ import { connect } from 'react-redux';
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { Card, Col, InputGroup, Row } from 'react-bootstrap'
 import { authLogin } from '../../../common/redux/action'
-import { imagesData } from '../../../common/commomimages/imagedata';
+import { imagesData } from '../../../common/commomimages/imagedata'
+import './login.css'
+import { red } from '@mui/material/colors';
+
 
 const Login = ({authLogin,isAuthenticated,role}) => {
   const [email,setEmail] = useState('')
@@ -23,8 +26,8 @@ const Login = ({authLogin,isAuthenticated,role}) => {
     <Fragment>
 
       
-<div className="page_content">
-        <div className="container text-center text-dark" style={{marginTop:200}}>
+<div className="page_content background" >
+        <div className="container text-center text-dark  " style={{marginTop:200}}>
           <Row>
             <Col lg={4} className=" d-block mx-auto">
               <Row>

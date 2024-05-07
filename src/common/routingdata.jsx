@@ -11,9 +11,11 @@ import Visits from '../components/visits/visits'
 import Specialists from '../components/specialists/specialists'
 import VisitDetails from '../components/visits/visit-details'
 import Schedules from '../components/schedules/schedules'
+import Appointments from '../components/appointments/appointments'
 
 export const Routingdata=[
 
+{path:`${import.meta.env.BASE_URL}appointments` ,element:<Appointments />, roles:['Nurse','Doctor']},
 {path:`${import.meta.env.BASE_URL}insurance` ,element:<Insurance />, roles:['Nurse','Doctor']},
 {path:`${import.meta.env.BASE_URL}access-control` ,element:<AccessControl />, roles:['Nurse','Doctor']},
 {path:`${import.meta.env.BASE_URL}department` ,element:<Department />, roles:['Nurse','Doctor']},

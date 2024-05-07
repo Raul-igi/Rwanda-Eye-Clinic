@@ -71,5 +71,19 @@ const MenuItems = [
     roles: ['Doctor'],
     condition: false,
   },
+  {
+    icon: <i class="side-menu__icon fa fa-calendar-check-o"></i>,
+    type: "sub",
+    Name: "",
+    active: false,
+    selected: false,
+    title: "Appointment",
+    class: "",
+    color: "",
+    badgetxt: "",
+    path: `${import.meta.env.BASE_URL}appointments`,
+    roles: ['Doctor'],
+    condition: false,
+  },
 ]
 export default MenuItems;

@@ -15,61 +15,77 @@ import Select from "react-select";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 
+
 const columns = [
   {
-    name: "FIRST NAME",
-    selector: (row) => [row.firstName],
+    name: "Names",
+    selector: (row) => [`${row.doctor?.firstName} ${row.doctor?.lastName}`],
     sortable: true,
   },
   {
-    name: "LAST NAME",
-    selector: (row) => [row.lastName],
+    name: "Day ID",
+    selector: (row) => [row.dayId],
+    sortable: true,
+  },
+  {
+    name: "Doctor ID",
+    selector: (row) => [row.doctorId],
     sortable: true,
   },
 
   {
-    name: " PHONE NUMBER",
+    name: " Starting Time",
+    selector: (row) => [row.startingTime],
+    sortable: true,
+  },
+  {
+    name: "Patient ID",
+    selector: (row) => [row.patientId],
+    sortable: true,
+  },
+  {
+    name: "Names",
+    selector: (row) => [row.names],
+    sortable: true,
+  },
+  {
+    name: "Phone Number",
     selector: (row) => [row.phoneNumber],
     sortable: true,
   },
-  {
-    name: "EMAIL",
-    selector: (row) => [row.email],
-    sortable: true,
-  },
-  {
-    name: "ROLE",
-    selector: (row) => [row.roles.map(role => role.roleName).join(', ') || '-'],
-    sortable: true,
-  },
+  
 ];
 
-function AccessControl() {
+function Appointments() {
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [password, setPassword] = useState("");
-  const [users, setUsers] = useState();
-  const [users_, setUsers_] = useState();
-  const [roles, setRoles] = useState([]);
-  const [selectedRoles, setSelectedRoles] = useState([]);
+
+  const [dayId, setDayId] = useState("");
+  const [doctorId, setDoctorId] = useState("");
+  const [startingTime, setStartingTime] = useState("");
+  const [patientId, setPatientId] = useState("");
+  const [names, setNames] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+
+  const [Appointments, setAppointments] = useState();
+  const [Appointments_, setAppointments_] = useState();
   const [show, setShow] = useState(false);
+
+
+  const [allDoctors, setAllDoctors] = useState([]);
+ 
 
   const searchUser = (value) => {
     if (value === "") {
       fetchUsers(); // Reset to the original list of projects
     } else {
-      const filteredUsers = users_.filter((user) => {
+      const filteredUsers = Appointments_.filter((user) => {
         const userNameLowercase = (user.names + user.email).toLowerCase();
         const searchTermLowercase = value.toLowerCase();
         return userNameLowercase.includes(searchTermLowercase);
       });
 
-      setUsers(filteredUsers);
+      setAppointments(filteredUsers);
     }
   };
 
@@ -81,12 +97,12 @@ function AccessControl() {
     e.preventDefault();
     setLoading(true);
     const postObj = JSON.stringify({
-      firstName: firstName, // modify body properties
-      lastName: lastName,
-      phoneNumber: phone,
-      email: email,
-      password: password,
-      roleId: [selectedRoles],
+      dayId: dayId, // modify body properties
+      doctorId: doctorId,
+      startingTime: startingTime,
+      patientId: patientId,
+      names: names,
+      phoneNumber:phoneNumber,
     });
     console.log(postObj);
     let my_token = await localStorage.getItem("token");
@@ -95,13 +111,13 @@ function AccessControl() {
       "Authorization": `Bearer ${my_token}`,
     };
     axios
-      .post(`http://www.ubuzima.rw/rec/access/user`, postObj) //declare api Path
+      .post(`http://www.ubuzima.rw/rec/schedule/booking`, postObj) //declare api Path
       .then((res) => {
-        console.log(res.data)
+        // console.log(res.data)
         setShow(false);
         if (res.data.status === true) {
           alert("User Added successfully");
-          fetchUsers();
+          fetchAppointments();
         } else {
           alert("something went wrong");
         }
@@ -113,56 +129,67 @@ function AccessControl() {
       });
   };
 
-  const fetchUsers = async () => {
+  const fetchAppointments = async () => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-      
+        doctorId : doctorId,
       },
     };
 
     try {
       const response = await axios.get(
-        `http://www.ubuzima.rw/rec/access/users`,
+        `http://www.ubuzima.rw/rec/schedule/booking/doctor`,
         config
       );
-      setUsers(response.data.response);
-      console.log(response.data);
-      setUsers_(response.data.response);
-      fetchRoles();
+      setAppointments(response.data.response);
+      // console.log(response.data);
+      setAppointments_(response.data.response);
+      fetchAppointments();
     } catch (error) {
       console.error("Error fetching payrolls:", error);
     }
   };
 
-  const fetchRoles = async () => {
+
+
+  
+
+
+
+  const fetchAllDoctors = async () => {
     let my_token = await localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
+        "Authorization": `Bearer ${my_token}`,
       },
-    }; //incase you have to deal with ID or Options
-    axios
-      .get(`http://www.ubuzima.rw/rec/access/roles`, config)
-      .then((res) => {
-        const myRoles = res.data.response.map((el) => {
-          return { label: el.roleName, value: el.id };
-        }); //const that assign value to the property
-        setRoles(myRoles);
-      })
-      .catch((error) => {
-        setLoading(false);
-        setShow(false);
-        console.log(error.message);
+    };
+    
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/medical/doctors`,
+        config
+      );
+      
+      const allDoctors_ = response.data.response.map((el) => {
+        return { label: `${el.firstName} ${el.lastName}`, value: el.id };
       });
+      setAllDoctors(allDoctors_);
+    } catch (error) {
+      console.error(error);
+
+      console.log(response.data)
+    }
   };
 
+  
   useEffect(() => {
-    fetchUsers();
-    fetchRoles();
+    fetchAppointments();
+    fetchAllDoctors();
+   
   }, []);
 
   return (
@@ -171,7 +198,7 @@ function AccessControl() {
         <Col lg={12}>
           <Card>
             <Card.Header className="d-flex justify-content-between align-items-center">
-              <Card.Title>Users</Card.Title>
+              <Card.Title>Appointments</Card.Title>
               <Row>
                 <Col>
                   <input
@@ -183,13 +210,13 @@ function AccessControl() {
                 </Col>
                 <Col>
                   <Button variant="primary" onClick={handleShow}>
-                    Register New User
+                    Book Appointments
                   </Button>
                 </Col>
               </Row>
             </Card.Header>
             <Card.Body> 
-              <DataTable columns={columns} data={users} pagination /> 
+              <DataTable columns={columns} data={Appointments} pagination /> 
             </Card.Body>
           </Card>
         </Col>
@@ -197,91 +224,103 @@ function AccessControl() {
       <Modal show={show} onHide={handleClose}>
         <Form onSubmit={handleSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>Register New user</Modal.Title>
+            <Modal.Title>Book Appointments</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Row>
               <Col lg={6} style={{ marginTop: 10 }}>
                 <Form.Group>
-                  <Form.Label>First Name</Form.Label>
+                  <Form.Label>Day ID</Form.Label>
                   <Form.Control
                     type="text"
                     className="form-control"
                     name="example-text-input"
-                    placeholder="First Name"
-                    onChange={(e) => setFirstName(e.target.value)} // value onChange on input is the third step
+                    placeholder="day id"
+                    onChange={(e) => setDayId(e.target.value)} // value onChange on input is the third step
                     required
                   />
                 </Form.Group>
               </Col>
+
+              <Col xl={6} style={{ marginTop: 10 }}>
+                        <Form.Group className="form-group">
+                          <Form.Label>Doctor ID</Form.Label>
+                          <Select
+                            options={allDoctors}
+                            onChange={(e) => setDoctorId(e.value)}
+                            classNamePrefix="Select2"
+                            className="multi-select"
+                            placeholder="doctor id"
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
+
+
+
+
+
+
+
+
+
+              
               <Col lg={6} style={{ marginTop: 10 }}>
                 <Form.Group>
-                  <Form.Label>Last Name</Form.Label>
+                  <Form.Label>starting Time</Form.Label>
                   <Form.Control
-                    type="text"
+                    type="time"
                     className="form-control"
                     name="example-text-input"
-                    placeholder="Last Name"
-                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="starting time"
+                    onChange={(e) => setStartingTime(e.target.value)}
                     required
                   />
                 </Form.Group>
               </Col>
               <Col lg={6} style={{ marginTop: 10 }}>
                 <Form.Group>
-                  <Form.Label>Phone</Form.Label>
-                  <Form.Control
-                    type="tel"
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="Phone..."
-                    onChange={(e) => setPhone(e.target.value)}
-                    required
-                  />
-                </Form.Group>
-              </Col>
-              <Col lg={6} style={{ marginTop: 10 }}>
-                <Form.Group>
-                  <Form.Label>Email</Form.Label>
+                  <Form.Label>Patient ID</Form.Label>
                   <Form.Control
                     type="email"
                     className="form-control"
                     name="example-text-input"
-                    placeholder="Email"
-                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="patient id"
+                    onChange={(e) => setPatientId(e.target.value)}
                     required
                   />
                 </Form.Group>
               </Col>
+
               <Col lg={6} style={{ marginTop: 10 }}>
                 <Form.Group>
-                  <Form.Label>Password</Form.Label>
+                  <Form.Label>Names</Form.Label>
                   <Form.Control
-                    type="password"
+                    type="text"
                     className="form-control "
                     name="example-text-input"
-                    placeholder="Password..."
-                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="names"
+                    onChange={(e) => setNames(e.target.value)}
                     required
                   />
                 </Form.Group>
               </Col>
 
               <Col lg={6} style={{ marginTop: 10 }}>
-                <Form.Group className="form-group">
-                  <Form.Label>Roles</Form.Label>
-                  <Select
-                    // isMulti
-                    options={roles}
-                    onChange={(e) => setSelectedRoles(e.value)}
-
-                    classNamePrefix="Select2"
-                    className="multi-select"
-                    placeholder="Select them"
+                <Form.Group>
+                  <Form.Label>Phone Number</Form.Label>
+                  <Form.Control
+                    type="tel"
+                    className="form-control "
+                    name="example-text-input"
+                    placeholder="phone number"
+                    onChange={(e) => setPhoneNumber(e.target.value)}
                     required
                   />
                 </Form.Group>
               </Col>
+
+              
             </Row>
           </Modal.Body>
           <Modal.Footer>
@@ -298,4 +337,4 @@ function AccessControl() {
   );
 }
 
-export default AccessControl;
+export default Appointments;

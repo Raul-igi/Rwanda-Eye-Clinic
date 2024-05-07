@@ -16,10 +16,9 @@ const Register = lazy(() => import('./components/Authentication/Register/Registe
 class AppRoot extends React.Component {
   constructor(props) {
     super(props);
-    const userRoles = localStorage.getItem('role');
-    const parsedRoles = JSON.parse(userRoles);
-    this.roles = Routingdata.filter(route => this.checkRoles(parsedRoles, route.roles));
-    console.log(this.roles)
+    // const userRoles = localStorage.getItem('role');
+    // const parsedRoles = JSON.parse(userRoles);
+    // this.roles = Routingdata.filter(route => this.checkRoles(parsedRoles, route.roles));
   }
 
   checkRoles(arrA, arrB) {
@@ -40,7 +39,7 @@ class AppRoot extends React.Component {
               <Route index element={<Login {...this.props} />} />
               <Route element={<PrivateRoute />}>
                 <Route path={`${import.meta.env.BASE_URL}`} element={<App {...this.props} />}>
-                  {this.roles.map(idx => (
+                  {Routingdata.map(idx => (
                     <Route key={idx.path} path={idx.path} element={idx.element} />
                   ))}
                   <Route path="*" element={<Navigate to="/" replace />} />

@@ -10,6 +10,7 @@ import Department from '../components/department/department'
 import Visits from '../components/visits/visits'
 import Specialists from '../components/specialists/specialists'
 import VisitDetails from '../components/visits/visit-details'
+import Schedules from '../components/schedules/schedules'
 
 export const Routingdata=[
 
@@ -21,6 +22,7 @@ export const Routingdata=[
 {path:`${import.meta.env.BASE_URL}visits` ,element:<Visits />, roles:['Nurse','Doctor','Receptionist']},
 {path:`${import.meta.env.BASE_URL}specialists` ,element:<Specialists />, roles:['Nurse','Doctor']},
 {path:`${import.meta.env.BASE_URL}profile` ,element:<Profile />, roles:['Nurse','Doctor']},
+{path:`${import.meta.env.BASE_URL}schedules` ,element:<Schedules />, roles:['Nurse','Doctor']},
 
 
 ]

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import {Link, useLocation } from "react-router-dom";
 import {
   Card,
   Col,
@@ -33,7 +33,19 @@ const columns = [
     selector: (row) => [row.doctor?.phoneNumber],
     sortable: true,
   },
-
+  {
+    name: "Actions",
+    cell: (row) => (
+      <Link
+        to="/schedules"
+        state={{
+          data:{doctor:row.doctor}
+        }}
+      >
+        View schedules
+      </Link>
+    ),
+  },
 
 ];
 

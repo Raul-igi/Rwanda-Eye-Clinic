@@ -164,6 +164,7 @@ function Patients() {
         console.log(error.message);
       });
   };
+  
 
   const fetchPatients = async () => {
     let my_token = localStorage.getItem("token");

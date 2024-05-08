@@ -99,7 +99,7 @@ const SideMenuIcon = () => {
         <Fragment>
 
            
-            <div className="app-header header sticky" style={{ marginBottom: '-70.7812px' }}>
+            <div className="app-header header sticky" style={{ marginBottom: '-70.7812px', backgroundColor:'#dee2e6', }}>
                 <Container fluid className=" main-container">
                     <div className="d-flex">
                         <Link aria-label="Hide Sidebar" className="app-sidebar__toggle" data-bs-toggle="sidebar"

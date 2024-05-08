@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MenuItems from "./sidebardata";
 
 
+
 const Onhover = () => {
   document.querySelector(".app").classList.contains("sidenav-toggled");
   document.querySelector(".app").classList.add("sidenav-toggled-open");
@@ -107,11 +108,12 @@ export default function Sidebar() {
           className="app-sidebar"
           onMouseOver={() => Onhover()}
           onMouseOut={() => Outhover()}
+          style={{backgroundColor:'#f7f5fb'}}
         >
           <PerfectScrollbar
             options={{ suppressScrollX: true, useBothWheelAxes: false }}
           >
-            <div className="side-header">
+            <div className="side-header" style={{backgroundColor:'#dee2e6'}}>
               {/* <Link className="header-brand1" to={`${import.meta.env.BASE_URL}taskboard`} >
                 <img src={imagesData('media')} className="header-brand-img main-logo" alt="Sparic logo" />
                 <img src={imagesData('media')} className="header-brand-img darklogo" alt="Sparic logo" />

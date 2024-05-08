@@ -28,11 +28,11 @@ const Login = ({authLogin,isAuthenticated,role}) => {
       
 <div className="page_content background" >
         <div className="container text-center text-dark  " style={{paddingTop:200}}>
-          <Row>
+          <Row >
             <Col lg={4} className=" d-block mx-auto">
-              <Row>
-                <Col xl={12} md={12}>
-                  <Card>
+              <Row >
+                <Col xl={12} md={12} >
+                  <Card style={{backgroundColor:'transparent', borderColor:'black'}}>
                     <Card.Body>
                       <div className="text-center mb-2">
                         {/* <Link className="header-brand1" to={`${import.meta.env.BASE_URL}dashboard`}>

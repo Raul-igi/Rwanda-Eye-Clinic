@@ -61,7 +61,7 @@ function Appointments() {
   const [loading, setLoading] = useState(false);
 
   const [doctorId, setDoctorId] = useState([]);
-  const [selectedDoctorId,setSelectedDoctorId] =useState();
+  const [selectedDoctorId,setSelectedDoctorId] =useState([]);
 
   const [dayId, setDayId] = useState("");
   const [scheduleDayId,setscheduleDayId] =useState("");
@@ -80,6 +80,9 @@ function Appointments() {
 
   const [allDoctors, setAllDoctors] = useState([]);
   const [allDayId, setallDayId]= useState([]);
+
+  const [patients_, setPatients_] = useState("");
+  const [patients, setPatients] = useState("");
  
 
   const searchUser = (value) => {
@@ -221,13 +224,59 @@ function Appointments() {
       });
   };
 
+  // const fetchPatients = async () => {
+  //   let my_token = localStorage.getItem("token");
+  //   const config = {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${my_token}`,
+  //     },
+  //   };
+
+  //   try {
+  //     const response = await axios.get(
+  //       `http://www.ubuzima.rw/rec/patient`,
+  //       config
+  //     );
+  //     setPatients_(response.data.response);
+  //     setPatients(response.data.response);
+  //   } catch (error) {
+  //     console.error("Error fetching payrolls:", error);
+  //   }
+  // };
+
+
+
+  const fetchPatients = async () => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    }; //incase you have to deal with ID or Options
+    axios
+      .get(`http://www.ubuzima.rw/rec/patient`, config)
+      .then((res) => {
+        const patients = res.data.response.map((el) => {
+          return { label: el.names, value: el.names};
+        }); //const that assign value to the property
+        setPatients(patients);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setShow(false);
+        console.log(error.message);
+      });
+  };
+
 
 
   
   useEffect(() => {
     fetchAppointments();
     fetchAllDoctors();
-    // fetchDayId();
+    fetchPatients();
    
   }, []);
 
@@ -315,7 +364,7 @@ function Appointments() {
                   <Select
                     className="basic-single"
                     options={allDoctors}
-                    onChange={(e) => {setSelectedDoctorId(e.value);fetchDayId(e.value)}} // value onChange on input is the third step
+                    onChange={(e) => {setDoctorId(e.value);fetchDayId(e.value)}} // value onChange on input is the third step
                     classNamePrefix="Select2"
                     placeholder="Select them"
                     required
@@ -353,7 +402,7 @@ function Appointments() {
                   <Select
                     className="basic-single"
                     options={schedulesDayId}
-                    onChange={(e) =>  setscheduleDayId(e.value)} // value onChange on input is the third step
+                    onChange={(e) =>  setDayIds(e.value)} // value onChange on input is the third step
                     classNamePrefix="Select2"
                     placeholder="Select them"
                     required
@@ -379,7 +428,10 @@ function Appointments() {
                   />
                 </Form.Group>
               </Col>
-              <Col lg={6} style={{ marginTop: 10 }}>
+
+
+
+              {/* <Col lg={6} style={{ marginTop: 10 }}>
                 <Form.Group>
                   <Form.Label>Patient ID</Form.Label>
                   <Form.Control
@@ -391,7 +443,29 @@ function Appointments() {
                     required
                   />
                 </Form.Group>
+              </Col> */}
+
+
+
+
+
+
+              <Col lg={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Patient ID</Form.Label>
+                  <Select
+                    className="basic-single"
+                    options={patients}
+                    onChange={(e) =>  setPatientId(e.value)} // value onChange on input is the third step
+                    classNamePrefix="Select2"
+                    placeholder="Select them"
+                    required
+                  />
+                </Form.Group>
               </Col>
+       
+
+
 
               <Col lg={6} style={{ marginTop: 10 }}>
                 <Form.Group>

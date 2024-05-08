@@ -195,29 +195,6 @@ function Appointments() {
 
 
 
-  // const fetchDayId = async () => {
-  //   let my_token = localStorage.getItem("token");
-  //   const config = {
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       "Authorization": `Bearer ${my_token}`,
-  //       doctorId : selectedDoctorId,    
-  //       },
-  //   };
-
-  //   try {
-  //     const response = await axios.get(
-  //       `http://www.ubuzima.rw/rec/schedule`,
-  //       config
-  //     );
-  //     console.log(response.data)
-  //     setDayId(response.data.response);
-  //   } catch (error) {
-  //     console.error(error.message);
-  //   }
-  // };
-
-
 
 
   const fetchDayId = async (id) => {
@@ -226,15 +203,15 @@ function Appointments() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        doctorId : selectedDoctorId, 
+        doctorId : id, 
       },
     }; //incase you have to deal with ID or Options
     axios
       .get(`http://www.ubuzima.rw/rec/schedule`, config)
       .then((res) => {
         console.log(res.data);
-        const schedulesDayId = res.data.response.schedulesDayId.map((el) => {
-          return { label: `${el.dayId}`, value: el.doctorId };
+        const schedulesDayId = res.data.response.map((el) => {
+          return ({ label: `${el.day}`, value: el.id });
         }); //const that assign value to the property
         setschedulesDayId(schedulesDayId);
       })

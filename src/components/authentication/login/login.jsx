@@ -27,7 +27,7 @@ const Login = ({authLogin,isAuthenticated,role}) => {
 
       
 <div className="page_content background" >
-        <div className="container text-center text-dark  " style={{marginTop:200}}>
+        <div className="container text-center text-dark  " style={{paddingTop:200}}>
           <Row>
             <Col lg={4} className=" d-block mx-auto">
               <Row>

@@ -64,7 +64,9 @@ function Appointments() {
   const [selectedDoctorId,setSelectedDoctorId] =useState();
 
   const [dayId, setDayId] = useState("");
-  const [selectedDayId,setSelectedDayId] =useState("");
+  const [scheduleDayId,setscheduleDayId] =useState("");
+  const [schedulesDayId,setschedulesDayId] =useState("");
+
 
   const [startingTime, setStartingTime] = useState("");
   const [patientId, setPatientId] = useState("");
@@ -153,7 +155,7 @@ function Appointments() {
       setAppointments(response.data.response);
       // console.log(response.data);
       setAppointments_(response.data.response);
-      fetchAppointments();
+      // fetchAppointments();
     } catch (error) {
       console.error("Error fetching payrolls:", error);
     }
@@ -193,64 +195,62 @@ function Appointments() {
 
 
 
-  const fetchDayId = async () => {
-    let my_token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        doctorId : selectedDoctorId,    
-        },
-    };
-
-    try {
-      const response = await axios.get(
-        `http://www.ubuzima.rw/rec/schedule`,
-        config
-      );
-      console.log(response.data)
-      setDayId(response.data.response);
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
-
-
-  // const fetchProvinces = async () => {
+  // const fetchDayId = async () => {
   //   let my_token = localStorage.getItem("token");
   //   const config = {
   //     headers: {
   //       "Content-Type": "application/json",
   //       "Authorization": `Bearer ${my_token}`,
-  //     },
+  //       doctorId : selectedDoctorId,    
+  //       },
   //   };
 
-  //   axios
-  //     .get(`http://www.ubuzima.rw/rec/locations/provinces`, config)
-  //     .then((res) => {
-  //       // console.log(res.data);
-  //       const provinces_ = res.data.response.map((el) => {
-  //         return { label: el.name, value: el.code };
-  //       });
-  //       setProvinces(provinces_);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error.message);
-  //     });
+  //   try {
+  //     const response = await axios.get(
+  //       `http://www.ubuzima.rw/rec/schedule`,
+  //       config
+  //     );
+  //     console.log(response.data)
+  //     setDayId(response.data.response);
+  //   } catch (error) {
+  //     console.error(error.message);
+  //   }
   // };
 
 
-  // const resetDayId = () => {
-  //   setSelectedDayId('');
-  //   setDayId([]);
-  // }
+
+
+  const fetchDayId = async (id) => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+        doctorId : selectedDoctorId, 
+      },
+    }; //incase you have to deal with ID or Options
+    axios
+      .get(`http://www.ubuzima.rw/rec/schedule`, config)
+      .then((res) => {
+        console.log(res.data);
+        const schedulesDayId = res.data.response.schedulesDayId.map((el) => {
+          return { label: `${el.dayId}`, value: el.doctorId };
+        }); //const that assign value to the property
+        setschedulesDayId(schedulesDayId);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error.message);
+      });
+  };
+
+
 
   
   useEffect(() => {
     fetchAppointments();
     fetchAllDoctors();
-    fetchDayId();
+    // fetchDayId();
    
   }, []);
 
@@ -310,7 +310,7 @@ function Appointments() {
 
 
 
-                      <Col xl={6} style={{ marginTop: 10 }}>
+                      {/* <Col xl={6} style={{ marginTop: 10 }}>
                         <Form.Group className="form-group">
                           <Form.Label>Doctor ID</Form.Label>
                           <Select
@@ -327,21 +327,38 @@ function Appointments() {
                             required
                           />
                         </Form.Group>
-                      </Col>
+                      </Col> */}
+
+
+
+
+                      <Col lg={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Doctor ID</Form.Label>
+                  <Select
+                    className="basic-single"
+                    options={allDoctors}
+                    onChange={(e) => {setSelectedDoctorId(e.value);fetchDayId(e.value)}} // value onChange on input is the third step
+                    classNamePrefix="Select2"
+                    placeholder="Select them"
+                    required
+                  />
+                </Form.Group>
+              </Col>
 
 
               
-                <Col xl={6} style={{ marginTop: 10 }}>
+                {/* <Col xl={6} style={{ marginTop: 10 }}>
                         <Form.Group className="form-group">
                           <Form.Label>Day ID</Form.Label>
                           <Select
                             options={dayId}
                             onChange={(e) => {
-                              setSelectedDayId(e);
+                              setscheduleDayId(e);
                               fetchDayId(e.value);
                               resetDayId();
                             }}
-                            value={selectedDayId}
+                            value={scheduleDayId}
                             classNamePrefix="Select2"
                             className="multi-select"
                             // placeholder="Select them"
@@ -349,7 +366,23 @@ function Appointments() {
                           />
                         </Form.Group>
                       </Col>
-                     
+                      */}
+
+
+
+                      <Col lg={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Day ID</Form.Label>
+                  <Select
+                    className="basic-single"
+                    options={schedulesDayId}
+                    onChange={(e) =>  setscheduleDayId(e.value)} // value onChange on input is the third step
+                    classNamePrefix="Select2"
+                    placeholder="Select them"
+                    required
+                  />
+                </Form.Group>
+              </Col>
        
 
 

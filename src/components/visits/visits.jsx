@@ -305,6 +305,7 @@ function Visits() {
           </Modal.Header>
           <Modal.Body>
             <Row>
+            
               <Col lg={6}>
                 <Form.Group className="form-group">
                   <Form.Label>Patient ID</Form.Label>
@@ -321,7 +322,7 @@ function Visits() {
 
               <Col lg={6}>
                 <Form.Group className="form-group">
-                  <Form.Label>Patient Insurance Id</Form.Label>
+                  <Form.Label>Patient Insurance ID</Form.Label>
                   <Select
                     className="basic-single"
                     options={patientsInsurances}

@@ -60,8 +60,12 @@ function Appointments() {
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
 
+  const [doctorId, setDoctorId] = useState([]);
+  const [selectedDoctorId,setSelectedDoctorId] =useState();
+
   const [dayId, setDayId] = useState("");
-  const [doctorId, setDoctorId] = useState("");
+  const [selectedDayId,setSelectedDayId] =useState("");
+
   const [startingTime, setStartingTime] = useState("");
   const [patientId, setPatientId] = useState("");
   const [names, setNames] = useState("");
@@ -73,6 +77,7 @@ function Appointments() {
 
 
   const [allDoctors, setAllDoctors] = useState([]);
+  const [allDayId, setallDayId]= useState([]);
  
 
   const searchUser = (value) => {
@@ -135,6 +140,7 @@ function Appointments() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
+        // "doctorId":location.state.data.doctor.id
         doctorId : doctorId,
       },
     };
@@ -185,10 +191,66 @@ function Appointments() {
     }
   };
 
+
+
+  const fetchDayId = async () => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+        doctorId : selectedDoctorId,    
+        },
+    };
+
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/schedule`,
+        config
+      );
+      console.log(response.data)
+      setDayId(response.data.response);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+
+
+  // const fetchProvinces = async () => {
+  //   let my_token = localStorage.getItem("token");
+  //   const config = {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       "Authorization": `Bearer ${my_token}`,
+  //     },
+  //   };
+
+  //   axios
+  //     .get(`http://www.ubuzima.rw/rec/locations/provinces`, config)
+  //     .then((res) => {
+  //       // console.log(res.data);
+  //       const provinces_ = res.data.response.map((el) => {
+  //         return { label: el.name, value: el.code };
+  //       });
+  //       setProvinces(provinces_);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error.message);
+  //     });
+  // };
+
+
+  // const resetDayId = () => {
+  //   setSelectedDayId('');
+  //   setDayId([]);
+  // }
+
   
   useEffect(() => {
     fetchAppointments();
     fetchAllDoctors();
+    fetchDayId();
    
   }, []);
 
@@ -228,21 +290,9 @@ function Appointments() {
           </Modal.Header>
           <Modal.Body>
             <Row>
-              <Col lg={6} style={{ marginTop: 10 }}>
-                <Form.Group>
-                  <Form.Label>Day ID</Form.Label>
-                  <Form.Control
-                    type="text"
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="day id"
-                    onChange={(e) => setDayId(e.target.value)} // value onChange on input is the third step
-                    required
-                  />
-                </Form.Group>
-              </Col>
+              
 
-              <Col xl={6} style={{ marginTop: 10 }}>
+              {/* <Col xl={6} style={{ marginTop: 10 }}>
                         <Form.Group className="form-group">
                           <Form.Label>Doctor ID</Form.Label>
                           <Select
@@ -254,15 +304,56 @@ function Appointments() {
                             required
                           />
                         </Form.Group>
+                      </Col> */}
+
+
+
+
+
+                      <Col xl={6} style={{ marginTop: 10 }}>
+                        <Form.Group className="form-group">
+                          <Form.Label>Doctor ID</Form.Label>
+                          <Select
+                            options={allDoctors}
+                            onChange={(e) => {
+                              setSelectedDoctorId(e.value);
+                              fetchDayId(e.value);
+                              // resetDayId();
+                            }}
+                            value={selectedDoctorId}
+                            classNamePrefix="Select2"
+                            className="multi-select"
+                            // placeholder="Select them"
+                            required
+                          />
+                        </Form.Group>
                       </Col>
 
 
+              
+                <Col xl={6} style={{ marginTop: 10 }}>
+                        <Form.Group className="form-group">
+                          <Form.Label>Day ID</Form.Label>
+                          <Select
+                            options={dayId}
+                            onChange={(e) => {
+                              setSelectedDayId(e);
+                              fetchDayId(e.value);
+                              resetDayId();
+                            }}
+                            value={selectedDayId}
+                            classNamePrefix="Select2"
+                            className="multi-select"
+                            // placeholder="Select them"
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
+                     
+       
 
 
-
-
-
-
+                      
 
               
               <Col lg={6} style={{ marginTop: 10 }}>

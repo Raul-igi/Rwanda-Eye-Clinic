@@ -544,6 +544,11 @@ function Patients() {
                         </Form.Group>
                       </Col>
 
+
+
+
+
+
                       <Col xl={6}>
                         <Form.Group className="form-group">
                           <Form.Label>Province</Form.Label>
@@ -562,6 +567,10 @@ function Patients() {
                           />
                         </Form.Group>
                       </Col>
+
+
+
+                      
 
                       {selectedProvince && (
                         <Col xl={6}>

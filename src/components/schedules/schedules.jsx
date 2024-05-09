@@ -63,7 +63,19 @@ function Schedules() {
 
   
 
+  const calculateSlots = (startDate, endDate) => {
+    // Convert the dates to timestamps
+    const startTimestamp = new Date(startDate).getTime();
+    const endTimestamp = new Date(endDate).getTime();
 
+    // Calculate the difference in milliseconds
+    const difference = endTimestamp - startTimestamp;
+
+    // Calculate the number of slots (each slot represents 15 minutes)
+    const slots = Math.floor(difference / (15 * 60 * 1000));
+
+    return slots;
+}
 
   const mondayToggled = ()=>{
     setMondayAvailability(!mondayAvailability)
@@ -281,7 +293,7 @@ function Schedules() {
             "windows": mondayAvailability? mondayWindows.map(window=>{return({
                 from:window.start,
                 to:window.end,
-                slots:0
+                slots:calculateSlots(window.start,window.end)
             })}):[]
           },
           {
@@ -289,7 +301,7 @@ function Schedules() {
             "windows": tuesdayAvailability? tuesdayWindows.map(window=>{return({
                 from:window.start,
                 to:window.end,
-                slots:0
+                slots:calculateSlots(window.start,window.end)
             })}):[]
           },
           {
@@ -297,7 +309,7 @@ function Schedules() {
             "windows": wednesdayAvailability? wednesdayWindows.map(window=>{return({
                 from:window.start,
                 to:window.end,
-                slots:0
+                slots:calculateSlots(window.start,window.end)
             })}):[]
           },
           {
@@ -305,7 +317,7 @@ function Schedules() {
             "windows": thursdayAvailability? thursdayWindows.map(window=>{return({
                 from:window.start,
                 to:window.end,
-                slots:0
+                slots:calculateSlots(window.start,window.end)
             })}):[]
           },
           {
@@ -313,7 +325,7 @@ function Schedules() {
             "windows": fridayAvailability? fridayWindows.map(window=>{return({
                 from:window.start,
                 to:window.end,
-                slots:0
+                slots:calculateSlots(window.start,window.end)
             })}):[]
           },
           {
@@ -321,7 +333,7 @@ function Schedules() {
             "windows": saturdayAvailability? saturdayWindows.map(window=>{return({
                 from:window.start,
                 to:window.end,
-                slots:0
+                slots:calculateSlots(window.start,window.end)
             })}):[]
           },
           {
@@ -329,7 +341,7 @@ function Schedules() {
             "windows": sundayAvailability? sundayWindows.map(window=>{return({
                 from:window.start,
                 to:window.end,
-                slots:0
+                slots:calculateSlots(window.start,window.end)
             })}):[]
           }
         ],

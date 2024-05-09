@@ -107,9 +107,9 @@ function Appointments() {
     e.preventDefault();
     setLoading(true);
     const postObj = JSON.stringify({
-      dayId: dayId, // modify body properties
+      day: scheduleDayId, // modify body properties
       doctorId: doctorId,
-      startingTime: startingTime,
+      startingTime: startingTime+":00",
       patientId: patientId,
       names: names,
       phoneNumber:phoneNumber,
@@ -129,7 +129,7 @@ function Appointments() {
           alert("User Added successfully");
           fetchAppointments();
         } else {
-          alert("something went wrong");
+          alert(res.data.message);
         }
       })
       .catch((error) => {
@@ -214,7 +214,7 @@ function Appointments() {
       .then((res) => {
         console.log(res.data);
         const schedulesDayId = res.data.response.map((el) => {
-          return ({ label: `${el.day}`, value: el.id });
+          return ({ label: `${el.day}`, value: el.day });
         }); //const that assign value to the property
         setschedulesDayId(schedulesDayId);
       })
@@ -259,7 +259,7 @@ function Appointments() {
       .get(`http://www.ubuzima.rw/rec/patient`, config)
       .then((res) => {
         const patients = res.data.response.map((el) => {
-          return { label: el.names, value: el.names};
+          return { label: el.names, value: el.id};
         }); //const that assign value to the property
         setPatients(patients);
       })
@@ -402,7 +402,7 @@ function Appointments() {
                   <Select
                     className="basic-single"
                     options={schedulesDayId}
-                    onChange={(e) =>  setDayIds(e.value)} // value onChange on input is the third step
+                    onChange={(e) =>  setscheduleDayId(e.value)} // value onChange on input is the third step
                     classNamePrefix="Select2"
                     placeholder="Select them"
                     required
@@ -419,7 +419,7 @@ function Appointments() {
                 <Form.Group>
                   <Form.Label>starting Time</Form.Label>
                   <Form.Control
-                    type="time"
+                    type="datetime-local"
                     className="form-control"
                     name="example-text-input"
                     placeholder="starting time"

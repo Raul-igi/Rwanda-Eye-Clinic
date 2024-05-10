@@ -114,6 +114,9 @@ function Patients() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+
+
+
   const handleSubmit = async (e) => {
     //handle submit is the second step
     e.preventDefault();
@@ -187,6 +190,7 @@ function Patients() {
     }
   };
 
+
   const fetchProvinces = async () => {
     let my_token = localStorage.getItem("token");
     const config = {
@@ -209,6 +213,8 @@ function Patients() {
         console.log(error.message);
       });
   };
+
+
 
   const fetchDistricts = async (code) => {
     let my_token = localStorage.getItem("token");
@@ -234,6 +240,7 @@ function Patients() {
       });
   };
 
+
   const fetchSectors = async (code) => {
     let my_token = localStorage.getItem("token");
     const config = {
@@ -257,6 +264,8 @@ function Patients() {
         console.log(error.message);
       });
   };
+
+  
 
   const fetchCells = async (code) => {
     let my_token = localStorage.getItem("token");
@@ -419,6 +428,20 @@ function Patients() {
                             name="example-text-input"
                             // placeholder="names"
                             onChange={(e) => setName(e.target.value)}
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
+
+                      <Col lg={6}>
+                        <Form.Group className="form-group">
+                          <Form.Label>Insurance</Form.Label>
+                          <Select
+                            className="basic-single"
+                            options={insurances}
+                            onChange={(e) => setInsuranceId(e.value)}
+                            classNamePrefix="Select2"
+                            placeholder="Select them"
                             required
                           />
                         </Form.Group>

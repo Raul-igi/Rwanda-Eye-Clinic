@@ -17,6 +17,10 @@ export default function VisitDetails() {
   const [roles, setRoles] = useState([]);
   const [act, setAct] = useState("");
   const [invoice, setInvoice] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("INSURANCE");
+
+  const [insuranceAmount, setInsuranceAmount] = useState(0);
+  const [topUpAmount, setTopUpAmount] = useState(0);
 
   const [treatment, setTreatment] = useState("");
   const [savedTreatment, setSavedTreatment] = useState("");
@@ -51,19 +55,18 @@ export default function VisitDetails() {
   const [lensType, setLensType] = useState("");
   const [dip, setDip] = useState("");
 
-  const [selectshow, selectsetShow] = useState(false)
-  const handleClose8 = () => selectsetShow(false)
-  const handleShow8 = () => selectsetShow(true)
+  const [showModal, setShowModal] = useState(false)
+  const handleClose8 = () => setShowModal(false)
+  const handleShow8 = () => setShowModal(true)
 
   const [eight, setEight] = useState(false)
 
 
-  const option = [
-    { value: 'Firefox', label: 'Firefox' },
-    { value: 'Chrome', label: 'Chrome' },
-    { value: 'Safari', label: 'Safari' },
-    { value: 'Opera', label: 'Opera' },
-    { value: 'Internet Explorer', label: 'Internet Explorer' }
+  const paymentMethods = [
+    { value: 'INSURANCE', label: 'Insurance' },
+    { value: 'INSURANCE_AND_TOP_UP', label: 'Insurance and Top Up' },
+    { value: 'CASH', label: 'Cash' },
+   
   ]
 
 
@@ -356,6 +359,36 @@ export default function VisitDetails() {
       }
     } catch (error) {
       setShow(false);
+      console.error(error);
+    }
+  };
+
+  const pay = async () => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+      },
+    };
+    const paymentDto = JSON.stringify({
+      invoiceNumber:invoice.invoiceNumber,
+      paymentMethod,
+      amount: invoice.patientAmount,
+      topUpAmount
+    })
+    console.log(paymentDto);
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/invoice/pay?paymentDto=${paymentDto}`,
+        config
+      );
+      setShowModal(false);
+      if (response.data.status) {
+        alert("Medical act added successfully!");
+      }
+    } catch (error) {
+      setShowModal(false);
       console.error(error);
     }
   };
@@ -655,12 +688,14 @@ export default function VisitDetails() {
 
         <Card style={{ minHeight: 180 }}>
             <Card.Header className=" d-flex justify-content-between align-items-center">
-              <div className="">
+              
                 <Card.Title>
                   Invoice Number: {invoice.invoiceNumber}
+                  <Button style={{marginLeft:50}} variant="green" onClick={handleShow8}>
+              Pay Invoice
+            </Button>
                 </Card.Title>
-                {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
-              </div>
+               
             </Card.Header>
             <Card.Body>
               <Card.Title> Total Amount: Rwf {invoice.totalAmount.toLocaleString()} </Card.Title>
@@ -685,53 +720,83 @@ export default function VisitDetails() {
           </Card.Header> */}
           <Card.Body>
 
-            <Button variant="green" onClick={handleShow8}>
-              Pay Invoice
-            </Button>
 
-            <Modal show={selectshow} onHide={handleClose8}>
+            <Modal show={showModal} onHide={handleClose8}>
               <Modal.Header closeButton>
-                <Modal.Title>Pay Invoice</Modal.Title>
+                <Modal.Title>Pay Invoice  |  Amount to pay: {invoice.patientAmount} Rwf</Modal.Title>
               </Modal.Header>
               <Modal.Body>
 
              
 
-                <Col xl={6}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Name Here</Form.Label>
-                          <Form.Control
-                            type="text"
-                            className="form-control"
-                            name="example-text-input"
-                            // placeholder="names"
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
-
-
-
-                      <Col xl={6}>
+              {invoice.patientAmount>0?(
+                <>
+                    <Col xl={12}>
                 <Form>
                   <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                    Name Here<br />
+                    Payment method<br />
                     <Select
-                      defaultValue={2}
-                      isMulti
-                      options={option}
-                      placeholder='Choose one'
+                      options={paymentMethods}
+                      placeholder='Select method'
                       classNamePrefix="Select2"
+                      onChange={(e)=>setPaymentMethod(e.value)}
                     />
                   </Form.Group>
                 </Form>
                 </Col>
+
+                {paymentMethod==='INSURANCE_AND_TOP_UP'&&(
+                  <>
+                  <Col xl={12}>
+                  <Form.Group className="form-group">
+                    <Form.Label>Insurance Amount</Form.Label>
+                    <Form.Control
+                      type="number"
+                      value={insuranceAmount}
+                      className="form-control"
+                      name="example-text-input"
+                      // placeholder="names"
+                      onChange={(e) => {
+                        let newValue = parseInt(e.target.value, 10);
+                        // Ensure the value is between 0 and 20
+                        newValue = Math.min(Math.max(newValue, 0), invoice.patientAmount);
+                    
+                        setInsuranceAmount(newValue);
+                        setTopUpAmount(invoice.patientAmount-newValue)
+
+                      }}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+                <Col xl={12}>
+                <Form.Group className="form-group">
+                  <Form.Label>Top Up Amount</Form.Label>
+                  <Form.Control
+                    type="number"
+                    value={topUpAmount}
+                    className="form-control"
+                    name="example-text-input"
+                    // placeholder="names"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              </>
+                )}
+                </>
+              ):(
+                <p>Mark Invoice as paid</p>
+              )}
+
+
+
+                  
                       
               </Modal.Body>
               <Modal.Footer>
-                <Button variant="success">
-                  Pay Now
+                <Button onClick={()=>pay()} variant="success">
+                  {invoice.patientAmount>0?'Pay Now':'Mark as paid'}
                 </Button>
                 <Button variant="danger" onClick={handleClose8}>
                   Cancel
@@ -744,9 +809,9 @@ export default function VisitDetails() {
 
                 {`   
      export default function SelectInside () {   
-      const [selectshow, selectsetShow] = useState(false)
-      const handleClose8 = () => selectsetShow(false)
-      const handleShow8 = () => selectsetShow(true)
+      const [showModal, setShowModal] = useState(false)
+      const handleClose8 = () => setShowModal(false)
+      const handleShow8 = () => setShowModal(true)
 
       const option = [
         { value: 'Firefox', label: 'Firefox' },
@@ -760,7 +825,7 @@ export default function VisitDetails() {
                     View Demo
                   </Button>
 
- <Modal show={selectshow} onHide={handleClose8}>
+ <Modal show={showModal} onHide={handleClose8}>
    <Modal.Header closeButton>
      <Modal.Title>Select2 Modal</Modal.Title>
    </Modal.Header>

@@ -85,5 +85,20 @@ const MenuItems = [
     roles: ['Doctor'],
     condition: false,
   },
+
+  {
+    icon: <i class="side-menu__icon fa fa-file-o"></i>,
+    type: "sub",
+    Name: "",
+    active: false,
+    selected: false,
+    title: "Report",
+    class: "",
+    color: "",
+    badgetxt: "",
+    path: `${import.meta.env.BASE_URL}report`,
+    roles: ['Doctor'],
+    condition: false,
+  },
 ]
 export default MenuItems;

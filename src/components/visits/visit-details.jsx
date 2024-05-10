@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
+import { Button, Card, Col, Form, Modal, Row, Collapse } from "react-bootstrap";
 import { useLocation,useNavigate } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
@@ -50,6 +50,22 @@ export default function VisitDetails() {
   const [axeLeftEye, setAxeLeftEye] = useState("");
   const [lensType, setLensType] = useState("");
   const [dip, setDip] = useState("");
+
+  const [selectshow, selectsetShow] = useState(false)
+  const handleClose8 = () => selectsetShow(false)
+  const handleShow8 = () => selectsetShow(true)
+
+  const [eight, setEight] = useState(false)
+
+
+  const option = [
+    { value: 'Firefox', label: 'Firefox' },
+    { value: 'Chrome', label: 'Chrome' },
+    { value: 'Safari', label: 'Safari' },
+    { value: 'Opera', label: 'Opera' },
+    { value: 'Internet Explorer', label: 'Internet Explorer' }
+  ]
+
 
   const vaColumns = [
     {
@@ -634,6 +650,9 @@ export default function VisitDetails() {
       {invoice&&(
         <Row>
         <Col md={4} xl={4} style={{ marginTop: 20,margin:'auto' }}>
+
+
+
         <Card style={{ minHeight: 180 }}>
             <Card.Header className=" d-flex justify-content-between align-items-center">
               <div className="">
@@ -651,6 +670,144 @@ export default function VisitDetails() {
               <Card.Title>Status: {invoice.paymentStatus}</Card.Title>
             </Card.Body>
           </Card>
+
+
+
+
+
+
+
+          <Col sm={12} md={12} lg={6} xl={4}>
+          
+          {/* <Card.Header>
+            <Card.Title>Select2 Inside Modal</Card.Title>
+            <Form.Check label="show code" type='switch' id="custom-switch" className="ms-auto" onClick={() => { setEight(!eight) }} />
+          </Card.Header> */}
+          <Card.Body>
+
+            <Button variant="green" onClick={handleShow8}>
+              Pay Invoice
+            </Button>
+
+            <Modal show={selectshow} onHide={handleClose8}>
+              <Modal.Header closeButton>
+                <Modal.Title>Pay Invoice</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+
+             
+
+                <Col xl={6}>
+                        <Form.Group className="form-group">
+                          <Form.Label>Name Here</Form.Label>
+                          <Form.Control
+                            type="text"
+                            className="form-control"
+                            name="example-text-input"
+                            // placeholder="names"
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
+
+
+
+                      <Col xl={6}>
+                <Form>
+                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    Name Here<br />
+                    <Select
+                      defaultValue={2}
+                      isMulti
+                      options={option}
+                      placeholder='Choose one'
+                      classNamePrefix="Select2"
+                    />
+                  </Form.Group>
+                </Form>
+                </Col>
+                      
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="success">
+                  Pay Now
+                </Button>
+                <Button variant="danger" onClick={handleClose8}>
+                  Cancel
+                </Button>
+              </Modal.Footer>
+            </Modal> </Card.Body>
+          <Collapse in={eight}>
+            <pre>
+              <code>
+
+                {`   
+     export default function SelectInside () {   
+      const [selectshow, selectsetShow] = useState(false)
+      const handleClose8 = () => selectsetShow(false)
+      const handleShow8 = () => selectsetShow(true)
+
+      const option = [
+        { value: 'Firefox', label: 'Firefox' },
+        { value: 'Chrome', label: 'Chrome' },
+        { value: 'Safari', label: 'Safari' },
+        { value: 'Opera', label: 'Opera' },
+        { value: 'Internet Explorer', label: 'Internet Explorer' }
+      ]
+     return(
+      <Button variant="purple" onClick={handleShow8}>
+                    View Demo
+                  </Button>
+
+ <Modal show={selectshow} onHide={handleClose8}>
+   <Modal.Header closeButton>
+     <Modal.Title>Select2 Modal</Modal.Title>
+   </Modal.Header>
+   <Modal.Body>
+     <Form>
+   <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+        Modal Body<br />
+         <Select
+           defaultValue={2}
+           isMulti
+           options={option}
+           placeholder='Choose one'
+           classNamePrefix="Select"
+         />
+       </Form.Group>
+     </Form>
+     Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
+      aut fugit, sed quia consequuntur magni dolores 
+      eos qui ratione voluptatem sequi nesciunt.
+   </Modal.Body>
+   <Modal.Footer>
+     <Button variant="success">
+       Save Changes
+     </Button>
+     <Button variant="danger" onClick={handleClose8}>
+       Close
+     </Button>
+   </Modal.Footer>
+ </Modal> 
+
+                    )}`}
+              </code>
+            </pre>
+          </Collapse>
+        
+      </Col>
+
+
+
+
+
+
+
+
+
+
+          
         </Col>
       </Row>
       )}

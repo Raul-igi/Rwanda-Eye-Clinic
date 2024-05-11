@@ -6,7 +6,7 @@ import './footer.css'
 export default function Footer () {
   return (
         <Fragment>
-            <footer className="footer backgroundss" >
+            <footer className="footer backgroundss" style={{backgroundColor:"#F4F5F7"}} >
                 <div className="container">
                     <Row className="row align-items-center flex-row-reverse">
                         <Col lg={12} sm={12} className="text-center">

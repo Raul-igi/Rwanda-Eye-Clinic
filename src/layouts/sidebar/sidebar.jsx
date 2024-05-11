@@ -106,7 +106,7 @@ export default function Sidebar() {
     <Fragment>
       <div className="sticky">
         <div
-          className="app-sidebar background"
+          className="app-sidebar backgrounds"
           onMouseOver={() => Onhover()}
           onMouseOut={() => Outhover()}
           // style={{backgroundColor:'#000000'}}
@@ -114,7 +114,7 @@ export default function Sidebar() {
           <PerfectScrollbar
             options={{ suppressScrollX: true, useBothWheelAxes: false }}
           >
-            <div className="side-header"  >
+            <div className="side-header" style={{background:"#FDFEFF"}}>
               {/* <Link className="header-brand1" to={`${import.meta.env.BASE_URL}taskboard`} >
                 <img src={imagesData('media')} className="header-brand-img main-logo" alt="Sparic logo" />
                 <img src={imagesData('media')} className="header-brand-img darklogo" alt="Sparic logo" />

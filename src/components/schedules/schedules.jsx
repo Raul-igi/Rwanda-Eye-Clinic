@@ -6,34 +6,7 @@ import axios from "axios";
 
 import DataTable from "react-data-table-component";
 
-const getTime = (dateString)=>{
-    const date = new Date(dateString);
 
-const hours = ('0' + date.getHours()).slice(-2); // Get the hours and ensure it has leading zero
-const minutes = ('0' + date.getMinutes()).slice(-2); // Get the minutes and ensure it has leading zero
-
-const formattedTime = `${hours}:${minutes}`;
-return formattedTime
-  }
-
-const columns = [
-  {
-    name: "Day",
-    selector: (row) => [row.day],
-    sortable: true,
-  },
-  {
-    name: "Availability",
-    selector: (row) => [row.windows.length>0?'Available':'Not available'],
-    sortable: true,
-  },
-  {
-    name: "Windows",
-    selector: (row) => [row.windows.length>0?row.windows.map(w=> `${getTime(w.startingTime)} to ${getTime(w.endingTime)}`).join(' | '):'-'],
-    sortable: true,
-  },
-
-];
 
 
 
@@ -41,8 +14,9 @@ function Schedules() {
   //useState must be declared between the function and  return   //creating useState is the first step
   const location = useLocation()
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState("");
+  const [updatingWindow, setUpdatingWindow] = useState("");
   const [show, setShow] = useState(false);
+  const [show2, setShow2] = useState(false);
   const [schedules, setSchedules] = useState();
 
   const [mondayAvailability, setMondayAvailability] = useState(false);
@@ -60,8 +34,49 @@ function Schedules() {
   const [fridayWindows, setFridayWindows] = useState([{ start: null, end: null }]);
   const [saturdayWindows, setSaturdayWindows] = useState([{ start: null, end: null }]);
   const [sundayWindows, setSundayWindows] = useState([{ start: null, end: null }]);
+  const [updateWindows, setUpdateWindows] = useState([]);
 
+  const prepopulateWindows = (windows) => {
+    const newWindows = windows? windows.map(w=>{
+      const start = new Date();
+      start.setHours(w.startingTime.split(':')[0]);
+      start.setMinutes(w.startingTime.split(':')[1]);
+      start.setSeconds(0);
+      const end = new Date();
+      end.setHours(w.endingTime.split(':')[0]);
+      end.setMinutes(w.endingTime.split(':')[1]);
+      end.setSeconds(0);
+      return({start:start,end:end})
+    }):[]
+    setUpdateWindows(newWindows)
+  }
+
+  const columns = [
+    {
+      name: "Day",
+      selector: (row) => [row.day],
+      sortable: true,
+    },
+    {
+      name: "Availability",
+      selector: (row) => [row.windows?.length>0?'Available':'Not available'],
+      sortable: true,
+    },
+    {
+      name: "Windows",
+      selector: (row) => [row.windows?.length>0?row.windows.map(w=> `${w.startingTime?.slice(0,5)} to ${w.endingTime?.slice(0,5)}`).join(' | '):'-'],
+      sortable: true,
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+          <div onClick={()=>{prepopulateWindows(row.windows);setShow2(true);setUpdatingWindow(row.day)}} style={{color:'blue',cursor:'pointer'}}>
+          Update {row.day}'s schedule
+        </div>
+      ),
+    },
   
+  ];
 
   const calculateSlots = (startDate, endDate) => {
     // Convert the dates to timestamps
@@ -127,6 +142,31 @@ function Schedules() {
     const newWindows = [...mondayWindows];
     newWindows[index].end = date;
     setMondayWindows(newWindows);
+  };
+
+
+  const addUpdateWindow = () => {
+    const newWindows = [...updateWindows];
+    newWindows.push({ start: null, end: null });
+    setUpdateWindows(newWindows);
+  };
+
+  const removeUpdateWindow = (index) => {
+    const newWindows = [...updateWindows];
+    newWindows.splice(index, 1);
+    setUpdateWindows(newWindows);
+  };
+
+  const handleUpdateStartTime = (index, date) => {
+    const newWindows = [...UpdateWindows];
+    newWindows[index].start = date;
+    setUpdateWindows(newWindows);
+  };
+
+  const handleUpdateEndTime = (index, date) => {
+    const newWindows = [...updateWindows];
+    newWindows[index].end = date;
+    setUpdateWindows(newWindows);
   };
 
   const addTuesdayWindow = () => {
@@ -275,6 +315,35 @@ function Schedules() {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const updateSchedule = async (e) => {
+    //handle submit is the second step
+    e.preventDefault();
+    setLoading(true);
+
+    let my_token = await localStorage.getItem("token");
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${my_token}`
+    };
+    
+    // axios
+    //   .post(`http://www.ubuzima.rw/rec/schedule`,postObj) //declare api Path
+    //   .then((res) => {
+    //     setShow(false);
+    //     if (res.data.status === true) {
+    //       alert("Department Added successfully");
+    //       fetchSchedules();
+    //     } else {
+    //       alert("something went wrong");
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     setLoading(false);
+    //     setShow(false);
+    //     console.log(error.message);
+    //   });
+  };
 
   const handleSubmit = async (e) => {
     //handle submit is the second step
@@ -454,7 +523,7 @@ function Schedules() {
                               timeIntervals={15}
                               timeCaption="Time"
                               placeholderText="Start Time"
-                              dateFormat="h:mm aa"
+                              dateFormat="HH:mm"
                             />
                           </div>
                         </div>
@@ -946,6 +1015,92 @@ function Schedules() {
             </Button>
           </Modal.Footer>
         </Form>
+      </Modal>
+      <Modal show={show2} onHide={()=>setShow2(false)}>
+      <Modal.Header closeButton>
+            <Modal.Title>Update {updatingWindow}'s schedule</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+      {updateWindows.length>0?(
+                  <>
+                  {updateWindows.map((window, index) => (
+                    <Row key={index} style={{marginTop:8}}>
+                      <Col md={4}>
+                        <div className="input-group time-limit">
+                          <div className="input-group-text">
+                            <i className="typcn typcn-stopwatch tx-24 lh--9 op-6"></i>
+                          </div>
+                          <div>
+                            <DatePicker
+                              selected={window.start}
+                              onChange={(date) =>
+                                handleUpdateStartTime(index, date)
+                              }
+                              showTimeSelect
+                              showTimeSelectOnly
+                              timeIntervals={15}
+                              timeCaption="Time"
+                              placeholderText={window.start}
+                              dateFormat="HH:mm"
+                            />
+                          </div>
+                        </div>
+                      </Col>
+                      <Col md={4}>
+                        <div className="input-group time-limit">
+                          <div className="input-group-text">
+                            <i className="typcn typcn-stopwatch tx-24 lh--9 op-6"></i>
+                          </div>
+                          <div>
+                            <DatePicker
+                              selected={window.end}
+                              onChange={(date) =>
+                                handleUpdateEndTime(index, date)
+                              }
+                              showTimeSelect
+                              showTimeSelectOnly
+                              timeIntervals={15}
+                              timeCaption="Time"
+                              placeholderText={window.end}
+                              dateFormat="HH:mm"
+                            />
+                          </div>
+                        </div>
+                      </Col>
+                      <Col md={2}>
+                        <Button onClick={() => removeUpdateWindow(index)}>
+                          Remove
+                        </Button>
+                      </Col>
+                    </Row>
+                  ))}
+                  <div
+                    style={{ color: "#0096c7", cursor: "pointer",margin:10 }}
+                    onClick={addUpdateWindow}
+                  >
+                    + Add Window
+                  </div>
+                  </>
+                  ):(
+                  <div>
+                    <p>Unavailable</p>
+                  <div
+                    style={{ color: "#0096c7", cursor: "pointer",margin:10 }}
+                    onClick={addUpdateWindow}
+                  >
+                    + Add Window
+                  </div>
+                  </div>
+                  )}
+                  </Modal.Body>
+                  <Modal.Footer>
+            <Button type="submit" variant="primary" onClick={updateSchedule}>
+              Submit
+            </Button>
+            <Button variant="secondary" onClick={()=>setShow2(false)}>
+              Close
+            </Button>
+          </Modal.Footer>
       </Modal>
     </div>
   );

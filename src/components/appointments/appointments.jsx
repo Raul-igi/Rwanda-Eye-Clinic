@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link, json } from "react-router-dom";
 import {
   Card,
   Col,
@@ -7,82 +6,85 @@ import {
   Button,
   Form,
   Modal,
-  InputGroup,
-  Dropdown,
-  ButtonGroup,
 } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 
 
-const columns = [
-  {
-    name: "Names",
-    selector: (row) => [`${row.doctor?.firstName} ${row.doctor?.lastName}`],
-    sortable: true,
-  },
-  {
-    name: "Day ID",
-    selector: (row) => [row.dayId],
-    sortable: true,
-  },
-  {
-    name: "Doctor ID",
-    selector: (row) => [row.doctorId],
-    sortable: true,
-  },
 
-  {
-    name: " Starting Time",
-    selector: (row) => [row.startingTime],
-    sortable: true,
-  },
-  {
-    name: "Patient ID",
-    selector: (row) => [row.patientId],
-    sortable: true,
-  },
-  {
-    name: "Names",
-    selector: (row) => [row.names],
-    sortable: true,
-  },
-  {
-    name: "Phone Number",
-    selector: (row) => [row.phoneNumber],
-    sortable: true,
-  },
-  
-];
 
 function Appointments() {
+  const location = useLocation()
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
-
   const [doctorId, setDoctorId] = useState([]);
-  const [selectedDoctorId,setSelectedDoctorId] =useState([]);
-
-  const [dayId, setDayId] = useState("");
   const [scheduleDayId,setscheduleDayId] =useState("");
   const [schedulesDayId,setschedulesDayId] =useState("");
-
-
   const [startingTime, setStartingTime] = useState("");
   const [patientId, setPatientId] = useState("");
   const [names, setNames] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-
-  const [Appointments, setAppointments] = useState();
+  const [Appointments, setAppointments] = useState([]);
   const [Appointments_, setAppointments_] = useState();
   const [show, setShow] = useState(false);
-
-
   const [allDoctors, setAllDoctors] = useState([]);
-  const [allDayId, setallDayId]= useState([]);
-
-  const [patients_, setPatients_] = useState("");
   const [patients, setPatients] = useState("");
+
+
+  const columns = [
+    {
+      name: "Doctor names",
+      selector: (row) => [`${row.doctor?.firstName} ${row.doctor?.lastName}`],
+      sortable: true,
+    },
+    {
+      name: "Patient names",
+      selector: (row) => [row.names],
+      sortable: true,
+    },
+    {
+      name: "Day",
+      selector: (row) => [row.day],
+      sortable: true,
+    },
+    {
+      name: " Starting Time",
+      selector: (row) => [row.startingTime],
+      sortable: true,
+    },
+    {
+      name: " End Time",
+      selector: (row) => [row.endingTime],
+      sortable: true,
+    },
+    {
+      name: "Patient's number",
+      selector: (row) => [row.patientNumber || '-'],
+      sortable: true,
+    },
+    {
+      name: "Doctor's number",
+      selector: (row) => [row.phoneNumber],
+      sortable: true,
+    },
+    {
+      name: "Status",
+      selector: (row) => [row.state],
+      sortable: true,
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+        row.state==='ACTIVE'?
+          <div onClick={()=>{if(window.confirm('Do you really want to cancel this appointment?')){cancelAppointment(row.id)}}} style={{color:'red',cursor:'pointer'}}>
+          Cancel
+        </div>:'-'
+      ),
+    },
+    
+  ];
  
 
   const searchUser = (value) => {
@@ -139,26 +141,78 @@ function Appointments() {
       });
   };
 
-  const fetchAppointments = async () => {
+  const cancelAppointment = async (id) => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
-        // "doctorId":location.state.data.doctor.id
-        doctorId : doctorId,
+        "Authorization": `Bearer ${my_token}`,
+        "bookingId": id
       },
     };
 
     try {
-      const response = await axios.get(
-        `http://www.ubuzima.rw/rec/schedule/booking/doctor`,
-        config
-      );
-      setAppointments(response.data.response);
-      // console.log(response.data);
-      setAppointments_(response.data.response);
-      // fetchAppointments();
+        
+        const response = await axios.post(
+          `http://www.ubuzima.rw/rec/schedule/cancel-booking`,
+          {},
+          config
+        );
+        if(response.data.status){
+          alert('Appointment cancelled!')
+        }
+        else{
+          alert('Something wrong!')
+        }
+      
+    } catch (error) {
+      console.error("Error fetching payrolls:", error);
+    }
+  };
+
+  const fetchAppointments = async () => {
+    let my_token = localStorage.getItem("token");
+    
+
+    try {
+      if(location.state?.data?.page==='doctor'){
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${my_token}`,
+            "doctorId":location.state.data.doctorId
+          },
+        };
+        const response = await axios.get(
+          `http://www.ubuzima.rw/rec/schedule/booking/doctor`,
+          config
+        );
+        if(response.data.status){
+          setAppointments(response.data.response);
+        setAppointments_(response.data.response);
+        }else{
+          console.log(response.data.message)
+        }
+        
+      }else{
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${my_token}`,
+          },
+        };
+        const response = await axios.get(
+          `http://www.ubuzima.rw/rec/schedule/booking/all`,
+          config
+        );
+        if(response.data.status){
+          setAppointments(response.data.response);
+        setAppointments_(response.data.response);
+        }else{
+          console.log(response.data.message)
+        }
+      }
+      
     } catch (error) {
       console.error("Error fetching payrolls:", error);
     }
@@ -224,28 +278,6 @@ function Appointments() {
       });
   };
 
-  // const fetchPatients = async () => {
-  //   let my_token = localStorage.getItem("token");
-  //   const config = {
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${my_token}`,
-  //     },
-  //   };
-
-  //   try {
-  //     const response = await axios.get(
-  //       `http://www.ubuzima.rw/rec/patient`,
-  //       config
-  //     );
-  //     setPatients_(response.data.response);
-  //     setPatients(response.data.response);
-  //   } catch (error) {
-  //     console.error("Error fetching payrolls:", error);
-  //   }
-  // };
-
-
 
   const fetchPatients = async () => {
     let my_token = await localStorage.getItem("token");
@@ -286,7 +318,7 @@ function Appointments() {
         <Col lg={12}>
           <Card>
             <Card.Header className="d-flex justify-content-between align-items-center">
-              <Card.Title>Appointments</Card.Title>
+              <Card.Title>{location.state?.data?.doctorNames&&`${location.state?.data?.doctorNames}'s`} Appointments</Card.Title>
               <Row>
                 <Col>
                   <input
@@ -316,45 +348,6 @@ function Appointments() {
           </Modal.Header>
           <Modal.Body>
             <Row>
-              
-
-              {/* <Col xl={6} style={{ marginTop: 10 }}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Doctor ID</Form.Label>
-                          <Select
-                            options={allDoctors}
-                            onChange={(e) => setDoctorId(e.value)}
-                            classNamePrefix="Select2"
-                            className="multi-select"
-                            placeholder="doctor id"
-                            required
-                          />
-                        </Form.Group>
-                      </Col> */}
-
-
-
-
-
-                      {/* <Col xl={6} style={{ marginTop: 10 }}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Doctor ID</Form.Label>
-                          <Select
-                            options={allDoctors}
-                            onChange={(e) => {
-                              setSelectedDoctorId(e.value);
-                              fetchDayId(e.value);
-                              // resetDayId();
-                            }}
-                            value={selectedDoctorId}
-                            classNamePrefix="Select2"
-                            className="multi-select"
-                            // placeholder="Select them"
-                            required
-                          />
-                        </Form.Group>
-                      </Col> */}
-
 
 
 
@@ -371,30 +364,6 @@ function Appointments() {
                   />
                 </Form.Group>
               </Col>
-
-
-              
-                {/* <Col xl={6} style={{ marginTop: 10 }}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Day ID</Form.Label>
-                          <Select
-                            options={dayId}
-                            onChange={(e) => {
-                              setscheduleDayId(e);
-                              fetchDayId(e.value);
-                              resetDayId();
-                            }}
-                            value={scheduleDayId}
-                            classNamePrefix="Select2"
-                            className="multi-select"
-                            // placeholder="Select them"
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
-                      */}
-
-
 
                       <Col lg={6}>
                 <Form.Group className="form-group">
@@ -428,26 +397,6 @@ function Appointments() {
                   />
                 </Form.Group>
               </Col>
-
-
-
-              {/* <Col lg={6} style={{ marginTop: 10 }}>
-                <Form.Group>
-                  <Form.Label>Patient ID</Form.Label>
-                  <Form.Control
-                    type="email"
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="patient id"
-                    onChange={(e) => setPatientId(e.target.value)}
-                    required
-                  />
-                </Form.Group>
-              </Col> */}
-
-
-
-
 
 
               <Col lg={6}>

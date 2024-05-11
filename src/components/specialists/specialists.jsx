@@ -36,14 +36,27 @@ const columns = [
   {
     name: "Actions",
     cell: (row) => (
-      <Link
+       <div>
+        <Link
         to="/schedules"
         state={{
           data:{doctor:row.doctor}
         }}
       >
-        View schedules
+        Schedules
       </Link>
+
+        <Link
+        to="/appointments"
+        style={{marginLeft:15}}
+        state={{
+          data:{page:'doctor',doctorId:row.doctor?.id,doctorNames:`${row.doctor?.firstName} ${row.doctor?.lastName}`}
+        }}
+      >
+        Appointments
+      </Link>
+      </div>
+      
     ),
   },
 

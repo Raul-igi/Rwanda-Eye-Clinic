@@ -128,7 +128,7 @@ function Appointments() {
         // console.log(res.data)
         setShow(false);
         if (res.data.status === true) {
-          alert("User Added successfully");
+          alert("Appointment Added successfully");
           fetchAppointments();
         } else {
           alert(res.data.message);

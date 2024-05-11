@@ -67,14 +67,14 @@ function Schedules() {
       selector: (row) => [row.windows?.length>0?row.windows.map(w=> `${w.startingTime?.slice(0,5)} to ${w.endingTime?.slice(0,5)}`).join(' | '):'-'],
       sortable: true,
     },
-    {
-      name: "Actions",
-      cell: (row) => (
-          <div onClick={()=>{prepopulateWindows(row.windows);setShow2(true);setUpdatingWindow(row.day)}} style={{color:'blue',cursor:'pointer'}}>
-          Update {row.day}'s schedule
-        </div>
-      ),
-    },
+    // {
+    //   name: "Actions",
+    //   cell: (row) => (
+    //       <div onClick={()=>{prepopulateWindows(row.windows);setShow2(true);setUpdatingWindow(row.day)}} style={{color:'blue',cursor:'pointer'}}>
+    //       Update {row.day}'s schedule
+    //     </div>
+    //   ),
+    // },
   
   ];
 

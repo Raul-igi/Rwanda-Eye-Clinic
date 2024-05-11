@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
-import {Link} from 'react-router-dom'
-import {
-  Card,
-  Col,
-  Row,
-  Button,
-  Form,
-  Modal,
-} from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { Card, Col, Row, Button, Form, Modal } from "react-bootstrap";
 import Select from "react-select";
 import axios from "axios";
 import { ECaseType, EVisitType } from "../../data/elementsdata";
 
-import { Document, Page, Text, View, StyleSheet, PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
-import './report.css'
-
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  PDFViewer,
+  PDFDownloadLink,
+} from "@react-pdf/renderer";
+import "./report.css";
 
 const columns = [
   {
@@ -78,19 +78,46 @@ function Report() {
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
 
-  const [startDate, setStartDate] =useState("");
-  const [endDate,setEndDate] =useState("");
-  const [reports,setReports] =useState("");
-  
-  
+  const [reportType, setReportType] = useState("");
+  const [date, setDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [reports, setReports] = useState([]);
+  const [insurances, setInsurances] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [insurance, setInsurance] = useState("");
+  const [doctor, setDoctor] = useState("");
+
   const [show, setShow] = useState(false);
-
-
-  
-
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const fetchAllDoctors = async () => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/medical/doctors`,
+        config
+      );
+
+      const allDoctors_ = response.data.response.map((el) => {
+        return { label: `${el.firstName} ${el.lastName}`, value: el.id };
+      });
+      setDoctors(allDoctors_);
+    } catch (error) {
+      console.error(error);
+
+      console.log(response.data);
+    }
+  };
 
   const handleSubmit = async (e) => {
     //handle submit is the second step
@@ -128,41 +155,133 @@ function Report() {
       });
   };
 
-
-
-    const fetchReports = async () => {
-      let my_token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${my_token}`,
-          startDate:startDate,
-          endDate:endDate,
-        },
-      };
-
-      try {
-        const response = await axios.get(
-          `http://www.ubuzima.rw/rec/report/range`,
-          config
-        );
-        const reports_=response.data.response.map(el=>{return({
-          doctorNames:`${el.doctor?.firstName} ${el.doctor?.lastName}`,
-          doctorPhone:el.doctor?.phoneNumber,
-          paymentMethod:el.paymentMethod,
-          paidAmaount:el.amount,
-          paymentDate:el.paymentDate,
-          insurance:el.insurance.name,
-          topUpAmount:el.topUpAmount||0
-        })})
-
-        setReports(reports_);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching payrolls:", error);
-      }
+  const fetchInsurances = async () => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
     };
 
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/patient/insurances`,
+        config
+      );
+      const insurances_ = response.data.response.map((el) => {
+        return {
+          label: el.name,
+          value: el.id,
+        };
+      });
+      setInsurances(insurances_);
+    } catch (error) {
+      console.error("Error fetching payrolls:", error);
+    }
+  };
+
+  const fetchReports = async () => {
+    let my_token = localStorage.getItem("token");
+    let url;
+    let config;
+
+    if(reportType==='DATE_RANGE'){
+      config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${my_token}`,
+          startDate: startDate,
+          endDate: endDate,
+        },
+      };
+      url = `http://www.ubuzima.rw/rec/report/range`
+    }
+    if(reportType==='INSURANCE_RANGE'){
+      config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${my_token}`,
+          startDate: startDate,
+          endDate: endDate,
+          insuranceId:insurance
+        },
+      };
+      url = `http://www.ubuzima.rw/rec/report/insurance-range`
+    }
+    if(reportType==='INSURANCE_DATE'){
+      config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${my_token}`,
+          date: date,
+          insuranceId:insurance
+        },
+      };
+      url = `http://www.ubuzima.rw/rec/report/insurance-date`
+    }
+    if(reportType==='DOCTOR_RANGE'){
+      config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${my_token}`,
+          startDate: startDate,
+          endDate: endDate,
+          doctorId:doctor
+        },
+      };
+      url = `http://www.ubuzima.rw/rec/report/doctor-range`
+    }
+    if(reportType==='DOCTOR_DATE'){
+      config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${my_token}`,
+          date: date,
+          doctorId:doctor
+        },
+      };
+      url = `http://www.ubuzima.rw/rec/report/doctor-date`
+    }
+    if(reportType==='DATE'){
+      config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${my_token}`,
+          date: date
+        },
+      };
+      url = `http://www.ubuzima.rw/rec/report/date`
+    }
+
+    try {
+      const response = await axios.get(
+        url,
+        config
+      );
+      const reports_ = response.data.response.map((el) => {
+        return {
+          doctorNames: `${el.doctor?.firstName} ${el.doctor?.lastName}`,
+          doctorPhone: el.doctor?.phoneNumber,
+          paymentMethod: el.paymentMethod,
+          paidAmaount: el.amount,
+          paymentDate: el.paymentDate,
+          insurance: el.insurance.name,
+          topUpAmount: el.topUpAmount || 0,
+        };
+      });
+
+      setReports(reports_);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching payrolls:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchInsurances();
+    fetchAllDoctors();
+  }, []);
 
   return (
     <div>
@@ -172,37 +291,23 @@ function Report() {
             <Card.Header className="d-flex justify-content-between align-items-center">
               <Card.Title>Report</Card.Title>
               <Row>
-              <Col>
-
-
-
-
-
-
-
-
-              <div>
-      {reports ? (
-        <PDFDownloadLink document={<PDFDocument reports={reports} />} fileName="data.pdf">
-          {({ blob, url, loading, error }) =>
-            loading ? 'Loading document...' : 'Download PDF'
-          }
-        </PDFDownloadLink>
-      ) : (
-        <p></p>
-      )}
-    </div>
-
-
-
-
-
-
-
-
-                  
+                <Col>
+                  <div>
+                    {reports ? (
+                      <PDFDownloadLink
+                        document={<PDFDocument reports={reports} />}
+                        fileName="data.pdf"
+                      >
+                        {({ blob, url, loading, error }) =>
+                          loading ? "Loading document..." : "Download PDF"
+                        }
+                      </PDFDownloadLink>
+                    ) : (
+                      <p></p>
+                    )}
+                  </div>
                 </Col>
-                
+
                 <Col>
                   <Button variant="primary" onClick={handleShow}>
                     Generate Report
@@ -219,40 +324,118 @@ function Report() {
       <Modal show={show} onHide={handleClose}>
         <Form onSubmit={handleSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>Report Range</Modal.Title>
+            <Modal.Title>Report</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Row>
-            
-            <Col lg={6} style={{ marginTop: 10 }}>
-                <Form.Group>
-                  <Form.Label>start Date</Form.Label>
-                  <Form.Control
-                    type="date"
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="starting time"
-                    onChange={(e) => setStartDate(e.target.value)}
+              <Col lg={12}>
+                <Form.Group className="form-group">
+                  <Form.Label>Select report type</Form.Label>
+                  <Select
+                    className="basic-single"
+                    options={[
+                      { value: "DATE_RANGE", label: "Date range" },
+                      {
+                        value: "INSURANCE_RANGE",
+                        label: "Insurance date range",
+                      },
+                      { value: "INSURANCE_DATE", label: "Insurance date" },
+                      { value: "DOCTOR_RANGE", label: "Doctor date range" },
+                      { value: "DOCTOR_DATE", label: "Doctor date" },
+                      { value: "DATE", label: "By date" },
+                    ]}
+                    onChange={(e) => setReportType(e.value)}
+                    classNamePrefix="Select2"
+                    placeholder="Select them"
                     required
                   />
                 </Form.Group>
               </Col>
+              {(reportType === "DATE_RANGE" ||
+                reportType === "INSURANCE_RANGE" ||
+                reportType === "DOCTOR_RANGE") && (
+                <>
+                  <Col lg={6} style={{ marginTop: 10 }}>
+                    <Form.Group>
+                      <Form.Label>start Date</Form.Label>
+                      <Form.Control
+                        type="date"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="starting time"
+                        onChange={(e) => setStartDate(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
 
-              <Col lg={6} style={{ marginTop: 10 }}>
-                <Form.Group>
-                  <Form.Label>End Date</Form.Label>
-                  <Form.Control
-                    type="date"
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="starting time"
-                    onChange={(e) => setEndDate(e.target.value)}
-                    required
-                  />
-                </Form.Group>
-              </Col>
+                  <Col lg={6} style={{ marginTop: 10 }}>
+                    <Form.Group>
+                      <Form.Label>End Date</Form.Label>
+                      <Form.Control
+                        type="date"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="starting time"
+                        onChange={(e) => setEndDate(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                </>
+              )}
 
+              {(reportType === "INSURANCE_RANGE" ||
+                reportType === "INSURANCE_DATE") && (
+                <Col lg={6}>
+                  <Form.Group className="form-group">
+                    <Form.Label>Select Insurance</Form.Label>
+                    <Select
+                      className="basic-single"
+                      options={insurances}
+                      onChange={(e) => setInsurance(e.value)}
+                      classNamePrefix="Select2"
+                      placeholder="Select them"
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+              )}
 
+              {(reportType === "DOCTOR_RANGE" ||
+                reportType === "DOCTOR_DATE") && (
+                <Col lg={6}>
+                  <Form.Group className="form-group">
+                    <Form.Label>Select Doctor</Form.Label>
+                    <Select
+                      className="basic-single"
+                      options={doctors}
+                      onChange={(e) => setDoctor(e.value)}
+                      classNamePrefix="Select2"
+                      placeholder="Select them"
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+              )}
+
+              {(reportType === "INSURANCE_DATE" ||
+                reportType === "DOCTOR_DATE" ||
+                reportType === "DATE") && (
+                <Col lg={6}>
+                  <Form.Group className="form-group">
+                    <Form.Label>Select Date</Form.Label>
+                    <Form.Control
+                      type="date"
+                      className="form-control"
+                      name="example-text-input"
+                      placeholder="starting time"
+                      onChange={(e) => setDate(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+              )}
             </Row>
           </Modal.Body>
           <Modal.Footer>
@@ -268,10 +451,6 @@ function Report() {
     </div>
   );
 }
-
-
-
-
 
 const PDFDocument = ({ reports }) => (
   <Document>
@@ -332,43 +511,38 @@ const PDFDocument = ({ reports }) => (
 
 const styles = StyleSheet.create({
   page: {
-    flexDirection: 'column',
+    flexDirection: "column",
     padding: 20,
   },
   table: {
-    display: 'table',
-    width: 'auto',
-    borderStyle: 'solid',
+    display: "table",
+    width: "auto",
+    borderStyle: "solid",
     borderWidth: 1,
-    borderColor: '#bfbfbf',
+    borderColor: "#bfbfbf",
   },
   tableRow: {
-    flexDirection: 'row',
-    backgroundColor: '#f2f2f2',
+    flexDirection: "row",
+    backgroundColor: "#f2f2f2",
   },
   tableHeader: {
     width: 100,
-    borderStyle: 'solid',
+    borderStyle: "solid",
     borderWidth: 1,
-    borderColor: '#bfbfbf',
+    borderColor: "#bfbfbf",
     padding: 5,
   },
   tableCell: {
     width: 100,
-    borderStyle: 'solid',
+    borderStyle: "solid",
     borderWidth: 1,
-    borderColor: '#bfbfbf',
+    borderColor: "#bfbfbf",
     padding: 5,
   },
   heading: {
-    fontWeight: 'bold',
-    fontSize:10
+    fontWeight: "bold",
+    fontSize: 10,
   },
 });
-
-
-
-
-
 
 export default Report;

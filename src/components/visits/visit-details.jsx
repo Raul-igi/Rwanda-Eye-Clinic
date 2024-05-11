@@ -371,16 +371,19 @@ export default function VisitDetails() {
         "Authorization": `Bearer ${my_token}`,
       },
     };
-    const paymentDto = JSON.stringify({
+    var paymentDto = {
       invoiceNumber:invoice.invoiceNumber,
       paymentMethod,
       amount: invoice.patientAmount,
-      topUpAmount
-    })
+    }
+    if(topUpAmount>0){
+      paymentDto.topUpAmount = topUpAmount
+    }
     console.log(paymentDto);
     try {
-      const response = await axios.get(
-        `http://www.ubuzima.rw/rec/invoice/pay?paymentDto=${paymentDto}`,
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/invoice/pay`,
+        JSON.stringify(paymentDto),
         config
       );
       setShowModal(false);
@@ -691,9 +694,11 @@ export default function VisitDetails() {
               
                 <Card.Title>
                   Invoice Number: {invoice.invoiceNumber}
-                  <Button style={{marginLeft:50}} variant="green" onClick={handleShow8}>
-              Pay Invoice
-            </Button>
+                  {invoice.paymentStatus=='NOT_PAID'&&(
+                    <Button style={{marginLeft:50}} variant="green" onClick={handleShow8}>
+                    Pay Invoice
+                  </Button>
+                  )}
                 </Card.Title>
                
             </Card.Header>
@@ -702,7 +707,7 @@ export default function VisitDetails() {
               <Card.Title>Insurer Amount: Rwf {invoice.insurerAmount.toLocaleString()}</Card.Title>
               <Card.Title>Patient Amount: Rwf {invoice.patientAmount.toLocaleString()}</Card.Title>
               <Card.Title>Remaining Amount: Rwf {invoice.remainingAmount.toLocaleString()}</Card.Title>
-              <Card.Title>Status: {invoice.paymentStatus}</Card.Title>
+              <Card.Title style={{color:invoice.paymentStatus=='NOT_PAID'?'red':'green'}}>Status: {invoice.paymentStatus}</Card.Title>
             </Card.Body>
           </Card>
 

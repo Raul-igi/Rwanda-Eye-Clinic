@@ -5,6 +5,7 @@ import {  Container, Dropdown, Form, InputGroup, Navbar } from 'react-bootstrap'
 
 import axios from 'axios'
 import { imagesData } from '../../common/commomimages/imagedata'
+import './header.css'
 
 
 
@@ -99,8 +100,8 @@ const SideMenuIcon = () => {
         <Fragment>
 
            
-            <div className="app-header header sticky" style={{ marginBottom: '-70.7812px', backgroundColor:'#dee2e6', }}>
-                <Container fluid className=" main-container">
+            <div className="app-header header sticky backgrounds" style={{ marginBottom: '-70.7812px' }}>
+                <Container fluid className=" main-container ">
                     <div className="d-flex">
                         <Link aria-label="Hide Sidebar" className="app-sidebar__toggle" data-bs-toggle="sidebar"
                        

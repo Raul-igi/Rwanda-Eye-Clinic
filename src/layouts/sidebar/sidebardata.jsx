@@ -87,7 +87,7 @@ const MenuItems = [
   },
 
   {
-    icon: <i class="side-menu__icon fa fa-file-o"></i>,
+    icon: <i class="side-menu__icon fa fa-file"></i>,
     type: "sub",
     Name: "",
     active: false,

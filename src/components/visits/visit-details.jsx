@@ -690,7 +690,7 @@ export default function VisitDetails() {
             </Button>
 
             <Modal show={selectshow} onHide={handleClose8}>
-              <Modal.Header closeButton>
+              <Modal.Header closeButton >
                 <Modal.Title>Pay Invoice</Modal.Title>
               </Modal.Header>
               <Modal.Body>

@@ -8,6 +8,7 @@ import { Badge } from "react-bootstrap";
 import { imagesData } from "../../common/commomimages/imagedata";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MenuItems from "./sidebardata";
+import './sidebar.css'
 
 
 
@@ -105,15 +106,15 @@ export default function Sidebar() {
     <Fragment>
       <div className="sticky">
         <div
-          className="app-sidebar"
+          className="app-sidebar background"
           onMouseOver={() => Onhover()}
           onMouseOut={() => Outhover()}
-          style={{backgroundColor:'#f7f5fb'}}
+          // style={{backgroundColor:'#000000'}}
         >
           <PerfectScrollbar
             options={{ suppressScrollX: true, useBothWheelAxes: false }}
           >
-            <div className="side-header" style={{backgroundColor:'#dee2e6'}}>
+            <div className="side-header"  >
               {/* <Link className="header-brand1" to={`${import.meta.env.BASE_URL}taskboard`} >
                 <img src={imagesData('media')} className="header-brand-img main-logo" alt="Sparic logo" />
                 <img src={imagesData('media')} className="header-brand-img darklogo" alt="Sparic logo" />

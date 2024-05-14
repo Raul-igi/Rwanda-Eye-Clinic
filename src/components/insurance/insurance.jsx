@@ -39,17 +39,17 @@ function Insurance() {
   const [insurances_, setInsurances_] = useState();
   // const [roles, setRoles] = useState([]);
 
-  const searchUser = (value) => {
+  const searchInsurances = (value) => {
     if (value === "") {
-      fetchInsurance(); // Reset to the original list of projects
+      fetchInsurances(); // Reset to the original list of projects
     } else {
       const filteredinsurances = insurances_.filter((user) => {
-        const userNameLowercase = (user.names + user.email).toLowerCase();
+        const userNameLowercase = (user.name).toLowerCase();
         const searchTermLowercase = value.toLowerCase();
         return userNameLowercase.includes(searchTermLowercase);
       });
 
-      setinsurances(filteredinsurances);
+      setInsurances(filteredinsurances);
     }
   };
 
@@ -141,7 +141,7 @@ function Insurance() {
                     type="text"
                     placeholder="Search..."
                     className="form-control"
-                    onChange={(e) => searchUser(e.target.value)}
+                    onChange={(e) => searchInsurances(e.target.value)}
                   />
                 </Col>
                 <Col>

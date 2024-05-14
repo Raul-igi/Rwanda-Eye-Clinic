@@ -64,7 +64,7 @@ function AccessControl() {
       fetchUsers(); // Reset to the original list of projects
     } else {
       const filteredUsers = users_.filter((user) => {
-        const userNameLowercase = (user.names + user.email).toLowerCase();
+        const userNameLowercase = (user.firstName + user.lastName + user.email + user.phoneNumber + user.roles ).toLowerCase();
         const searchTermLowercase = value.toLowerCase();
         return userNameLowercase.includes(searchTermLowercase);
       });

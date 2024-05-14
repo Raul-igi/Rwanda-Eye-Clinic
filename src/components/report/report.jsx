@@ -214,7 +214,7 @@ function Report() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${my_token}`,
-          selectedDate: date,
+          date: date,
           insuranceId:insurance
         },
       };
@@ -237,7 +237,7 @@ function Report() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${my_token}`,
-          selectedDate: date,
+          date: date,
           doctorId:doctor
         },
       };
@@ -248,7 +248,7 @@ function Report() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${my_token}`,
-          selectedDate: date
+          date: date
         },
       };
       url = `http://www.ubuzima.rw/rec/report/date`
@@ -293,13 +293,13 @@ function Report() {
               <Row>
                 <Col>
                   <div>
-                    {reports ? (
+                    {reports.length>0 ? (
                       <PDFDownloadLink
                         document={<PDFDocument reports={reports} />}
                         fileName="data.pdf"
                       >
                         {({ blob, url, loading, error }) =>
-                          loading ? "Loading document..." : "Download PDF"
+                          loading ? "Loading document..." : <Button>Download PDF</Button>
                         }
                       </PDFDownloadLink>
                     ) : (

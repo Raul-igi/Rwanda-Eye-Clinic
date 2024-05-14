@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link, json } from "react-router-dom";
 import {
   Card,
   Col,
@@ -7,71 +6,13 @@ import {
   Button,
   Form,
   Modal,
-  InputGroup,
-  Dropdown,
-  ButtonGroup,
 } from "react-bootstrap";
 import Select from "react-select";
 import axios from "axios";
-import {
-  BasicProvince,
-  BasicDistrict,
-  BasicSectors,
-  BasicCell,
-  membershipTypes,
-} from "../../data/elementsdata";
+import {membershipTypes} from "../../data/elementsdata";
 import DataTable from "react-data-table-component";
 
-import {
-  DataTabless,
-  ExportCSV,
-  ResponsiveDataTable,
-} from "../tables/datatables/data/responsivedatatable";
-
-const columns = [
-  {
-    name: "Names",
-    selector: (row) => [row.names],
-    sortable: true,
-  },
-  // {
-  //   name: "Insurance",
-  //   selector: (row) => [row.insuranceId],
-  //   sortable: true,
-  // },
-  {
-    name: " Email",
-    selector: (row) => [row.email],
-    sortable: true,
-  },
-  {
-    name: "Phone Number",
-    selector: (row) => [row.phoneNumber],
-    sortable: true,
-  },
-  {
-    name: "Gender",
-    selector: (row) => [row.gender],
-    sortable: true,
-  },
-
-  {
-    name: "Date of Birth",
-    selector: (row) => [row.dob],
-    sortable: true,
-  },
-];
-
-// const headers = [
-//   { label: "Task Name", key: "name" },
-//   { label: "Creator", key: "created_by" },
-//   { label: "assignees", key: "assignees" },
-//   { label: "projects", key: "projects" },
-//   { label: "start_date", key: "start_date" },
-//   { label: "end_date", key: "end_date" },
-//   { label: "gender", key: "gender" },
-//   { label: "description", key: "description" },
-// ];
+import { ECaseType, EVisitType } from "../../data/elementsdata";
 
 
 function Patients() {
@@ -109,13 +50,90 @@ function Patients() {
   const [employer, setemployer] = useState("");
   const [expiryDate, setexpiryDate] = useState("");
   const [show, setShow] = useState(false);
+  const [show2, setShow2] = useState(false);
   const [selectedAssignees, setSelectedAssignees] = useState([]);
+
+  const [patientsInsurances, setPatientsInsurances] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [department, setDepartment] = useState([]);
+  const [caseType, setCaseType] = useState("");
+  const [patientInsuranceId, setPatientInsuranceId] = useState("");
+  const [visitType, setVisitType] = useState("");
+  const [doctors, setDoctors] = useState([]);
+  const [doctorId, setDoctorId] = useState("");
+
+  const columns = [
+    {
+      name: "Names",
+      selector: (row) => [row.names],
+      sortable: true,
+    },
+    // {
+    //   name: "Insurance",
+    //   selector: (row) => [row.insuranceId],
+    //   sortable: true,
+    // },
+    {
+      name: " Email",
+      selector: (row) => [row.email],
+      sortable: true,
+    },
+    {
+      name: "Phone Number",
+      selector: (row) => [row.phoneNumber],
+      sortable: true,
+    },
+    {
+      name: "Gender",
+      selector: (row) => [row.gender],
+      sortable: true,
+    },
+
+    {
+      name: "Date of Birth",
+      selector: (row) => [row.dob],
+      sortable: true,
+    },
+
+    {
+      name: "Actions",
+      cell: (row) => (
+        <div
+          onClick={() => {
+            setShow2(true);
+            fetchPatientsInsuranceID(row.id);
+            setpatientId(row.id);
+          }}
+          style={{ color: "#2D6CC5", cursor: "pointer" }}
+        >
+          Add visit
+        </div>
+      ),
+    },
+  ];
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const searchPatients = (value) => {
+    if (value === "") {
+      fetchPatients(); // Reset to the original list of projects
+    } else {
+      const filteredPatients = patients_.filter((user) => {
+        const userNameLowercase = (
+          user.names +
+          user.email +
+          user.gender +
+          user.phoneNumber +
+          user.dob
+        ).toLowerCase();
+        const searchTermLowercase = value.toLowerCase();
+        return userNameLowercase.includes(searchTermLowercase);
+      });
 
-
+      setPatients(filteredPatients);
+    }
+  };
 
   const handleSubmit = async (e) => {
     //handle submit is the second step
@@ -132,8 +150,9 @@ function Patients() {
       contactPersonPhoneNumber: contactPersonPhoneNumber,
       locationId: selectedVillage.value,
       status: "INDIGENT",
-      patientInsuranceDto: {
-        insuranceId: insuranceId,
+      patientInsuranceDto: insuranceId?.label?.toLowerCase()==='private'?null:
+      {
+        insuranceId: insuranceId?.value,
         affiliationCardNumber: affiliationCardNumber,
         membershipType: membershipType,
         principalNames: principalNames,
@@ -167,7 +186,6 @@ function Patients() {
         console.log(error.message);
       });
   };
-  
 
   const fetchPatients = async () => {
     let my_token = localStorage.getItem("token");
@@ -190,13 +208,12 @@ function Patients() {
     }
   };
 
-
   const fetchProvinces = async () => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
+        Authorization: `Bearer ${my_token}`,
       },
     };
 
@@ -214,15 +231,13 @@ function Patients() {
       });
   };
 
-
-
   const fetchDistricts = async (code) => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        "code":code
+        Authorization: `Bearer ${my_token}`,
+        code: code,
       },
     };
 
@@ -240,14 +255,13 @@ function Patients() {
       });
   };
 
-
   const fetchSectors = async (code) => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        "code":code
+        Authorization: `Bearer ${my_token}`,
+        code: code,
       },
     };
 
@@ -265,15 +279,13 @@ function Patients() {
       });
   };
 
-  
-
   const fetchCells = async (code) => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        "code":code
+        Authorization: `Bearer ${my_token}`,
+        code: code,
       },
     };
 
@@ -296,8 +308,8 @@ function Patients() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        "code":code
+        Authorization: `Bearer ${my_token}`,
+        code: code,
       },
     };
 
@@ -315,37 +327,156 @@ function Patients() {
       });
   };
 
-  const resetDistricts = () => {
-    setSelectedDistrict('');
-    setDistricts([]);
-    setSelectedSector('');
-    setSectors([]);
-    setSelectedCell('');
-    setCells([]);
-    setSelectedVillage('');
-    setVillages([]);
-  }
+  const handleSubmit2 = async (e) => {
+    //handle submit is the second step
+    e.preventDefault();
+    setLoading(true);
+    const postObj = JSON.stringify({
+      patientId: patientId, // modify body properties
+      patientInsuranceId: patientInsuranceId || null,
+      visitType: visitType,
+      caseType: caseType,
+      doctorId: doctorId,
+    });
+    console.log(postObj);
+    let my_token = await localStorage.getItem("token");
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${my_token}`,
+    };
+    axios
+      .post(`http://www.ubuzima.rw/rec/visit`, postObj) //declare api Path
+      .then((res) => {
+        console.log(res.data);
+        setShow(false);
+        if (res.data.status === true) {
+          alert("Visit added successfully");
+          fetchVisits();
+        } else {
+          alert("something went wrong");
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        setShow(false);
+        console.log(error.message);
+      });
+  };
 
-  const resetSectors = () => {
-    setSelectedSector('');
-    setSectors([]);
-    setSelectedCell('');
-    setCells([]);
-    setSelectedVillage('');
-    setVillages([]);
-  }
+  const fetchDoctors = async (departmentId) => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+        departmentId: departmentId,
+      },
+    };
 
-  const resetCells = () => {
-    setSelectedCell('');
-    setCells([]);
-    setSelectedVillage('');
-    setVillages([]);
-  }
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/medical/doctors/department-id`,
+        config
+      );
+      const doctors_ = response.data.response.map((el) => {
+        return {
+          label: `${el.doctor?.firstName} ${el.doctor?.lastName}`,
+          value: el.doctor?.id,
+        };
+      });
+      setDoctors(doctors_);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching payrolls:", error);
+    }
+  };
 
-  const resetVillages = () => {
-    setSelectedVillage('');
-    setVillages([]);
-  }
+  const fetchVisits = async () => {
+    let my_token = await localStorage.getItem("token");
+    let roles = await localStorage.getItem("role");
+    let userRoles = JSON.parse(roles);
+    const config = {                                            
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+        page: 1,
+        size: 20,
+      },
+    }; //incase you have to deal with ID or Options
+    axios
+      .get(
+        userRoles.includes("Nurse")
+          ? `http://www.ubuzima.rw/rec/visit/nurse`
+          : userRoles.includes("Doctor")
+          ? `http://www.ubuzima.rw/rec/visit/doctor`
+          : `http://www.ubuzima.rw/rec/visit/receptionist`,
+        config
+      )
+      .then((res) => {
+        // console.log(res.data);
+
+        if (res.data.status) {
+          setVisits(res.data.response.patientVisits);
+          setVisits_(res.data.response.patientVisits);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        setShow(false);
+        console.log(error.message);
+      });
+  };
+
+  const fetchDepartments = async () => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    }; //incase you have to deal with ID or Options
+    axios
+      .get(`http://www.ubuzima.rw/rec/medical/departments`, config)
+      .then((res) => {
+        const departments_ = res.data.response.map((el) => {
+          return { label: el.name, value: el.id };
+        }); //const that assign value to the property
+        setDepartments(departments_);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error.message);
+      });
+  };
+
+  const fetchPatientsInsuranceID = async (id) => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+        id: id,
+      },
+    }; //incase you have to deal with ID or Options
+    axios
+      .get(`http://www.ubuzima.rw/rec/patient/id`, config)
+      .then((res) => {
+        console.log(res.data);
+        const patientsInsurances = res.data.response.patientInsurances.map(
+          (el) => {
+            return {
+              label: `${el.insuranceName} - ${el.cardNumber}`,
+              value: el.id,
+            };
+          }
+        ); //const that assign value to the property
+        setPatientsInsurances(patientsInsurances);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error.message);
+      });
+  };
 
   const fetchInsurances = async () => {
     let my_token = await localStorage.getItem("token");
@@ -370,10 +501,45 @@ function Patients() {
       });
   };
 
+
+  const resetDistricts = () => {
+    setSelectedDistrict("");
+    setDistricts([]);
+    setSelectedSector("");
+    setSectors([]);
+    setSelectedCell("");
+    setCells([]);
+    setSelectedVillage("");
+    setVillages([]);
+  };
+
+  const resetSectors = () => {
+    setSelectedSector("");
+    setSectors([]);
+    setSelectedCell("");
+    setCells([]);
+    setSelectedVillage("");
+    setVillages([]);
+  };
+
+  const resetCells = () => {
+    setSelectedCell("");
+    setCells([]);
+    setSelectedVillage("");
+    setVillages([]);
+  };
+
+  const resetVillages = () => {
+    setSelectedVillage("");
+    setVillages([]);
+  };
+
+  
   useEffect(() => {
     fetchPatients();
     fetchInsurances();
     fetchProvinces();
+    fetchDepartments();
   }, []);
 
   return (
@@ -382,14 +548,14 @@ function Patients() {
         <Col lg={12}>
           <Card>
             <Card.Header className="d-flex justify-content-between align-items-center">
-              <Card.Title>Patients</Card.Title>
+              <Card.Title>Patients {JSON.stringify(show2)}</Card.Title>
               <Row>
                 <Col>
                   <input
                     type="text"
                     placeholder="Search..."
                     className="form-control"
-                    onChange={(e) => searchUser(e.target.value)}
+                    onChange={(e) => searchPatients(e.target.value)}
                   />
                 </Col>
                 <Col>
@@ -439,21 +605,7 @@ function Patients() {
                           <Select
                             className="basic-single"
                             options={insurances}
-                            onChange={(e) => setInsuranceId(e.value)}
-                            classNamePrefix="Select2"
-                            placeholder="Select them"
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
-
-                      <Col lg={6}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Insurance</Form.Label>
-                          <Select
-                            className="basic-single"
-                            options={insurances}
-                            onChange={(e) => setInsuranceId(e.value)}
+                            onChange={(e) => setInsuranceId(e)}
                             classNamePrefix="Select2"
                             placeholder="Select them"
                             required
@@ -568,11 +720,6 @@ function Patients() {
                         </Form.Group>
                       </Col>
 
-
-
-
-
-
                       <Col xl={6}>
                         <Form.Group className="form-group">
                           <Form.Label>Province</Form.Label>
@@ -591,10 +738,6 @@ function Patients() {
                           />
                         </Form.Group>
                       </Col>
-
-
-
-                      
 
                       {selectedProvince && (
                         <Col xl={6}>
@@ -675,131 +818,110 @@ function Patients() {
                         </Col>
                       )}
 
-                      <Col xl={6}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Affiliation Card Number</Form.Label>
-                          <Form.Control
-                            type="number"
-                            className="form-control"
-                            name="example-text-input"
-                            // placeholder="Address"
-                            onChange={(e) =>
-                              setaffiliationCardNumber(e.target.value)
-                            }
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
+                      {insuranceId?.label?.toLowerCase() !==  "private" && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Affiliation Card Number</Form.Label>
+                            <Form.Control
+                              type="number"
+                              className="form-control"
+                              name="example-text-input"
+                              // placeholder="Address"
+                              onChange={(e) =>
+                                setaffiliationCardNumber(e.target.value)
+                              }
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
 
-                      {/* 
-                      <Col xl={6}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Membership Type</Form.Label>
-                          <Form.Control
-                            type="text"
-                            className="form-control"
-                            name="example-text-input"
-                            // placeholder="Address"
-                            onChange={(e) => setmembershipType(e.target.value)}
-                            required
-                          />
-                        </Form.Group>
-                      </Col> */}
+                      
 
-                      <Col xl={6}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Membership Type</Form.Label>
-                          <Select
-                            options={membershipTypes}
-                            onChange={(e) => setmembershipType(e.value)}
-                            classNamePrefix="Select2"
-                            className="multi-select"
-                            // placeholder="Select them"
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
+                      {insuranceId?.label?.toLowerCase() !==  "private" && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Membership Type</Form.Label>
+                            <Select
+                              options={membershipTypes}
+                              onChange={(e) => setmembershipType(e.value)}
+                              classNamePrefix="Select2"
+                              className="multi-select"
+                              // placeholder="Select them"
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
 
-                      <Col xl={6}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Principal Names</Form.Label>
-                          <Form.Control
-                            type="Text"
-                            className="form-control"
-                            name="example-text-input"
-                            // placeholder="Address"
-                            onChange={(e) => setprincipalNames(e.target.value)}
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
+                      {insuranceId?.label?.toLowerCase() !==  "private" && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Principal Names</Form.Label>
+                            <Form.Control
+                              type="Text"
+                              className="form-control"
+                              name="example-text-input"
+                              // placeholder="Address"
+                              onChange={(e) =>
+                                setprincipalNames(e.target.value)
+                              }
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
 
-                      <Col xl={6}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Card Number</Form.Label>
-                          <Form.Control
-                            type="text"
-                            className="form-control"
-                            name="example-text-input"
-                            // placeholder="Address"
-                            onChange={(e) => setcardNumber(e.target.value)}
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
+                      {insuranceId?.label?.toLowerCase() !==  "private" && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Card Number</Form.Label>
+                            <Form.Control
+                              type="text"
+                              className="form-control"
+                              name="example-text-input"
+                              // placeholder="Address"
+                              onChange={(e) => setcardNumber(e.target.value)}
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
 
-                      <Col xl={6}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Employee</Form.Label>
-                          <Form.Control
-                            type="text"
-                            className="form-control"
-                            name="example-text-input"
-                            // placeholder="Address"
-                            onChange={(e) => setemployer(e.target.value)}
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
+                      {insuranceId?.label?.toLowerCase() !==  "private" && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Employee</Form.Label>
+                            <Form.Control
+                              type="text"
+                              className="form-control"
+                              name="example-text-input"
+                              // placeholder="Address"
+                              onChange={(e) => setemployer(e.target.value)}
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
 
-                      <Col xl={6}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Expiry Date</Form.Label>
-                          <Form.Control
-                            type="Date"
-                            className="form-control"
-                            name="example-text-input"
-                            // placeholder="Address"
-                            onChange={(e) => setexpiryDate(e.target.value)}
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
-
-                      {/* <Col lg={12} style={{ marginTop: 15 }}>
-                        <Form.Group className="form-group">
-                          <Form.Label>
-                            Choose files (You can choose multiple at the same
-                            time).
-                          </Form.Label>
-                          <Form.Control
-                            type="file"
-                            multiple
-                            className="border-right-0 browse-file"
-                            placeholder="Upload file"
-                            onChange={(e) => setFiles(e.target.files)}
-                          />
-                        </Form.Group>
-                      </Col> */}
+                      {insuranceId?.label?.toLowerCase() !== "private" && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Expiry Date</Form.Label>
+                            <Form.Control
+                              type="Date"
+                              className="form-control"
+                              name="example-text-input"
+                              // placeholder="Address"
+                              onChange={(e) => setexpiryDate(e.target.value)}
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
                     </Row>
 
-                    {/* <Button
-                      type="submit"
-                      className="btn ripple btn-primary my-3"
-                      style={{width:"40%", marginLeft:"320px"}}
-                    >
-                      Submit
-                    </Button> */}
+
 
                     <Button
                       type="submit"
@@ -815,6 +937,98 @@ function Patients() {
               </Card>
             </Col>
           </Modal.Body>
+        </Form>
+      </Modal>
+
+      <Modal show={show2} onHide={() => setShow2(false)}>
+        <Form onSubmit={handleSubmit2}>
+          <Modal.Header closeButton>
+            <Modal.Title>Register New Visitor</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Row>
+              <Col lg={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Patient Insurance ID</Form.Label>
+                  <Select
+                    className="basic-single"
+                    options={patientsInsurances}
+                    onChange={(e) => setPatientInsuranceId(e.value)} // value onChange on input is the third step
+                    classNamePrefix="Select2"
+                    placeholder="Select them"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col xl={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Visit Type</Form.Label>
+                  <Select
+                    options={EVisitType}
+                    onChange={(e) => setVisitType(e.value)}
+                    classNamePrefix="Select2"
+                    className="multi-select"
+                    placeholder="Case Type"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col xl={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Case Type</Form.Label>
+                  <Select
+                    options={ECaseType}
+                    onChange={(e) => setCaseType(e.value)}
+                    classNamePrefix="Select2"
+                    className="multi-select"
+                    placeholder="Case Type"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col xl={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Department</Form.Label>
+                  <Select
+                    options={departments}
+                    onChange={(e) => {
+                      setDepartment(e.value);
+                      fetchDoctors(e.value);
+                    }}
+                    classNamePrefix="Select2"
+                    className="multi-select"
+                    placeholder="Department"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col xl={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Doctor Id</Form.Label>
+                  <Select
+                    options={doctors}
+                    onChange={(e) => setDoctorId(e.value)}
+                    classNamePrefix="Select2"
+                    className="multi-select"
+                    placeholder="Doctor Id"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button type="submit" variant="primary" onClick={handleSubmit2}>
+              Submit
+            </Button>
+            <Button variant="secondary" onClick={() => setShow2(false)}>
+              Close
+            </Button>
+          </Modal.Footer>
         </Form>
       </Modal>
     </div>

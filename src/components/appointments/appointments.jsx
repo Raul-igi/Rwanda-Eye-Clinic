@@ -87,17 +87,17 @@ function Appointments() {
   ];
  
 
-  const searchUser = (value) => {
+  const searchAppointments = (value) => {
     if (value === "") {
-      fetchUsers(); // Reset to the original list of projects
+      fetchAppointments(); // Reset to the original list of projects
     } else {
-      const filteredUsers = Appointments_.filter((user) => {
-        const userNameLowercase = (user.names + user.email).toLowerCase();
+      const filteredAppointments = Appointments_.filter((user) => {
+        const userNameLowercase = (user.doctor?.firstName + user.doctor?.lastName  + user.names + user.day + user.startingTime + user.endingTime + user.patientNumber + user.phoneNumber).toLowerCase();
         const searchTermLowercase = value.toLowerCase();
         return userNameLowercase.includes(searchTermLowercase);
       });
 
-      setAppointments(filteredUsers);
+      setAppointments(filteredAppointments);
     }
   };
 
@@ -325,7 +325,7 @@ function Appointments() {
                     type="text"
                     placeholder="Search..."
                     className="form-control"
-                    onChange={(e) => searchUser(e.target.value)}
+                    onChange={(e) => searchAppointments(e.target.value)}
                   />
                 </Col>
                 <Col>

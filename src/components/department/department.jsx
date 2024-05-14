@@ -66,17 +66,17 @@ function Department() {
   const [departments, setDepartments] = useState();
   const [departments_, setDepartments_] = useState();
 
-  const searchUser = (value) => {
+  const searchDepertment = (value) => {
     if (value === "") {
       fetchDepartments(); // Reset to the original list of projects
     } else {
-      const filteredUsers = users_.filter((user) => {
-        const userNameLowercase = (user.names + user.email).toLowerCase();
+      const filteredDepertment = departments_.filter((user) => {
+        const userNameLowercase = (user.name).toLowerCase();
         const searchTermLowercase = value.toLowerCase();
         return userNameLowercase.includes(searchTermLowercase);
       });
 
-      setDepartments(filteredUsers);
+      setDepartments(filteredDepertment);
     }
   };
 
@@ -175,7 +175,7 @@ function Department() {
                     type="text"
                     placeholder="Search..."
                     className="form-control"
-                    onChange={(e) => searchUser(e.target.value)}
+                    onChange={(e) => searchDepertment(e.target.value)}
                   />
                 </Col>
                 <Col>

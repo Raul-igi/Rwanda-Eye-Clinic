@@ -85,7 +85,27 @@ function Visits() {
   const [caseType, setCaseType] = useState("");
   const [doctorId, setDoctorId] = useState("");
   const [visits, setVisits] = useState([]);
+  const [visits_, setVisits_] = useState([]);
+
   const [show, setShow] = useState(false);
+
+
+
+  const searchVisits = (value) => {
+    if (value === "") {
+      fetchVisits(); // Reset to the original list of projects
+    } else {
+      const filteredVisits = setVisits_.filter((user) => {
+        const userNameLowercase = (user.patient?.names + user.patient?.phoneNumber + user.doctor?.firstName +  user.doctor?.lastName + user.doctor?.phoneNumber + user.patientInsurance?.insuranceName ).toLowerCase();
+        const searchTermLowercase = value.toLowerCase();
+        return userNameLowercase.includes(searchTermLowercase);
+      });
+
+      setVisits(filteredVisits);
+      
+    }
+  };
+
 
 
   const handleClose = () => setShow(false);
@@ -176,6 +196,7 @@ function Visits() {
 
           if(res.data.status){
             setVisits(res.data.response.patientVisits);
+            setVisits_(res.data.response.patientVisits);
           }
         })
         .catch((error) => {
@@ -282,7 +303,7 @@ function Visits() {
                     type="text"
                     placeholder="Search..."
                     className="form-control"
-                    onChange={(e) => searchUser(e.target.value)}
+                    onChange={(e) => searchVisits(e.target.value)}
                   />
                 </Col>
                 <Col>

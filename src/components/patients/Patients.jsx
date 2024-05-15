@@ -33,6 +33,8 @@ function Patients() {
   const [gender, setGender] = useState("");
   const [dob, setDob] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedSector, setSelectedSector] = useState("");
@@ -43,7 +45,6 @@ function Patients() {
   const [contactPersonPhoneNumber, setcontactPersonPhoneNumber] = useState();
   const [locationId, setlocationId] = useState([]);
   const [patientId, setpatientId] = useState(false);
-  const [affiliationCardNumber, setaffiliationCardNumber] = useState("");
   const [membershipType, setmembershipType] = useState("");
   const [principalNames, setprincipalNames] = useState("");
   const [cardNumber, setcardNumber] = useState("");
@@ -52,6 +53,8 @@ function Patients() {
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);
   const [selectedAssignees, setSelectedAssignees] = useState([]);
+
+  const [totalRows, setTotalRows] = useState(0);
 
   const [patientsInsurances, setPatientsInsurances] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -153,7 +156,6 @@ function Patients() {
       patientInsuranceDto: insuranceId?.label?.toLowerCase()==='private'?null:
       {
         insuranceId: insuranceId?.value,
-        affiliationCardNumber: affiliationCardNumber,
         membershipType: membershipType,
         principalNames: principalNames,
         cardNumber: cardNumber,
@@ -192,7 +194,9 @@ function Patients() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
+        "Authorization": `Bearer ${my_token}`,
+        "size":10,
+        "page":currentPage
       },
     };
 
@@ -203,6 +207,9 @@ function Patients() {
       );
       setPatients_(response.data.response);
       setPatients(response.data.response);
+      if(response.data.response.totalElements){
+        setTotalRows(response.data.response.totalElements)
+      }
     } catch (error) {
       console.error("Error fetching payrolls:", error);
     }
@@ -536,11 +543,13 @@ function Patients() {
 
   
   useEffect(() => {
-    fetchPatients();
     fetchInsurances();
     fetchProvinces();
     fetchDepartments();
   }, []);
+  useEffect(()=>{
+    fetchPatients();
+  },[currentPage])
 
   return (
     <div>
@@ -548,7 +557,7 @@ function Patients() {
         <Col lg={12}>
           <Card>
             <Card.Header className="d-flex justify-content-between align-items-center">
-              <Card.Title>Patients {JSON.stringify(show2)}</Card.Title>
+              <Card.Title>Patients</Card.Title>
               <Row>
                 <Col>
                   <input
@@ -567,7 +576,7 @@ function Patients() {
             </Card.Header>
             <Card.Body>
               <Card.Body>
-                <DataTable columns={columns} data={patients} pagination />
+                <DataTable columns={columns} data={patients} paginationTotalRows={totalRows?totalRows:patients.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]} onChangePage={page=>setCurrentPage(page)} pagination paginationServer/>
               </Card.Body>
             </Card.Body>
           </Card>
@@ -818,23 +827,6 @@ function Patients() {
                         </Col>
                       )}
 
-                      {insuranceId?.label?.toLowerCase() !==  "private" && (
-                        <Col xl={6}>
-                          <Form.Group className="form-group">
-                            <Form.Label>Affiliation Card Number</Form.Label>
-                            <Form.Control
-                              type="number"
-                              className="form-control"
-                              name="example-text-input"
-                              // placeholder="Address"
-                              onChange={(e) =>
-                                setaffiliationCardNumber(e.target.value)
-                              }
-                              required
-                            />
-                          </Form.Group>
-                        </Col>
-                      )}
 
                       
 

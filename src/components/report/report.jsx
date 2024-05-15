@@ -214,7 +214,7 @@ function Report() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${my_token}`,
-          date: date,
+          selectedDate: date,
           insuranceId:insurance
         },
       };
@@ -237,7 +237,7 @@ function Report() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${my_token}`,
-          date: date,
+          selectedDate: date,
           doctorId:doctor
         },
       };
@@ -248,7 +248,7 @@ function Report() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${my_token}`,
-          date: date
+          selectedDate: date
         },
       };
       url = `http://www.ubuzima.rw/rec/report/date`

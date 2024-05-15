@@ -16,9 +16,10 @@ const Register = lazy(() => import('./components/Authentication/Register/Registe
 class AppRoot extends React.Component {
   constructor(props) {
     super(props);
-    // const userRoles = localStorage.getItem('role');
-    // const parsedRoles = JSON.parse(userRoles);
-    // this.roles = Routingdata.filter(route => this.checkRoles(parsedRoles, route.roles));
+    this.state = {
+      isAuthenticated: !!(localStorage.getItem('token')),
+      userRoles: JSON.parse(localStorage.getItem('role')) || []
+    };
   }
 
   checkRoles(arrA, arrB) {
@@ -31,20 +32,26 @@ class AppRoot extends React.Component {
   }
 
   render() {
+    const { isAuthenticated, userRoles } = this.state;
     return (
       <Fragment>
         <BrowserRouter>
           <Suspense fallback={<Loaderimage />}>
             <Routes>
               <Route index element={<Login {...this.props} />} />
-              <Route element={<PrivateRoute />}>
                 <Route path={`${import.meta.env.BASE_URL}`} element={<App {...this.props} />}>
-                  {Routingdata.map(idx => (
-                    <Route key={idx.path} path={idx.path} element={idx.element} />
-                  ))}
+
+                  {Routingdata.map(idx =>{
+                    return (
+                    
+                  <Route element={<PrivateRoute   isAuthenticated={isAuthenticated} userRoles={userRoles} roles={idx.roles} />}>
+                      <Route key={idx.path} path={idx.path} element={idx.element} />
+                      
+                      </Route>
+                      )})}
+
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Route>
-              </Route>
             </Routes>
           </Suspense>
         </BrowserRouter>

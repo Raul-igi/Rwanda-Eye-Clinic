@@ -1,20 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import {connect} from 'react-redux';
 import {Navigate,Outlet} from 'react-router-dom';
 
-const PrivateRoute=({isAuthenticated})=>{
-    const [authenticated,setAuthenticated]=useState(true)
-    useEffect(()=>{
-        const token =  localStorage.getItem("token")
-        setAuthenticated(token!==null)
-    },[])
+const PrivateRoute=({isAuthenticated,userRoles,roles})=>{
+  const hasRequiredRole = roles.some(role => userRoles.includes(role));
     return(
-    !authenticated  ?<Navigate to='/'/>:<Outlet/>
+    (!isAuthenticated || !hasRequiredRole) ?<Navigate to='/'/>:<Outlet/>
     )
 }
 
-const mapStateToProps = state => ({
-    isAuthenticated: state.token !== null,
-    isLoading: state.loading
-})
- export default connect(mapStateToProps)(PrivateRoute); 
+ export default PrivateRoute; 

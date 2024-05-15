@@ -32,6 +32,9 @@ function Appointments() {
   const [allDoctors, setAllDoctors] = useState([]);
   const [patients, setPatients] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalRows, setTotalRows] = useState(0);
+
 
   const columns = [
     {
@@ -190,6 +193,9 @@ function Appointments() {
         if(response.data.status){
           setAppointments(response.data.response);
         setAppointments_(response.data.response);
+        if(response.data.response.totalElements){
+          setTotalRows(response.data.response.totalElements)
+        }
         }else{
           console.log(response.data.message)
         }
@@ -303,14 +309,15 @@ function Appointments() {
   };
 
 
-
-  
   useEffect(() => {
-    fetchAppointments();
     fetchAllDoctors();
     fetchPatients();
    
   }, []);
+  
+  useEffect(() => {
+    fetchAppointments();
+  }, [currentPage]);
 
   return (
     <div>
@@ -336,7 +343,7 @@ function Appointments() {
               </Row>
             </Card.Header>
             <Card.Body> 
-              <DataTable columns={columns} data={Appointments} pagination /> 
+              <DataTable columns={columns} data={Appointments} paginationTotalRows={totalRows?totalRows:Appointments.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]} onChangePage={page=>setCurrentPage(page)} pagination paginationServer /> 
             </Card.Body>
           </Card>
         </Col>

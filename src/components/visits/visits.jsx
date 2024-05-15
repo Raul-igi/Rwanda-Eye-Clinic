@@ -80,6 +80,9 @@ function Visits() {
   const [patientId, setPatientId] = useState("");
   const [patientsInsurances,setPatientsInsurances] =useState([]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalRows, setTotalRows] = useState(0);
+
   const [patientInsuranceId, setPatientInsuranceId] = useState("");
   const [visitType, setVisitType] = useState("");
   const [caseType, setCaseType] = useState("");
@@ -182,8 +185,8 @@ function Visits() {
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${my_token}`,
-          "page":1,
-          "size":20
+          "page":currentPage,
+          "size":10
         },
       }; //incase you have to deal with ID or Options
       axios
@@ -197,6 +200,9 @@ function Visits() {
           if(res.data.status){
             setVisits(res.data.response.patientVisits);
             setVisits_(res.data.response.patientVisits);
+            if(res.data.response.totalElements){
+              setTotalRows(response.data.response.totalElements)
+            }
           }
         })
         .catch((error) => {
@@ -279,7 +285,9 @@ function Visits() {
   };
 
 
-
+  useEffect(() => {
+    fetchVisits();
+  }, [currentPage]);
 
 
 
@@ -314,7 +322,7 @@ function Visits() {
               </Row>
             </Card.Header>
             <Card.Body>
-              <DataTable columns={columns} data={visits} pagination />
+              <DataTable columns={columns} paginationPerPage={10} paginationRowsPerPageOptions={[10]} paginationTotalRows={totalRows?totalRows:visits.length} onChangePage={page=>setCurrentPage(page)} data={visits} pagination paginationServer />
             </Card.Body>
           </Card>
         </Col>
@@ -343,13 +351,13 @@ function Visits() {
 
               <Col lg={6}>
                 <Form.Group className="form-group">
-                  <Form.Label>Patient Insurance ID</Form.Label>
+                  <Form.Label>Patient Insurance</Form.Label>
                   <Select
                     className="basic-single"
                     options={patientsInsurances}
                     onChange={(e) => setPatientInsuranceId(e.value)} // value onChange on input is the third step
                     classNamePrefix="Select2"
-                    placeholder="Select them"
+                    placeholder="Select patient insurance"
                     required
                   />
                 </Form.Group>
@@ -403,14 +411,14 @@ function Visits() {
 
               <Col xl={6}>
                 <Form.Group className="form-group">
-                  <Form.Label>Doctor Id</Form.Label>
+                  <Form.Label>Doctor</Form.Label>
                   <Select
                     options={doctors}
                     onChange={(e) => setDoctorId(e.value)}
                     EVisitType
                     classNamePrefix="Select2"
                     className="multi-select"
-                    placeholder="Doctor Id"
+                    placeholder="Select Doctor"
                     required
                   />
                 </Form.Group>

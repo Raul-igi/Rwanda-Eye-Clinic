@@ -156,7 +156,7 @@ function Patients() {
       patientInsuranceDto: insuranceId?.label?.toLowerCase()==='private'?null:
       {
         insuranceId: insuranceId?.value,
-        membershipType: membershipType,
+        membershipType: membershipType?.value,
         principalNames: principalNames,
         cardNumber: cardNumber,
         employer: employer,
@@ -355,7 +355,7 @@ function Patients() {
       .post(`http://www.ubuzima.rw/rec/visit`, postObj) //declare api Path
       .then((res) => {
         console.log(res.data);
-        setShow(false);
+        setShow2(false);
         if (res.data.status === true) {
           alert("Visit added successfully");
           fetchVisits();
@@ -365,7 +365,7 @@ function Patients() {
       })
       .catch((error) => {
         setLoading(false);
-        setShow(false);
+        setShow2(false);
         console.log(error.message);
       });
   };
@@ -836,7 +836,7 @@ function Patients() {
                             <Form.Label>Membership Type</Form.Label>
                             <Select
                               options={membershipTypes}
-                              onChange={(e) => setmembershipType(e.value)}
+                              onChange={(e) => setmembershipType(e)}
                               classNamePrefix="Select2"
                               className="multi-select"
                               // placeholder="Select them"
@@ -846,7 +846,7 @@ function Patients() {
                         </Col>
                       )}
 
-                      {insuranceId?.label?.toLowerCase() !==  "private" && (
+                      {insuranceId?.label?.toLowerCase() !==  "private" && membershipType?.label?.toLowerCase() !=="principal" && (
                         <Col xl={6}>
                           <Form.Group className="form-group">
                             <Form.Label>Principal Names</Form.Label>

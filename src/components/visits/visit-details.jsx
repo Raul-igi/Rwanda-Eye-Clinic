@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Button, Card, Col, Form, Modal, Row, Collapse } from "react-bootstrap";
-import { useLocation,useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import DataTable from "react-data-table-component";
@@ -31,7 +31,38 @@ export default function VisitDetails() {
   const [savedRefraction, setSavedRefraction] = useState("");
 
   const [medicalActs, setMedicalActs] = useState([]);
-  const [visualAcuity, setVisualAcuity] = useState([]);
+  const [visualAcuity, setVisualAcuity] = useState([
+    {
+      name: "SC",
+      right: "",
+      left: "",
+    },
+    {
+      name: "AC",
+      right: "",
+      left: "",
+    },
+    {
+      name: "PH",
+      right: "",
+      left: "",
+    },
+    {
+      name: "Glass Sphere",
+      right: "",
+      left: "",
+    },
+    {
+      name: "Glass Cylindre",
+      right: "",
+      left: "",
+    },
+    {
+      name: "Glass Axe",
+      right: "",
+      left: "",
+    },
+  ]);
 
   const [scRightEye, setScRightEye] = useState("");
   const [scLeftEye, setScLeftEye] = useState("");
@@ -55,20 +86,28 @@ export default function VisitDetails() {
   const [lensType, setLensType] = useState("");
   const [dip, setDip] = useState("");
 
-  const [showModal, setShowModal] = useState(false)
-  const handleClose8 = () => setShowModal(false)
-  const handleShow8 = () => setShowModal(true)
+  const [showModal, setShowModal] = useState(false);
+  const handleClose8 = () => setShowModal(false);
+  const handleShow8 = () => setShowModal(true);
 
-  const [eight, setEight] = useState(false)
+  const [eight, setEight] = useState(false);
 
+  const handleInputChange = (e, name, field) => {
+    // Update the corresponding data item with the new value
+    const newData = visualAcuity.map((item) => {
+      if (item.name === name) {
+        return { ...item, [field]: e.target.value };
+      }
+      return item;
+    });
+    setVisualAcuity(newData);
+  };
 
   const paymentMethods = [
-    { value: 'INSURANCE', label: 'Insurance' },
-    { value: 'INSURANCE_AND_TOP_UP', label: 'Insurance and Top Up' },
-    { value: 'CASH', label: 'Cash' },
-   
-  ]
-
+    { value: "INSURANCE", label: "Insurance" },
+    { value: "INSURANCE_AND_TOP_UP", label: "Insurance and Top Up" },
+    { value: "CASH", label: "Cash" },
+  ];
 
   const vaColumns = [
     {
@@ -78,13 +117,27 @@ export default function VisitDetails() {
     },
     {
       name: "Right",
-      selector: (row) => [row.right],
       sortable: true,
+      cell: (row) => (
+        <input
+          className="form-control"
+          type="text"
+          value={row.right}
+          onChange={(e) => handleInputChange(e, row.name, "right")}
+        />
+      ),
     },
     {
       name: "Left",
-      selector: (row) => [row.left],
       sortable: true,
+      cell: (row) => (
+        <input
+          className="form-control"
+          type="text"
+          value={row.left}
+          onChange={(e) => handleInputChange(e, row.name, "left")}
+        />
+      ),
     },
   ];
 
@@ -252,8 +305,8 @@ export default function VisitDetails() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        "patientVisitId": location.state.data.visitId,
+        Authorization: `Bearer ${my_token}`,
+        patientVisitId: location.state.data.visitId,
       },
     };
 
@@ -321,8 +374,7 @@ export default function VisitDetails() {
     }
   };
 
-  const addVisualAcuity = async (e) => {
-    e.preventDefault();
+  const addVisualAcuity = async () => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -332,18 +384,18 @@ export default function VisitDetails() {
     };
     const postObj = JSON.stringify({
       patientVisitId: location.state.data.visitId,
-      scRightEye: scRightEye,
-      scLeftEye: scLeftEye,
-      acRightEye: acRightEye,
-      acLeftEye: acLeftEye,
-      phRightEye: phRightEye,
-      phLeftEye: phLeftEye,
-      glassSphereRightEye: glassSphereRightEye,
-      glassSphereLeftEye: glassSphereLeftEye,
-      glassCylindreRightEye: glassCylindreRightEye,
-      glassCylindreLeftEye: glassCylindreLeftEye,
-      glassAxeRightEye: glassAxeRightEye,
-      glassAxeLeftEye: glassAxeLeftEye,
+      scRightEye: visualAcuity[0].right,
+      scLeftEye: visualAcuity[0].left,
+      acRightEye: visualAcuity[1].right,
+      acLeftEye: visualAcuity[1].left,
+      phRightEye: visualAcuity[2].right,
+      phLeftEye: visualAcuity[2].left,
+      glassSphereRightEye: visualAcuity[3].left,
+      glassSphereLeftEye: visualAcuity[3].left,
+      glassCylindreRightEye: visualAcuity[4].right,
+      glassCylindreLeftEye: visualAcuity[4].left,
+      glassAxeRightEye: visualAcuity[5].right,
+      glassAxeLeftEye: visualAcuity[5].left,
     });
     console.log(postObj);
     try {
@@ -368,16 +420,16 @@ export default function VisitDetails() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
+        Authorization: `Bearer ${my_token}`,
       },
     };
     var paymentDto = {
-      invoiceNumber:invoice.invoiceNumber,
+      invoiceNumber: invoice.invoiceNumber,
       paymentMethod,
       amount: invoice.patientAmount,
-    }
-    if(topUpAmount>0){
-      paymentDto.topUpAmount = topUpAmount
+    };
+    if (topUpAmount > 0) {
+      paymentDto.topUpAmount = topUpAmount;
     }
     console.log(paymentDto);
     try {
@@ -442,7 +494,7 @@ export default function VisitDetails() {
       );
       if (response.data.status) {
         alert("Successfully saved!");
-        navigate('/visits')
+        navigate("/visits");
       }
     } catch (error) {
       console.error(error);
@@ -466,7 +518,7 @@ export default function VisitDetails() {
       );
       if (response.data.status) {
         alert("Successfully saved!");
-        navigate('/visits')
+        navigate("/visits");
       }
     } catch (error) {
       console.error(error);
@@ -637,21 +689,6 @@ export default function VisitDetails() {
 
   return (
     <Fragment>
-      {roles.includes("Nurse") &&
-        location.state.data.visitStatus === "TRANSFER_TO_NURSE" && (
-          <>
-            <Button
-              onClick={() => setShow(true)}
-              style={{ marginRight: 10, marginLeft: 20 }}
-            >
-              Add Visual Acuity
-            </Button>
-            <Button onClick={() => setShow2(true)} style={{ marginRight: 10 }}>
-              Add medical act
-            </Button>
-          </>
-        )}
-
       {roles.includes("Doctor") &&
         location.state.data.visitStatus === "TRANSFER_TO_DOCTOR" && (
           <>
@@ -671,215 +708,158 @@ export default function VisitDetails() {
           </Button>
         )}
 
-      {(visualAcuity.length > 0 && medicalActs.length > 0 && (roles.includes("Nurse") || roles.includes("Doctor"))) && (
-        <Button
-          onClick={() => {
-            if (window.confirm("Are you sure you want to save?")) {
-              roles.includes("Nurse") ? nurseSave() : doctorSave();
-            }
-          }}
-          style={{ marginRight: 10 }}
-        >
-          save and send
-        </Button>
-      )}
-      {invoice&&(
+      {visualAcuity.length > 0 &&
+        medicalActs.length > 0 &&
+        (roles.includes("Nurse") || roles.includes("Doctor")) && (
+          <Button
+            onClick={() => {
+              if (window.confirm("Are you sure you want to save?")) {
+                roles.includes("Nurse") ? nurseSave() : doctorSave();
+              }
+            }}
+            style={{ marginRight: 10 }}
+          >
+            save and send
+          </Button>
+        )}
+      {invoice && (
         <Row>
-        <Col md={4} xl={4} style={{ marginTop: 20,margin:'auto' }}>
-
-
-
-        <Card style={{ minHeight: 180 }}>
-            <Card.Header className=" d-flex justify-content-between align-items-center">
-              
+          <Col md={4} xl={4} style={{ marginTop: 20, margin: "auto" }}>
+            <Card style={{ minHeight: 180 }}>
+              <Card.Header className=" d-flex justify-content-between align-items-center">
                 <Card.Title>
                   Invoice Number: {invoice.invoiceNumber}
-                  {invoice.paymentStatus=='NOT_PAID'&&(
-                    <Button style={{marginLeft:50}} variant="green" onClick={handleShow8}>
-                    Pay Invoice
-                  </Button>
+                  {invoice.paymentStatus == "NOT_PAID" && (
+                    <Button
+                      style={{ marginLeft: 50 }}
+                      variant="green"
+                      onClick={handleShow8}
+                    >
+                      Pay Invoice
+                    </Button>
                   )}
                 </Card.Title>
-               
-            </Card.Header>
-            <Card.Body>
-              <Card.Title> Total Amount: Rwf {invoice.totalAmount.toLocaleString()} </Card.Title>
-              <Card.Title>Insurer Amount: Rwf {invoice.insurerAmount.toLocaleString()}</Card.Title>
-              <Card.Title>Patient Amount: Rwf {invoice.patientAmount.toLocaleString()}</Card.Title>
-              <Card.Title>Remaining Amount: Rwf {invoice.remainingAmount.toLocaleString()}</Card.Title>
-              <Card.Title style={{color:invoice.paymentStatus=='NOT_PAID'?'red':'green'}}>Status: {invoice.paymentStatus}</Card.Title>
-            </Card.Body>
-          </Card>
+              </Card.Header>
+              <Card.Body>
+                <Card.Title>
+                  {" "}
+                  Total Amount: Rwf {invoice.totalAmount.toLocaleString()}{" "}
+                </Card.Title>
+                <Card.Title>
+                  Insurer Amount: Rwf {invoice.insurerAmount.toLocaleString()}
+                </Card.Title>
+                <Card.Title>
+                  Patient Amount: Rwf {invoice.patientAmount.toLocaleString()}
+                </Card.Title>
+                <Card.Title>
+                  Remaining Amount: Rwf{" "}
+                  {invoice.remainingAmount.toLocaleString()}
+                </Card.Title>
+                <Card.Title
+                  style={{
+                    color:
+                      invoice.paymentStatus == "NOT_PAID" ? "red" : "green",
+                  }}
+                >
+                  Status: {invoice.paymentStatus}
+                </Card.Title>
+              </Card.Body>
+            </Card>
 
-
-
-
-
-
-
-          <Col sm={12} md={12} lg={6} xl={4}>
-          
-          {/* <Card.Header>
+            <Col sm={12} md={12} lg={6} xl={4}>
+              {/* <Card.Header>
             <Card.Title>Select2 Inside Modal</Card.Title>
             <Form.Check label="show code" type='switch' id="custom-switch" className="ms-auto" onClick={() => { setEight(!eight) }} />
           </Card.Header> */}
-          <Card.Body>
+              <Card.Body>
+                <Modal show={showModal} onHide={handleClose8}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>
+                      Pay Invoice | Amount to pay: {invoice.patientAmount} Rwf
+                    </Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    {invoice.patientAmount > 0 ? (
+                      <>
+                        <Col xl={12}>
+                          <Form>
+                            <Form.Group
+                              className="mb-3"
+                              controlId="exampleForm.ControlInput1"
+                            >
+                              Payment method
+                              <br />
+                              <Select
+                                options={paymentMethods}
+                                placeholder="Select method"
+                                classNamePrefix="Select2"
+                                onChange={(e) => setPaymentMethod(e.value)}
+                              />
+                            </Form.Group>
+                          </Form>
+                        </Col>
 
+                        {paymentMethod === "INSURANCE_AND_TOP_UP" && (
+                          <>
+                            <Col xl={12}>
+                              <Form.Group className="form-group">
+                                <Form.Label>Insurance Amount</Form.Label>
+                                <Form.Control
+                                  type="number"
+                                  value={insuranceAmount}
+                                  className="form-control"
+                                  name="example-text-input"
+                                  // placeholder="names"
+                                  onChange={(e) => {
+                                    let newValue = parseInt(e.target.value, 10);
+                                    // Ensure the value is between 0 and 20
+                                    newValue = Math.min(
+                                      Math.max(newValue, 0),
+                                      invoice.patientAmount
+                                    );
 
-            <Modal show={showModal} onHide={handleClose8}>
-              <Modal.Header closeButton>
-                <Modal.Title>Pay Invoice  |  Amount to pay: {invoice.patientAmount} Rwf</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-
-             
-
-              {invoice.patientAmount>0?(
-                <>
-                    <Col xl={12}>
-                <Form>
-                  <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                    Payment method<br />
-                    <Select
-                      options={paymentMethods}
-                      placeholder='Select method'
-                      classNamePrefix="Select2"
-                      onChange={(e)=>setPaymentMethod(e.value)}
-                    />
-                  </Form.Group>
-                </Form>
-                </Col>
-
-                {paymentMethod==='INSURANCE_AND_TOP_UP'&&(
-                  <>
-                  <Col xl={12}>
-                  <Form.Group className="form-group">
-                    <Form.Label>Insurance Amount</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={insuranceAmount}
-                      className="form-control"
-                      name="example-text-input"
-                      // placeholder="names"
-                      onChange={(e) => {
-                        let newValue = parseInt(e.target.value, 10);
-                        // Ensure the value is between 0 and 20
-                        newValue = Math.min(Math.max(newValue, 0), invoice.patientAmount);
-                    
-                        setInsuranceAmount(newValue);
-                        setTopUpAmount(invoice.patientAmount-newValue)
-
-                      }}
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-                <Col xl={12}>
-                <Form.Group className="form-group">
-                  <Form.Label>Top Up Amount</Form.Label>
-                  <Form.Control
-                    type="number"
-                    value={topUpAmount}
-                    className="form-control"
-                    name="example-text-input"
-                    // placeholder="names"
-                    required
-                  />
-                </Form.Group>
-              </Col>
-              </>
-                )}
-                </>
-              ):(
-                <p>Mark Invoice as paid</p>
-              )}
-
-
-
-                  
-                      
-              </Modal.Body>
-              <Modal.Footer>
-                <Button onClick={()=>pay()} variant="success">
-                  {invoice.patientAmount>0?'Pay Now':'Mark as paid'}
-                </Button>
-                <Button variant="danger" onClick={handleClose8}>
-                  Cancel
-                </Button>
-              </Modal.Footer>
-            </Modal> </Card.Body>
-          <Collapse in={eight}>
-            <pre>
-              <code>
-
-                {`   
-     export default function SelectInside () {   
-      const [showModal, setShowModal] = useState(false)
-      const handleClose8 = () => setShowModal(false)
-      const handleShow8 = () => setShowModal(true)
-
-      const option = [
-        { value: 'Firefox', label: 'Firefox' },
-        { value: 'Chrome', label: 'Chrome' },
-        { value: 'Safari', label: 'Safari' },
-        { value: 'Opera', label: 'Opera' },
-        { value: 'Internet Explorer', label: 'Internet Explorer' }
-      ]
-     return(
-      <Button variant="purple" onClick={handleShow8}>
-                    View Demo
-                  </Button>
-
- <Modal show={showModal} onHide={handleClose8}>
-   <Modal.Header closeButton>
-     <Modal.Title>Select2 Modal</Modal.Title>
-   </Modal.Header>
-   <Modal.Body>
-     <Form>
-   <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-        Modal Body<br />
-         <Select
-           defaultValue={2}
-           isMulti
-           options={option}
-           placeholder='Choose one'
-           classNamePrefix="Select"
-         />
-       </Form.Group>
-     </Form>
-     Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
-      aut fugit, sed quia consequuntur magni dolores 
-      eos qui ratione voluptatem sequi nesciunt.
-   </Modal.Body>
-   <Modal.Footer>
-     <Button variant="success">
-       Save Changes
-     </Button>
-     <Button variant="danger" onClick={handleClose8}>
-       Close
-     </Button>
-   </Modal.Footer>
- </Modal> 
-
-                    )}`}
-              </code>
-            </pre>
-          </Collapse>
-        
-      </Col>
-
-
-
-
-
-
-
-
-
-
-          
-        </Col>
-      </Row>
+                                    setInsuranceAmount(newValue);
+                                    setTopUpAmount(
+                                      invoice.patientAmount - newValue
+                                    );
+                                  }}
+                                  required
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col xl={12}>
+                              <Form.Group className="form-group">
+                                <Form.Label>Top Up Amount</Form.Label>
+                                <Form.Control
+                                  type="number"
+                                  value={topUpAmount}
+                                  className="form-control"
+                                  name="example-text-input"
+                                  // placeholder="names"
+                                  required
+                                />
+                              </Form.Group>
+                            </Col>
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      <p>Mark Invoice as paid</p>
+                    )}
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button onClick={() => pay()} variant="success">
+                      {invoice.patientAmount > 0 ? "Pay Now" : "Mark as paid"}
+                    </Button>
+                    <Button variant="danger" onClick={handleClose8}>
+                      Cancel
+                    </Button>
+                  </Modal.Footer>
+                </Modal>{" "}
+              </Card.Body>
+            </Col>
+          </Col>
+        </Row>
       )}
       <Row>
         <Col md={4} xl={4} style={{ marginTop: 20 }}>
@@ -943,6 +923,17 @@ export default function VisitDetails() {
         <Col md={6} xl={6} style={{ marginTop: 20 }}>
           <h1>Visual Acuity</h1>
           <DataTable columns={vaColumns} data={visualAcuity} />
+          {roles.includes("Nurse") &&
+            location.state.data.visitStatus === "TRANSFER_TO_NURSE" && (
+              <>
+                <Button
+                  onClick={() => addVisualAcuity()}
+                  style={{ marginRight: 10, marginLeft: 20 }}
+                >
+                  Save
+                </Button>
+              </>
+            )}
         </Col>
 
         <Col md={6} xl={6} style={{ marginTop: 20 }}>
@@ -953,212 +944,18 @@ export default function VisitDetails() {
         <Col md={6} xl={6} style={{ marginTop: 20 }}>
           <h1>Medical Acts</h1>
           <DataTable columns={maColumns} data={medicalActs} />
+          {roles.includes("Nurse") &&
+            location.state.data.visitStatus === "TRANSFER_TO_NURSE" && (
+              <>
+                <Button
+                  onClick={() => addMedicalaC()}
+                  style={{ marginRight: 10, marginLeft: 20 }}
+                >
+                  Save
+                </Button>
+              </>
+            )}
         </Col>
-
-        <Modal show={show} onHide={() => setShow(false)}>
-          <Col lg={12} md={12} style={{ padding: 30 }}>
-            <h1>Visual Acuity</h1>
-
-            <Form onSubmit={addVisualAcuity}>
-              <Row className="">
-                <Col
-                  md={4}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <p style={{ fontSize: 16, fontWeight: "bold" }}>SC</p>
-                </Col>
-                <Form.Group as={Col} md="4" className="form-group">
-                  <Form.Label>Right Eye</Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    placeholder="%"
-                    onChange={(e) => setScRightEye(e.target.value)}
-                  />
-                </Form.Group>
-                <Form.Group as={Col} md="4" className="form-group">
-                  <Form.Label>Left Eye</Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    placeholder="%"
-                    onChange={(e) => setScLeftEye(e.target.value)}
-                  />
-                </Form.Group>
-
-                <Col
-                  md={4}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <p style={{ fontSize: 16, fontWeight: "bold" }}>AC</p>
-                </Col>
-
-                <Form.Group as={Col} md="4" className="form-group">
-                  <Form.Label></Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    placeholder="%"
-                    onChange={(e) => setAcRightEye(e.target.value)}
-                  />
-                </Form.Group>
-                <Form.Group
-                  as={Col}
-                  md="4"
-                  controlId="validationCustomUsername"
-                  className="form-group"
-                >
-                  <Form.Label></Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    placeholder="%"
-                    onChange={(e) => setAcLeftEye(e.target.value)}
-                  />
-                </Form.Group>
-
-                <Col
-                  md={4}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <p style={{ fontSize: 16, fontWeight: "bold" }}>PH</p>
-                </Col>
-
-                <Form.Group as={Col} md="4" className="form-group">
-                  <Form.Label></Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    placeholder="%"
-                    onChange={(e) => setPhRightEye(e.target.value)}
-                  />
-                </Form.Group>
-                <Form.Group as={Col} md="4" className="form-group">
-                  <Form.Label></Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    placeholder="%"
-                    onChange={(e) => setPhLeftEye(e.target.value)}
-                  />
-                </Form.Group>
-
-                <Col
-                  md={4}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <p style={{ fontSize: 16, fontWeight: "bold" }}>
-                    Glass Sphere
-                  </p>
-                </Col>
-
-                <Form.Group as={Col} md="4" className="form-group">
-                  <Form.Label></Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    placeholder="%"
-                    onChange={(e) => setGlassSphereRightEye(e.target.value)}
-                  />
-                </Form.Group>
-                <Form.Group as={Col} md="4" className="form-group">
-                  <Form.Label></Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    placeholder="%"
-                    onChange={(e) => setGlassSphereLeftEye(e.target.value)}
-                  />
-                </Form.Group>
-
-                <Col
-                  md={4}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <p style={{ fontSize: 16, fontWeight: "bold" }}>
-                    Glass Cylindre
-                  </p>
-                </Col>
-
-                <Form.Group as={Col} md="4" className="form-group">
-                  <Form.Label></Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    placeholder="%"
-                    onChange={(e) => setGlassCylindreRightEye(e.target.value)}
-                  />
-                </Form.Group>
-                <Form.Group as={Col} md="4" className="form-group">
-                  <Form.Label></Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    placeholder="%"
-                    onChange={(e) => setGlassCylindreLeftEye(e.target.value)}
-                  />
-                </Form.Group>
-
-                <Col
-                  md={4}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <p style={{ fontSize: 16, fontWeight: "bold" }}>Glass Axe</p>
-                </Col>
-
-                <Form.Group as={Col} md="4" className="form-group">
-                  <Form.Label></Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    placeholder="%"
-                    onChange={(e) => setGlassAxeRightEye(e.target.value)}
-                  />
-                </Form.Group>
-                <Form.Group as={Col} md="4" className="form-group">
-                  <Form.Label></Form.Label>
-                  <Form.Control
-                    required
-                    type="text"
-                    placeholder="%"
-                    onChange={(e) => setGlassAxeLeftEye(e.target.value)}
-                  />
-                </Form.Group>
-              </Row>
-
-              <Button className="btn btn-danger" onClick={() => setShow(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" style={{ marginLeft: 10 }}>
-                Send Results
-              </Button>
-            </Form>
-          </Col>
-        </Modal>
 
         <Modal show={show2} onHide={() => setShow2(false)}>
           <Form onSubmit={addAct}>

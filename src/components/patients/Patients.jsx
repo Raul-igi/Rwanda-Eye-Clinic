@@ -576,7 +576,7 @@ function Patients() {
             </Card.Header>
             <Card.Body>
               <Card.Body>
-                <DataTable columns={columns} data={patients} paginationTotalRows={totalRows?totalRows:patients.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]} onChangePage={page=>setCurrentPage(page)} pagination paginationServer/>
+                <DataTable columns={columns} data={patients} paginationTotalRows={totalRows?totalRows:patients.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]} onChangePage={page=>setCurrentPage(page)} pagination/>
               </Card.Body>
             </Card.Body>
           </Card>

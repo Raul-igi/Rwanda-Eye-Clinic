@@ -35,7 +35,7 @@ const columns = [
   },
   {
     name: "Insurance",
-    selector: (row) => [row.patientInsurance?.insuranceName],
+    selector: (row) => [row.patientInsurance?.insuranceName || '-'],
     sortable: true,
   },
   {
@@ -201,7 +201,7 @@ function Visits() {
             setVisits(res.data.response.patientVisits);
             setVisits_(res.data.response.patientVisits);
             if(res.data.response.totalElements){
-              setTotalRows(response.data.response.totalElements)
+              setTotalRows(res.data.response.totalElements)
             }
           }
         })
@@ -295,7 +295,6 @@ function Visits() {
   useEffect(() => {
     fetchPatients();
     fetchDepartments();
-    fetchVisits();
   }, []);
 
   return (

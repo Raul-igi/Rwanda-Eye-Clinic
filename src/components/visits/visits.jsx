@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {Link} from 'react-router-dom'
-import {
-  Card,
-  Col,
-  Row,
-  Button,
-  Form,
-  Modal,
-} from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { Card, Col, Row, Button, Form, Modal } from "react-bootstrap";
 import Select from "react-select";
 import axios from "axios";
 import { ECaseType, EVisitType } from "../../data/elementsdata";
@@ -35,7 +28,7 @@ const columns = [
   },
   {
     name: "Insurance",
-    selector: (row) => [row.patientInsurance?.insuranceName || '-'],
+    selector: (row) => [row.patientInsurance?.insuranceName || "-"],
     sortable: true,
   },
   {
@@ -54,13 +47,13 @@ const columns = [
       <Link
         to="/visit-details"
         state={{
-          data:{
-            patient:row.patient,
-            doctor:`${row.doctor.firstName} ${row.doctor.lastName}`,
-            createdAt:row.createdAt,
-            visitId:row.id,
-            visitStatus:row.status
-          }
+          data: {
+            patient: row.patient,
+            doctor: `${row.doctor.firstName} ${row.doctor.lastName}`,
+            createdAt: row.createdAt,
+            visitId: row.id,
+            visitStatus: row.status,
+          },
         }}
       >
         View Details
@@ -78,7 +71,8 @@ function Visits() {
   const [doctors, setDoctors] = useState([]);
   const [department, setDepartment] = useState("");
   const [patientId, setPatientId] = useState("");
-  const [patientsInsurances,setPatientsInsurances] =useState([]);
+  const [patientsInsurances, setPatientsInsurances] = useState([]);
+  const [diagnostics, setDiagnostics] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -92,24 +86,26 @@ function Visits() {
 
   const [show, setShow] = useState(false);
 
-
-
   const searchVisits = (value) => {
     if (value === "") {
       fetchVisits(); // Reset to the original list of projects
     } else {
       const filteredVisits = setVisits_.filter((user) => {
-        const userNameLowercase = (user.patient?.names + user.patient?.phoneNumber + user.doctor?.firstName +  user.doctor?.lastName + user.doctor?.phoneNumber + user.patientInsurance?.insuranceName ).toLowerCase();
+        const userNameLowercase = (
+          user.patient?.names +
+          user.patient?.phoneNumber +
+          user.doctor?.firstName +
+          user.doctor?.lastName +
+          user.doctor?.phoneNumber +
+          user.patientInsurance?.insuranceName
+        ).toLowerCase();
         const searchTermLowercase = value.toLowerCase();
         return userNameLowercase.includes(searchTermLowercase);
       });
 
       setVisits(filteredVisits);
-      
     }
   };
-
-
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -150,67 +146,72 @@ function Visits() {
       });
   };
 
-    const fetchDoctors = async (departmentId) => {
-      let my_token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${my_token}`,
-          "departmentId": departmentId
-        },
-      };
-
-      try {
-        const response = await axios.get(
-          `http://www.ubuzima.rw/rec/medical/doctors/department-id`,
-          config
-        );
-        const doctors_=response.data.response.map(el=>{return({
-          label:`${el.doctor?.firstName} ${el.doctor?.lastName}`,value:el.doctor?.id
-        })})
-        setDoctors(doctors_);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching payrolls:", error);
-      }
+  const fetchDoctors = async (departmentId) => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+        departmentId: departmentId,
+      },
     };
 
-    
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/medical/doctors/department-id`,
+        config
+      );
+      const doctors_ = response.data.response.map((el) => {
+        return {
+          label: `${el.doctor?.firstName} ${el.doctor?.lastName}`,
+          value: el.doctor?.id,
+        };
+      });
+      setDoctors(doctors_);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching payrolls:", error);
+    }
+  };
 
-    const fetchVisits = async () => {
-      let my_token = await localStorage.getItem("token");
-      let roles = await localStorage.getItem("role");
-      let userRoles = JSON.parse(roles);
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${my_token}`,
-          "page":currentPage,
-          "size":10
-        },
-      }; //incase you have to deal with ID or Options
-      axios
-        .get(
-          userRoles.includes('Nurse')?`http://www.ubuzima.rw/rec/visit/nurse`:
-          (userRoles.includes('Doctor')?`http://www.ubuzima.rw/rec/visit/doctor`:`http://www.ubuzima.rw/rec/visit/receptionist`)
-          , config)
-        .then((res) => {
-          // console.log(res.data);
+  const fetchVisits = async () => {
+    let my_token = await localStorage.getItem("token");
+    let roles = await localStorage.getItem("role");
+    let userRoles = JSON.parse(roles);
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+        page: currentPage,
+        size: 10,
+      },
+    }; //incase you have to deal with ID or Options
+    axios
+      .get(
+        userRoles.includes("Nurse")
+          ? `http://www.ubuzima.rw/rec/visit/nurse`
+          : userRoles.includes("Doctor")
+          ? `http://www.ubuzima.rw/rec/visit/doctor`
+          : `http://www.ubuzima.rw/rec/visit/receptionist`,
+        config
+      )
+      .then((res) => {
+        // console.log(res.data);
 
-          if(res.data.status){
-            setVisits(res.data.response.patientVisits);
-            setVisits_(res.data.response.patientVisits);
-            if(res.data.response.totalElements){
-              setTotalRows(res.data.response.totalElements)
-            }
+        if (res.data.status) {
+          setVisits(res.data.response.patientVisits);
+          setVisits_(res.data.response.patientVisits);
+          if (res.data.response.totalElements) {
+            setTotalRows(res.data.response.totalElements);
           }
-        })
-        .catch((error) => {
-          setLoading(false);
-          setShow(false);
-          console.log(error.message);
-        });
-    };
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        setShow(false);
+        console.log(error.message);
+      });
+  };
 
   const fetchPatients = async () => {
     let my_token = await localStorage.getItem("token");
@@ -241,7 +242,7 @@ function Visits() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
+        Authorization: `Bearer ${my_token}`,
       },
     }; //incase you have to deal with ID or Options
     axios
@@ -258,24 +259,27 @@ function Visits() {
       });
   };
 
-
-
   const fetchPatientsInsuranceID = async (id) => {
     let my_token = await localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        "id":id
+        id: id,
       },
     }; //incase you have to deal with ID or Options
     axios
       .get(`http://www.ubuzima.rw/rec/patient/id`, config)
       .then((res) => {
         console.log(res.data);
-        const patientsInsurances = res.data.response.patientInsurances.map((el) => {
-          return { label: `${el.insuranceName} - ${el.cardNumber}`, value: el.id };
-        }); //const that assign value to the property
+        const patientsInsurances = res.data.response.patientInsurances.map(
+          (el) => {
+            return {
+              label: `${el.insuranceName} - ${el.cardNumber}`,
+              value: el.id,
+            };
+          }
+        ); //const that assign value to the property
         setPatientsInsurances(patientsInsurances);
       })
       .catch((error) => {
@@ -285,16 +289,42 @@ function Visits() {
   };
 
 
+
+  const fetchVisitsDiagnostics = async (id) => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    }; //incase you have to deal with ID or Options
+    axios
+      .get(`http://www.ubuzima.rw/rec/visit/nurse/diagnostics`, config)
+      .then((res) => {
+        console.log(res.data);
+        setVisits(res.data.response.patientVisits);
+        setVisits_(res.data.response.patientVisits);
+        if (res.data.response.totalElements) {
+          setTotalRows(res.data.response.totalElements);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error.message);
+        
+      });
+  };
+
+
+
   useEffect(() => {
     fetchVisits();
   }, [currentPage]);
 
-
-
-
   useEffect(() => {
     fetchPatients();
     fetchDepartments();
+   
   }, []);
 
   return (
@@ -304,6 +334,19 @@ function Visits() {
           <Card>
             <Card.Header className="d-flex justify-content-between align-items-center">
               <Card.Title>Visits</Card.Title>
+
+              <Button variant="primary" onClick={fetchVisitsDiagnostics}>
+                Visit Without Diagnostics
+              </Button>
+
+              <Button
+                variant="primary"
+                onClick={fetchVisits}
+                
+              >
+                All visits
+              </Button>
+
               <Row>
                 <Col>
                   <input
@@ -321,7 +364,16 @@ function Visits() {
               </Row>
             </Card.Header>
             <Card.Body>
-              <DataTable columns={columns} paginationPerPage={10} paginationRowsPerPageOptions={[10]} paginationTotalRows={totalRows?totalRows:visits.length} onChangePage={page=>setCurrentPage(page)} data={visits} pagination paginationServer />
+              <DataTable
+                columns={columns}
+                paginationPerPage={10}
+                paginationRowsPerPageOptions={[10]}
+                paginationTotalRows={totalRows ? totalRows : visits.length}
+                onChangePage={(page) => setCurrentPage(page)}
+                data={visits}
+                pagination
+                paginationServer
+              />
             </Card.Body>
           </Card>
         </Col>
@@ -333,14 +385,16 @@ function Visits() {
           </Modal.Header>
           <Modal.Body>
             <Row>
-            
               <Col lg={6}>
                 <Form.Group className="form-group">
                   <Form.Label>Patient ID</Form.Label>
                   <Select
                     className="basic-single"
                     options={patients}
-                    onChange={(e) => {setPatientId(e.value);fetchPatientsInsuranceID(e.value)}} // value onChange on input is the third step
+                    onChange={(e) => {
+                      setPatientId(e.value);
+                      fetchPatientsInsuranceID(e.value);
+                    }} // value onChange on input is the third step
                     classNamePrefix="Select2"
                     placeholder="Select them"
                     required
@@ -396,7 +450,10 @@ function Visits() {
                   <Form.Label>Department</Form.Label>
                   <Select
                     options={departments}
-                    onChange={(e) => {setDepartment(e.value);fetchDoctors(e.value)}}
+                    onChange={(e) => {
+                      setDepartment(e.value);
+                      fetchDoctors(e.value);
+                    }}
                     EVisitType
                     classNamePrefix="Select2"
                     className="multi-select"
@@ -405,8 +462,6 @@ function Visits() {
                   />
                 </Form.Group>
               </Col>
-
-              
 
               <Col xl={6}>
                 <Form.Group className="form-group">
@@ -422,7 +477,6 @@ function Visits() {
                   />
                 </Form.Group>
               </Col>
-
             </Row>
           </Modal.Body>
           <Modal.Footer>

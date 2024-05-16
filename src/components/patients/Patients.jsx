@@ -13,6 +13,7 @@ import {membershipTypes} from "../../data/elementsdata";
 import DataTable from "react-data-table-component";
 
 import { ECaseType, EVisitType } from "../../data/elementsdata";
+import { Link } from "react-router-dom";
 
 
 function Patients() {
@@ -52,6 +53,7 @@ function Patients() {
   const [expiryDate, setexpiryDate] = useState("");
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);
+  const [show3, setShow3] = useState(false);
   const [selectedAssignees, setSelectedAssignees] = useState([]);
 
   const [totalRows, setTotalRows] = useState(0);
@@ -64,6 +66,8 @@ function Patients() {
   const [visitType, setVisitType] = useState("");
   const [doctors, setDoctors] = useState([]);
   const [doctorId, setDoctorId] = useState("");
+  const[previousVisits,setPreviousVisits] =useState("");
+  const[previousVisits_,setPreviousVisits_] =useState("");
 
   const columns = [
     {
@@ -111,6 +115,82 @@ function Patients() {
         >
           Add visit
         </div>
+      ),
+    },
+
+    {
+      name: "Records",
+      cell: (row) => (
+        <div
+          onClick={() => {
+            setShow3(true);
+            fetchPreviousVisits(row.id);
+            setpatientId(row.id);
+          }}
+          style={{ color: "#2D6CC5", cursor: "pointer" }}
+        >
+          Previous Visits
+        </div>
+      ),
+    },
+
+  ];
+
+
+
+  const columns2 = [
+    {
+      name: "Patient's names",
+      selector: (row) => [row.patient?.names],
+      sortable: true,
+    },
+    {
+      name: "Patient's phone ",
+      selector: (row) => [row.patient?.phoneNumber],
+      sortable: true,
+    },
+    {
+      name: "Doctor's names",
+      selector: (row) => [`${row.doctor?.firstName} ${row.doctor?.lastName}`],
+      sortable: true,
+    },
+    {
+      name: "Doctor's phone",
+      selector: (row) => [row.doctor?.phoneNumber],
+      sortable: true,
+    },
+    {
+      name: "Insurance",
+      selector: (row) => [row.patientInsurance?.insuranceName || '-'],
+      sortable: true,
+    },
+    {
+      name: "Case Type",
+      selector: (row) => [row.caseType],
+      sortable: true,
+    },
+    {
+      name: "Case Type",
+      selector: (row) => [row.visitType],
+      sortable: true,
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <Link
+          to="/visit-details"
+          state={{
+            data:{
+              patient:row.patient,
+              doctor:`${row.doctor.firstName} ${row.doctor.lastName}`,
+              createdAt:row.createdAt,
+              visitId:row.id,
+              visitStatus:row.status
+            }
+          }}
+        >
+          View Details
+        </Link>
       ),
     },
   ];
@@ -485,6 +565,85 @@ function Patients() {
       });
   };
 
+
+
+
+
+
+
+
+  // const fetchPreviousVisits = async (id) => {
+  //   let my_token = await localStorage.getItem("token");
+  //   const config = {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${my_token}`,
+  //       patientId: patientId,
+  //     },
+  //   }; //incase you have to deal with ID or Options
+  //   axios
+  //     .get(`http://www.ubuzima.rw/rec/visit/patient/id`, config)
+  //     .then((res) => {
+  //       console.log(res.data);
+  //       const previousVisits = res.data.response.previousVisits.map(
+  //         (el) => {
+  //           return {
+  //             label: `${el.names} - ${el.email}`,
+  //             value: el.patientId,
+  //           };
+  //         }
+  //       ); //const that assign value to the property
+  //       setPreviousVisits(previousVisits);
+  //     })
+  //     .catch((error) => {
+  //       setLoading(false);
+  //       console.log(error.message);
+  //     });
+  // };
+
+
+
+
+
+  
+
+
+
+  const fetchPreviousVisits = async (id) => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+        "size":10,
+        "page":currentPage,
+        patientId:id
+      },
+    };
+
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/visit/patient/id`,
+        config
+      );
+      setPreviousVisits_(response.data.response.patientVisits);
+      setPreviousVisits(response.data.response.patientVisits);
+      if(response.data.response.totalElements){
+        setTotalRows(response.data.response.totalElements)
+      }
+    } catch (error) {
+      console.error("Error fetching payrolls:", error);
+    }
+  };
+
+
+
+
+
+
+
+
+
   const fetchInsurances = async () => {
     let my_token = await localStorage.getItem("token");
     const config = {
@@ -576,7 +735,7 @@ function Patients() {
             </Card.Header>
             <Card.Body>
               <Card.Body>
-                <DataTable columns={columns} data={patients} paginationTotalRows={totalRows?totalRows:patients.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]} onChangePage={page=>setCurrentPage(page)} pagination/>
+                <DataTable columns={columns} data={patients} paginationTotalRows={totalRows?totalRows:patients.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]} onChangePage={page=>setCurrentPage(page)} pagination paginationServer/>
               </Card.Body>
             </Card.Body>
           </Card>
@@ -1018,6 +1177,30 @@ function Patients() {
               Submit
             </Button>
             <Button variant="secondary" onClick={() => setShow2(false)}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+
+
+
+
+
+
+      <Modal show={show3} onHide={() => setShow3(false)}>
+        <Form onSubmit={handleSubmit2}>
+          <Modal.Header closeButton>
+            <Modal.Title>Previous Visits</Modal.Title>
+          </Modal.Header>
+          <Card.Body>
+              <Card.Body>
+                <DataTable columns={columns2} data={previousVisits} paginationTotalRows={totalRows?totalRows:previousVisits.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]} onChangePage={page=>setCurrentPage(page)} pagination paginationServer/>
+              </Card.Body>
+            </Card.Body>
+          <Modal.Footer>
+            
+            <Button variant="secondary" onClick={() => setShow3(false)}>
               Close
             </Button>
           </Modal.Footer>

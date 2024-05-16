@@ -693,7 +693,7 @@ export default function VisitDetails() {
         location.state.data.visitStatus === "TRANSFER_TO_DOCTOR" && (
           <>
             <Button onClick={() => setShow3(true)} style={{ marginRight: 10 }}>
-              Add treatment
+              Add Dr.Note
             </Button>
             <Button onClick={() => setShow5(true)} style={{ marginRight: 10 }}>
               Add Refraction
@@ -887,14 +887,14 @@ export default function VisitDetails() {
           <Card style={{ minHeight: 180 }}>
             <Card.Header className=" d-flex justify-content-between align-items-center">
               <div className="">
-                <Card.Title>Treatment</Card.Title>
+                <Card.Title>Dr.Note</Card.Title>
                 {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
               </div>
             </Card.Header>
             <Card.Body>
               <Card.Title>
                 {savedTreatment
-                  ? `Treatment: ${savedTreatment}`
+                  ? `Dr.Note: ${savedTreatment}`
                   : "No treatment yet..."}
               </Card.Title>
             </Card.Body>
@@ -1007,12 +1007,12 @@ export default function VisitDetails() {
               <Col lg={12} className="col-md-">
                 <Card className="custom-card">
                   <Card.Header>
-                    <Card.Title>Add treatment</Card.Title>
+                    <Card.Title>Add Dr.Note</Card.Title>
                   </Card.Header>
                   <Card.Body>
                     <div className="d-flex flex-column">
                       <Form.Group as={Col} md="12" className="form-group">
-                        <Form.Label>Treatment</Form.Label>
+                        <Form.Label>DR.Note</Form.Label>
                         <Form.Control
                           required
                           type="text"

@@ -19,7 +19,7 @@ import { Link } from "react-router-dom";
 function Patients() {
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
-  const [names, setName] = useState("");
+  const [names, setNames] = useState("");
   const [patients_, setPatients_] = useState("");
   const [patients, setPatients] = useState("");
   const [provinces, setProvinces] = useState([]);
@@ -30,7 +30,7 @@ function Patients() {
   const [insuranceId, setInsuranceId] = useState("");
   const [insurances, setInsurances] = useState();
   const [email, setEmail] = useState("");
-  const [phoneNumber, setphoneNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [gender, setGender] = useState("");
   const [dob, setDob] = useState("");
 
@@ -45,7 +45,7 @@ function Patients() {
   const [contactPerson, setcontactPerson] = useState();
   const [contactPersonPhoneNumber, setcontactPersonPhoneNumber] = useState();
   const [locationId, setlocationId] = useState([]);
-  const [patientId, setpatientId] = useState(false);
+  const [patientId, setPatientId] = useState(false);
   const [membershipType, setmembershipType] = useState("");
   const [principalNames, setprincipalNames] = useState("");
   const [cardNumber, setcardNumber] = useState("");
@@ -54,6 +54,8 @@ function Patients() {
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);
   const [show3, setShow3] = useState(false);
+  const [show4, setShow4] = useState(false);
+  const [show5, setShow5] = useState(false);
   const [selectedAssignees, setSelectedAssignees] = useState([]);
 
   const [totalRows, setTotalRows] = useState(0);
@@ -68,6 +70,15 @@ function Patients() {
   const [doctorId, setDoctorId] = useState("");
   const[previousVisits,setPreviousVisits] =useState("");
   const[previousVisits_,setPreviousVisits_] =useState("");
+  const [allDoctors, setAllDoctors] = useState([]);
+  const [scheduleDayId,setscheduleDayId] =useState("");
+
+
+
+
+
+  
+
 
   const columns = [
     {
@@ -109,7 +120,7 @@ function Patients() {
           onClick={() => {
             setShow2(true);
             fetchPatientsInsuranceID(row.id);
-            setpatientId(row.id);
+            setPatientId(row.id);
           }}
           style={{ color: "#2D6CC5", cursor: "pointer" }}
         >
@@ -125,7 +136,7 @@ function Patients() {
           onClick={() => {
             setShow3(true);
             fetchPreviousVisits(row.id);
-            setpatientId(row.id);
+            setPatientId(row.id);
           }}
           style={{ color: "#2D6CC5", cursor: "pointer" }}
         >
@@ -198,6 +209,7 @@ function Patients() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+
   const searchPatients = (value) => {
     if (value === "") {
       fetchPatients(); // Reset to the original list of projects
@@ -256,7 +268,7 @@ function Patients() {
         // console.log(res.data);
         setShow(false);
         if (res.data.status === true) {
-          alert("Patient added successfully");
+          setShow4(true);
           fetchPatients();
         } else {
           alert("something went wrong");
@@ -572,35 +584,29 @@ function Patients() {
 
 
 
-  // const fetchPreviousVisits = async (id) => {
-  //   let my_token = await localStorage.getItem("token");
-  //   const config = {
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${my_token}`,
-  //       patientId: patientId,
-  //     },
-  //   }; //incase you have to deal with ID or Options
-  //   axios
-  //     .get(`http://www.ubuzima.rw/rec/visit/patient/id`, config)
-  //     .then((res) => {
-  //       console.log(res.data);
-  //       const previousVisits = res.data.response.previousVisits.map(
-  //         (el) => {
-  //           return {
-  //             label: `${el.names} - ${el.email}`,
-  //             value: el.patientId,
-  //           };
-  //         }
-  //       ); //const that assign value to the property
-  //       setPreviousVisits(previousVisits);
-  //     })
-  //     .catch((error) => {
-  //       setLoading(false);
-  //       console.log(error.message);
-  //     });
-  // };
-
+  const fetchDayId = async (id) => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+        doctorId : id, 
+      },
+    }; //incase you have to deal with ID or Options
+    axios
+      .get(`http://www.ubuzima.rw/rec/schedule`, config)
+      .then((res) => {
+        console.log(res.data);
+        const schedulesDayId = res.data.response.map((el) => {
+          return ({ label: `${el.day}`, value: el.day });
+        }); //const that assign value to the property
+        setschedulesDayId(schedulesDayId);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error.message);
+      });
+  };
 
 
 
@@ -761,7 +767,7 @@ function Patients() {
                             className="form-control"
                             name="example-text-input"
                             // placeholder="names"
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={(e) => setNames(e.target.value)}
                             required
                           />
                         </Form.Group>
@@ -804,7 +810,7 @@ function Patients() {
                             name="example-text-input"
                             // placeholder="phone number"
 
-                            onChange={(e) => setphoneNumber(e.target.value)}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
                             required
                           />
                         </Form.Group>
@@ -1206,6 +1212,156 @@ function Patients() {
           </Modal.Footer>
         </Form>
       </Modal>
+
+
+
+      <Modal show={show4} onHide={() => setShow4(false)}>
+        <Form onSubmit={handleSubmit2}>
+          <Modal.Header closeButton>
+            <Modal.Title>Choose Action</Modal.Title>
+          </Modal.Header>
+          <Modal.Footer>
+
+          <Button  variant="primary"  onClick={() => {
+            setShow2(true);
+            setShow4(false)
+          }} >
+              Add Visits
+            </Button>
+
+            <Button  variant="primary"  onClick={() => {
+            setShow5(true);
+            setShow4(false)
+
+          }} >
+              Add Appointment
+            </Button>
+            </Modal.Footer>
+        </Form>
+      </Modal>
+
+
+
+
+      <Modal show={show5} onHide={() => setShow5(false)}>
+        <Form onSubmit={handleSubmit}>
+          <Modal.Header closeButton>
+            <Modal.Title>Book Appointments</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Row>
+
+
+
+                      <Col lg={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Doctor ID</Form.Label>
+                  <Select
+                    className="basic-single"
+                    options={allDoctors}
+                    onChange={(e) => {setDoctorId(e.value);fetchDayId(e.value)}} // value onChange on input is the third step
+                    classNamePrefix="Select2"
+                    placeholder="Select them"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+                      <Col lg={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Day ID</Form.Label>
+                  <Select
+                    className="basic-single"
+                    options={scheduleDayId}
+                    onChange={(e) =>  setscheduleDayId(e.value)} // value onChange on input is the third step
+                    classNamePrefix="Select2"
+                    placeholder="Select them"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+       
+
+
+                      
+
+              
+              <Col lg={6} style={{ marginTop: 10 }}>
+                <Form.Group>
+                  <Form.Label>starting Time</Form.Label>
+                  <Form.Control
+                    type="datetime-local"
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="starting time"
+                    onChange={(e) => setStartingTime(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+
+              <Col lg={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Patient ID</Form.Label>
+                  <Select
+                    className="basic-single"
+                    options={patients}
+                    onChange={(e) =>  setPatientId(e.value)} // value onChange on input is the third step
+                    classNamePrefix="Select2"
+                    placeholder="Select them"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+       
+
+
+
+              <Col lg={6} style={{ marginTop: 10 }}>
+                <Form.Group>
+                  <Form.Label>Names</Form.Label>
+                  <Form.Control
+                    type="text"
+                    className="form-control "
+                    name="example-text-input"
+                    placeholder="names"
+                    onChange={(e) => setNames(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col lg={6} style={{ marginTop: 10 }}>
+                <Form.Group>
+                  <Form.Label>Phone Number</Form.Label>
+                  <Form.Control
+                    type="tel"
+                    className="form-control "
+                    name="example-text-input"
+                    placeholder="phone number"
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              
+            </Row>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button type="submit" variant="primary" onClick={handleSubmit}>
+              Submit
+            </Button>
+            <Button variant="secondary" onClick={()=>{setShow5(false)}}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+
+
+
     </div>
   );
 }

@@ -3,8 +3,6 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {  Container, Dropdown, Form, InputGroup, Navbar } from 'react-bootstrap'
 
-import axios from 'axios'
-import { imagesData } from '../../common/commomimages/imagedata'
 import './header.css'
 
 
@@ -16,7 +14,6 @@ function Header () {
     const logout = () => {
             localStorage.clear()
             window.location.reload()
-            navigate('/')
         
     }
 

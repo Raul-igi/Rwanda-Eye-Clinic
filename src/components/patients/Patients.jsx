@@ -543,13 +543,12 @@ function Patients() {
 
   
   useEffect(() => {
+    fetchPatients();
     fetchInsurances();
     fetchProvinces();
     fetchDepartments();
   }, []);
-  useEffect(()=>{
-    fetchPatients();
-  },[currentPage])
+
 
   return (
     <div>
@@ -576,7 +575,7 @@ function Patients() {
             </Card.Header>
             <Card.Body>
               <Card.Body>
-                <DataTable columns={columns} data={patients} paginationTotalRows={totalRows?totalRows:patients.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]} onChangePage={page=>setCurrentPage(page)} pagination/>
+                <DataTable columns={columns} data={patients}  pagination/>
               </Card.Body>
             </Card.Body>
           </Card>

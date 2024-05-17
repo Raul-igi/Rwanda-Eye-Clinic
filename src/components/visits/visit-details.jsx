@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import DataTable from "react-data-table-component";
+import { debounce } from "lodash";
 import { lensType_, dip_ } from "../../data/elementsdata";
 export default function VisitDetails() {
   const location = useLocation();
@@ -13,6 +14,10 @@ export default function VisitDetails() {
   const [show3, setShow3] = useState(false);
   const [show4, setShow4] = useState(false);
   const [show5, setShow5] = useState(false);
+  
+  const [isVaSaved, setIsVaSaved] = useState(true);
+  const [isReSaved, setIsReSaved] = useState(true);
+
   const [acts, setActs] = useState([]);
   const [roles, setRoles] = useState([]);
   const [act, setAct] = useState("");
@@ -26,7 +31,37 @@ export default function VisitDetails() {
   const [savedTreatment, setSavedTreatment] = useState("");
   const [diagnostic, setDiagnostic] = useState("");
   const [savedDiagnostic, setSavedDiagnostic] = useState("");
-  const [refraction, setRefraction] = useState("");
+  const [refraction, setRefraction] = useState([
+    {
+      name: "Sphere Right Eye",
+      right: "",
+      left: "",
+    },
+
+    {
+      name: "Cylindre Right Eye",
+      right: "",
+      left: "",
+    },
+
+    {
+      name: "Axe Right Eye",
+      right: "",
+      left: "",
+    },
+
+    {
+      name: "Lens Type",
+      select:true,
+      right: "",
+    },
+
+    {
+      name: "DIP",
+      select:true,
+      right: "",
+    },
+  ]);
 
   const [savedRefraction, setSavedRefraction] = useState("");
 
@@ -64,18 +99,6 @@ export default function VisitDetails() {
     },
   ]);
 
-  const [scRightEye, setScRightEye] = useState("");
-  const [scLeftEye, setScLeftEye] = useState("");
-  const [acRightEye, setAcRightEye] = useState("");
-  const [acLeftEye, setAcLeftEye] = useState("");
-  const [phRightEye, setPhRightEye] = useState("");
-  const [phLeftEye, setPhLeftEye] = useState("");
-  const [glassSphereRightEye, setGlassSphereRightEye] = useState("");
-  const [glassSphereLeftEye, setGlassSphereLeftEye] = useState("");
-  const [glassCylindreRightEye, setGlassCylindreRightEye] = useState("");
-  const [glassCylindreLeftEye, setGlassCylindreLeftEye] = useState("");
-  const [glassAxeRightEye, setGlassAxeRightEye] = useState("");
-  const [glassAxeLeftEye, setGlassAxeLeftEye] = useState("");
 
   const [sphereRightEye, setSphereRightEye] = useState("");
   const [sphereLeftEye, setSphereLeftEye] = useState("");
@@ -89,7 +112,7 @@ export default function VisitDetails() {
   const [showModal, setShowModal] = useState(false);
   const handleClose8 = () => setShowModal(false);
   const handleShow8 = () => setShowModal(true);
-
+  
   const [eight, setEight] = useState(false);
 
   const handleInputChange = (e, name, field) => {
@@ -101,6 +124,17 @@ export default function VisitDetails() {
       return item;
     });
     setVisualAcuity(newData);
+  };
+
+  const handleInputChange2 = (e, name, field) => {
+    // Update the corresponding data item with the new value
+    const newData = refraction.map((item) => {
+      if (item.name === name) {
+        return { ...item, [field]: e };
+      }
+      return item;
+    });
+    setRefraction(newData);
   };
 
   const paymentMethods = [
@@ -122,6 +156,7 @@ export default function VisitDetails() {
         <input
           className="form-control"
           type="text"
+          readOnly={isVaSaved}
           value={row.right}
           onChange={(e) => handleInputChange(e, row.name, "right")}
         />
@@ -134,6 +169,7 @@ export default function VisitDetails() {
         <input
           className="form-control"
           type="text"
+          readOnly={isVaSaved}
           value={row.left}
           onChange={(e) => handleInputChange(e, row.name, "left")}
         />
@@ -173,13 +209,45 @@ export default function VisitDetails() {
     },
     {
       name: "Right",
-      selector: (row) => [row.right],
       sortable: true,
+      cell: (row) => (
+          !row.select?
+         <input
+          className="form-control"
+          type="text"
+          readOnly={isReSaved}
+          value={row.right}
+          onChange={(e) => handleInputChange2(e.target.value, row.name, "right")}
+        />:
+        <div style={{width:'100%'}}>
+<Select
+                          options={row.name==='Lens Type'?lensType_:dip_}
+                          value={{label:row.right,value:row.right}}
+                          style={{width:'100%'}}
+                          onChange={(e) =>handleInputChange2(e.value, row.name, "right")}
+                          classNamePrefix="Select2"
+                          className="multi-select"
+                          // placeholder="Select them"
+                          required
+                        />
+        </div>
+        
+        
+       
+      ),
     },
     {
       name: "Left",
-      selector: (row) => [row.left],
       sortable: true,
+      cell: (row) => (
+       (row.left!==undefined) &&  <input
+       className="form-control"
+       type="text"
+       readOnly={isReSaved}
+       value={row.left}
+       onChange={(e) => handleInputChange2(e.target.value, row.name, "left")}
+     />
+      ),
     },
   ];
 
@@ -239,7 +307,7 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state.data.visitId,
+        patientVisitId: location.state.data?.visitId,
       },
     };
 
@@ -249,7 +317,7 @@ export default function VisitDetails() {
         config
       );
       if (response.data.status) {
-        setSavedDiagnostic(response.data.response.diagnostic);
+        setSavedDiagnostic(response.data.response?.diagnostic);
       }
     } catch (error) {
       console.error(error);
@@ -272,7 +340,7 @@ export default function VisitDetails() {
         config
       );
       if (response.data.status) {
-        setSavedTreatment(response.data.response.treatment);
+        setSavedTreatment(response.data.response?.treatment);
       }
     } catch (error) {
       console.error(error);
@@ -294,7 +362,7 @@ export default function VisitDetails() {
         `http://www.ubuzima.rw/rec/visit/nurse/patient-acts`,
         config
       );
-      setMedicalActs(response.data.response);
+      setMedicalActs(response.data.response.map(el=>el.id));
     } catch (error) {
       console.error(error);
     }
@@ -336,7 +404,9 @@ export default function VisitDetails() {
         `http://www.ubuzima.rw/rec/visit/nurse/va/visit-id`,
         config
       );
-      const visualAcuity_ = [
+      if(response.data.response){
+        setIsVaSaved(true)
+         const visualAcuity_ = [
         {
           name: "SC",
           right: response.data.response.scRightEye,
@@ -369,13 +439,27 @@ export default function VisitDetails() {
         },
       ];
       setVisualAcuity(visualAcuity_);
+      }else{
+        setIsVaSaved(false)
+      }
+     
     } catch (error) {
       console.error(error);
     }
   };
 
   const addVisualAcuity = async () => {
-    let my_token = localStorage.getItem("token");
+    if(
+      !(visualAcuity[0].right && visualAcuity[0].left &&
+      visualAcuity[1].right && visualAcuity[1].left &&
+      visualAcuity[2].right && visualAcuity[2].left &&
+      visualAcuity[3].right && visualAcuity[3].left &&
+      visualAcuity[4].right && visualAcuity[4].left &&
+      visualAcuity[5].right && visualAcuity[5].left)
+      ){
+        alert('Fill all the visual acuity fields')
+      }else{
+        let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -413,6 +497,8 @@ export default function VisitDetails() {
       setShow(false);
       console.error(error);
     }
+      }
+    
   };
 
   const pay = async () => {
@@ -440,7 +526,7 @@ export default function VisitDetails() {
       );
       setShowModal(false);
       if (response.data.status) {
-        alert("Medical act added successfully!");
+        alert("Paid successfully!");
       }
     } catch (error) {
       setShowModal(false);
@@ -448,33 +534,61 @@ export default function VisitDetails() {
     }
   };
 
-  const addAct = async (e) => {
-    e.preventDefault();
-    let my_token = localStorage.getItem("token");
+  const handleCheckboxChange = (event) => {
+    const { value, checked } = event.target;
+    setMedicalActs((prev) => {
+      if (checked) {
+        return [...prev, value];
+      } else {
+        return prev.filter((act) => act !== value);
+      }
+    });
+  };
+
+  // Debounced function to be executed after changes
+  const debouncedFunction = debounce((updatedMedicalActs) => {
+    addAct(updatedMedicalActs);
+    // Your function logic here
+  }, 3000);
+
+  // Effect to handle changes to medicalActs state
+  useEffect(() => {
+    debouncedFunction(medicalActs);
+
+    // Cleanup the debounce on unmount
+    return () => debouncedFunction.cancel();
+  }, [medicalActs, debouncedFunction]);
+
+  const addAct = async (acts_) => {
+    const roles_ = localStorage.getItem("role");
+    const userRoles = JSON.parse(roles_);
+    if(userRoles.includes('Nurse')){
+      let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
         patientVisitId: location.state.data.visitId,
-        medicalActId: act,
+        medicalActId: acts_,
       },
     };
     console.log(config);
     try {
       const response = await axios.post(
-        `http://www.ubuzima.rw/rec/visit/nurse/patient/add-act`,
+        `http://www.ubuzima.rw/rec/visit/nurse/patient/add-act-all`,
         {},
         config
       );
       setShow2(false);
       if (response.data.status) {
-        alert("Medical act added successfully!");
-        fetchMedicalActs();
+        // alert("Medical acts added successfully!");
       }
     } catch (error) {
       setShow2(false);
       console.error(error);
     }
+    }
+    
   };
 
   const nurseSave = async () => {
@@ -585,9 +699,17 @@ export default function VisitDetails() {
     }
   };
 
-  const addRefraction = async (e) => {
-    e.preventDefault();
-    let my_token = localStorage.getItem("token");
+  const addRefraction = async () => {
+    if(!(
+      refraction[0].right && refraction[0].left &&
+      refraction[1].right && refraction[1].left &&
+      refraction[2].right && refraction[2].left &&
+      refraction[3].right && 
+      refraction[4].right
+    )){
+      alert('Fill all the refraction fields')
+    }else{
+      let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -596,14 +718,14 @@ export default function VisitDetails() {
     };
     const postObj = JSON.stringify({
       patientVisitId: location.state.data.visitId,
-      sphereRightEye: sphereRightEye,
-      sphereLeftEye: sphereLeftEye,
-      cylindreRightEye: cylindreRightEye,
-      cylindreLeftEye: cylindreLeftEye,
-      axeRightEye: axeRightEye,
-      axeLeftEye: axeLeftEye,
-      lensType: lensType,
-      dip: dip,
+      sphereRightEye: refraction[0].right,
+      sphereLeftEye: refraction[0].left,
+      cylindreRightEye: refraction[1].right,
+      cylindreLeftEye: refraction[1].left,
+      axeRightEye: refraction[2].right,
+      axeLeftEye: refraction[2].left,
+      lensType: refraction[3].right,
+      dip: refraction[4].right,
     });
 
     try {
@@ -622,6 +744,7 @@ export default function VisitDetails() {
       console.error(error);
       console.log(res.data);
     }
+    }
   };
 
   const fetchRefraction = async () => {
@@ -639,36 +762,43 @@ export default function VisitDetails() {
         `http://www.ubuzima.rw/rec/visit/doctor/refraction/visit-id`,
         config
       );
-      const refraction_ = [
-        {
-          name: "Sphere Right Eye",
-          right: response.data.response.sphereRightEye,
-          left: response.data.response.sphereLeftEye,
-        },
-
-        {
-          name: "Cylindre Right Eye",
-          right: response.data.response.cylindreRightEye,
-          left: response.data.response.cylindreLeftEye,
-        },
-
-        {
-          name: "Axe Right Eye",
-          right: response.data.response.axeRightEye,
-          left: response.data.response.axeLeftEye,
-        },
-
-        {
-          name: "Lens Type",
-          right: response.data.response.lensType,
-        },
-
-        {
-          name: "DIP",
-          right: response.data.response.dip,
-        },
-      ];
-      setRefraction(refraction_);
+      if(response.data.status && response.data.response){
+        setIsReSaved(true)
+        const refraction_ = [
+          {
+            name: "Sphere Right Eye",
+            right: response.data.response.sphereRightEye,
+            left: response.data.response.sphereLeftEye,
+          },
+  
+          {
+            name: "Cylindre Right Eye",
+            right: response.data.response.cylindreRightEye,
+            left: response.data.response.cylindreLeftEye,
+          },
+  
+          {
+            name: "Axe Right Eye",
+            right: response.data.response.axeRightEye,
+            left: response.data.response.axeLeftEye,
+          },
+  
+          {
+            name: "Lens Type",
+            select:true,
+            right: response.data.response.lensType,
+          },
+  
+          {
+            name: "DIP",
+            select:true,
+            right: response.data.response.dip,
+          },
+        ];
+        setRefraction(refraction_);
+      }else{
+        setIsReSaved(false)
+      }
     } catch (error) {
       console.error(error);
     }
@@ -923,8 +1053,8 @@ export default function VisitDetails() {
         <Col md={6} xl={6} style={{ marginTop: 20 }}>
           <h1>Visual Acuity</h1>
           <DataTable columns={vaColumns} data={visualAcuity} />
-          {roles.includes("Nurse") &&
-            location.state.data.visitStatus === "TRANSFER_TO_NURSE" && (
+          {(roles.includes("Nurse") &&
+            location.state.data.visitStatus === "TRANSFER_TO_NURSE" && !isVaSaved) && (
               <>
                 <Button
                   onClick={() => addVisualAcuity()}
@@ -939,22 +1069,38 @@ export default function VisitDetails() {
         <Col md={6} xl={6} style={{ marginTop: 20 }}>
           <h1>Refraction</h1>
           <DataTable columns={reColumns} data={refraction} />
-        </Col>
-
-        <Col md={6} xl={6} style={{ marginTop: 20 }}>
-          <h1>Medical Acts</h1>
-          <DataTable columns={maColumns} data={medicalActs} />
-          {roles.includes("Nurse") &&
-            location.state.data.visitStatus === "TRANSFER_TO_NURSE" && (
+          {(roles.includes("Doctor") &&
+            location.state.data.visitStatus === "TRANSFER_TO_DOCTOR" && !isReSaved) && (
               <>
                 <Button
-                  onClick={() => addMedicalaC()}
+                  onClick={() => addRefraction()}
                   style={{ marginRight: 10, marginLeft: 20 }}
                 >
                   Save
                 </Button>
               </>
             )}
+        </Col>
+
+        <Col md={6} xl={6} style={{ marginTop: 20 }}>
+          <h1>Medical Acts</h1>
+          {acts.length>0?(
+            acts.map(act=>
+              <Fragment key={act.id}>
+            <input
+              type="checkbox"
+              style={{ marginBottom: 15 }}
+              value={act.value}
+              checked={medicalActs.includes(act.value)}
+              onChange={handleCheckboxChange}
+            />{' '}
+            {act.label}
+            <br />
+          </Fragment>
+              )
+          ):(
+            <p>No medical acts</p>
+          )}
         </Col>
 
         <Modal show={show2} onHide={() => setShow2(false)}>

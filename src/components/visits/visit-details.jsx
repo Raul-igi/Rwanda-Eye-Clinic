@@ -23,6 +23,7 @@ export default function VisitDetails() {
   const [act, setAct] = useState("");
   const [invoice, setInvoice] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("INSURANCE");
+  const [paymentMode, setPaymentMode] = useState(null);
 
   const [insuranceAmount, setInsuranceAmount] = useState(0);
   const [topUpAmount, setTopUpAmount] = useState(0);
@@ -353,16 +354,16 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state.data.visitId,
+        id: location.state.data.visitId,
       },
     };
 
     try {
       const response = await axios.get(
-        `http://www.ubuzima.rw/rec/visit/nurse/patient-acts`,
+        `http://www.ubuzima.rw/rec/visit/id`,
         config
       );
-      setMedicalActs(response.data.response.map(el=>el.id));
+      setMedicalActs(response.data.response.medicalAct.map(el=>el.id));
     } catch (error) {
       console.error(error);
     }
@@ -513,6 +514,7 @@ export default function VisitDetails() {
       invoiceNumber: invoice.invoiceNumber,
       paymentMethod,
       amount: invoice.patientAmount,
+      paymentMode: paymentMode
     };
     if (topUpAmount > 0) {
       paymentDto.topUpAmount = topUpAmount;
@@ -527,6 +529,7 @@ export default function VisitDetails() {
       setShowModal(false);
       if (response.data.status) {
         alert("Paid successfully!");
+        fetchInvoice();
       }
     } catch (error) {
       setShowModal(false);
@@ -824,9 +827,6 @@ export default function VisitDetails() {
             <Button onClick={() => setShow3(true)} style={{ marginRight: 10 }}>
               Add Dr.Note
             </Button>
-            <Button onClick={() => setShow5(true)} style={{ marginRight: 10 }}>
-              Add Refraction
-            </Button>
           </>
         )}
       {roles.includes("Nurse") &&
@@ -837,7 +837,7 @@ export default function VisitDetails() {
         )}
 
       {visualAcuity.length > 0 &&
-        medicalActs.length > 0 &&
+        // medicalActs.length > 0 &&
         roles.includes("Doctor") && (
           <Button
             onClick={() => {
@@ -983,6 +983,23 @@ export default function VisitDetails() {
                                 />
                               </Form.Group>
                             </Col>
+                            <Col xl={12}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Select payment mode</Form.Label>
+                            <Select
+                              options={[
+                                {label:'Cash',value:'CASH'},
+                                {label:'MoMo',value:'MOMO'},
+                                {label:'POS',value:'POS'},
+                              ]}
+                              onChange={(e) => setPaymentMode(e.value)}
+                              classNamePrefix="Select2"
+                              className="multi-select"
+                              // placeholder="Select them"
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
                           </>
                         )}
                       </>

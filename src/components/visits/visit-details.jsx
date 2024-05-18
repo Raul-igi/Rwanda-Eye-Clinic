@@ -570,15 +570,17 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state.data.visitId,
-        medicalActId: acts_,
       },
     };
+    const postObj = JSON.stringify({
+      patientVisitId: location.state.data.visitId,
+        medicalActId: acts_,
+    })
     console.log(config);
     try {
       const response = await axios.post(
         `http://www.ubuzima.rw/rec/visit/nurse/patient/add-act-all`,
-        {},
+        postObj,
         config
       );
       setShow2(false);

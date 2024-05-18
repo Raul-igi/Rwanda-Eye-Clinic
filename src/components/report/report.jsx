@@ -181,6 +181,66 @@ function Report() {
     }
   };
 
+
+
+
+
+
+
+
+
+  const fetchDailyReport = async () => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+        selectedDate:formatDate (new Date())
+      },
+    };
+
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/report/date`,
+        config
+      );
+    
+      const reports_ = response.data.response.map((el) => {
+        return {
+          doctorNames: `${el.doctor?.firstName} ${el.doctor?.lastName}`,
+          doctorPhone: el.doctor?.phoneNumber,
+          paymentMethod: el.paymentMethod,
+          paidAmaount: el.amount,
+          paymentDate: el.paymentDate,
+          insurance: el.insurance.name,
+          topUpAmount: el.topUpAmount || 0,
+        };
+      });
+
+      setReports(reports_);
+    } catch (error) {
+      console.error("Error fetching payrolls:", error);
+    }
+  };
+
+
+
+
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+  };
+
+
+
+
+
+
+
+
   const fetchReports = async () => {
     let my_token = localStorage.getItem("token");
     let url;
@@ -281,6 +341,7 @@ function Report() {
   useEffect(() => {
     fetchInsurances();
     fetchAllDoctors();
+    fetchDailyReport();
   }, []);
 
   return (

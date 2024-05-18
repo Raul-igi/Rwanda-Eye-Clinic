@@ -19,7 +19,8 @@ const Login = ({authLogin,isAuthenticated,role}) => {
 
   }
   if (isAuthenticated) {
-      return <Navigate replace to={`/patients`} />
+      
+      return JSON.parse(role).includes('Nurse')?<Navigate replace to={`/visits`} /> : <Navigate replace to={`/patients`} />
   }
 
   return (

@@ -548,7 +548,6 @@ export default function VisitDetails() {
   // Debounced function to be executed after changes
   const debouncedFunction = debounce((updatedMedicalActs) => {
     addAct(updatedMedicalActs);
-    // Your function logic here
   }, 3000);
 
   // Effect to handle changes to medicalActs state
@@ -562,7 +561,7 @@ export default function VisitDetails() {
   const addAct = async (acts_) => {
     const roles_ = localStorage.getItem("role");
     const userRoles = JSON.parse(roles_);
-    if(userRoles.includes('Nurse')){
+    if(userRoles.includes('Nurse') && location.state.data.visitStatus === "TRANSFER_TO_NURSE"){
       let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -823,7 +822,7 @@ export default function VisitDetails() {
         location.state.data.visitStatus === "TRANSFER_TO_DOCTOR" && (
           <>
             <Button onClick={() => setShow3(true)} style={{ marginRight: 10 }}>
-              Add treatment
+              Add Dr.Note
             </Button>
             <Button onClick={() => setShow5(true)} style={{ marginRight: 10 }}>
               Add Refraction
@@ -831,8 +830,7 @@ export default function VisitDetails() {
           </>
         )}
       {roles.includes("Nurse") &&
-        location.state.data.visitStatus === "TRANSFER_TO_NURSE" &&
-        savedTreatment && (
+        savedTreatment && !savedDiagnostic && (
           <Button onClick={() => setShow4(true)} style={{ marginRight: 10 }}>
             Add diagnostic
           </Button>
@@ -840,11 +838,26 @@ export default function VisitDetails() {
 
       {visualAcuity.length > 0 &&
         medicalActs.length > 0 &&
-        (roles.includes("Nurse") || roles.includes("Doctor")) && (
+        roles.includes("Doctor") && (
           <Button
             onClick={() => {
               if (window.confirm("Are you sure you want to save?")) {
-                roles.includes("Nurse") ? nurseSave() : doctorSave();
+                 doctorSave();
+              }
+            }}
+            style={{ marginRight: 10 }}
+          >
+            save and send
+          </Button>
+        )}
+
+{visualAcuity.length > 0 &&
+        medicalActs.length > 0 &&
+        roles.includes("Nurse") && !savedTreatment && (
+          <Button
+            onClick={() => {
+              if (window.confirm("Are you sure you want to save?")) {
+                nurseSave() 
               }
             }}
             style={{ marginRight: 10 }}
@@ -859,7 +872,7 @@ export default function VisitDetails() {
               <Card.Header className=" d-flex justify-content-between align-items-center">
                 <Card.Title>
                   Invoice Number: {invoice.invoiceNumber}
-                  {invoice.paymentStatus == "NOT_PAID" && (
+                  {(invoice.paymentStatus == "NOT_PAID" && roles.includes('Receptionist')) && (
                     <Button
                       style={{ marginLeft: 50 }}
                       variant="green"
@@ -1013,18 +1026,20 @@ export default function VisitDetails() {
             </Card.Body>
           </Card>
         </Col>
-        <Col md={4} xl={4} style={{ marginTop: 20 }}>
+        {!roles.includes('Receptionist')&&(
+          <>
+          <Col md={4} xl={4} style={{ marginTop: 20 }}>
           <Card style={{ minHeight: 180 }}>
             <Card.Header className=" d-flex justify-content-between align-items-center">
               <div className="">
-                <Card.Title>Treatment</Card.Title>
+                <Card.Title>Dr.Note</Card.Title>
                 {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
               </div>
             </Card.Header>
             <Card.Body>
               <Card.Title>
                 {savedTreatment
-                  ? `Treatment: ${savedTreatment}`
+                  ? `Dr.Note: ${savedTreatment}`
                   : "No treatment yet..."}
               </Card.Title>
             </Card.Body>
@@ -1047,9 +1062,13 @@ export default function VisitDetails() {
             </Card.Body>
           </Card>
         </Col>
+        </>
+        )}
+        
       </Row>
 
-      <Row>
+      {!roles.includes('Receptionist')&&(
+        <Row>
         <Col md={6} xl={6} style={{ marginTop: 20 }}>
           <h1>Visual Acuity</h1>
           <DataTable columns={vaColumns} data={visualAcuity} />
@@ -1058,7 +1077,7 @@ export default function VisitDetails() {
               <>
                 <Button
                   onClick={() => addVisualAcuity()}
-                  style={{ marginRight: 10, marginLeft: 20 }}
+                  style={{ marginTop:20 }}
                 >
                   Save
                 </Button>
@@ -1074,7 +1093,7 @@ export default function VisitDetails() {
               <>
                 <Button
                   onClick={() => addRefraction()}
-                  style={{ marginRight: 10, marginLeft: 20 }}
+                  style={{ marginTop:20 }}
                 >
                   Save
                 </Button>
@@ -1102,7 +1121,8 @@ export default function VisitDetails() {
             <p>No medical acts</p>
           )}
         </Col>
-
+      </Row>
+      )}
         <Modal show={show2} onHide={() => setShow2(false)}>
           <Form onSubmit={addAct}>
             <Modal.Header closeButton></Modal.Header>
@@ -1153,12 +1173,12 @@ export default function VisitDetails() {
               <Col lg={12} className="col-md-">
                 <Card className="custom-card">
                   <Card.Header>
-                    <Card.Title>Add treatment</Card.Title>
+                    <Card.Title>Add Dr.Note</Card.Title>
                   </Card.Header>
                   <Card.Body>
                     <div className="d-flex flex-column">
                       <Form.Group as={Col} md="12" className="form-group">
-                        <Form.Label>Treatment</Form.Label>
+                        <Form.Label>DR.Note</Form.Label>
                         <Form.Control
                           required
                           type="text"
@@ -1336,7 +1356,7 @@ export default function VisitDetails() {
             </Modal.Body>
           </Form>
         </Modal>
-      </Row>
+      
     </Fragment>
   );
 }

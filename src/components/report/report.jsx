@@ -78,7 +78,7 @@ function Report() {
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
 
-  const [reportType, setReportType] = useState("");
+  const [reportType, setReportType] = useState({ value: "DATE_RANGE", label: "Date range" });
   const [date, setDate] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -181,21 +181,13 @@ function Report() {
     }
   };
 
-
-
-
-
-
-
-
-
   const fetchDailyReport = async () => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        selectedDate:formatDate (new Date())
+        selectedDate: formatDate(new Date()),
       },
     };
 
@@ -204,7 +196,7 @@ function Report() {
         `http://www.ubuzima.rw/rec/report/date`,
         config
       );
-    
+
       const reports_ = response.data.response.map((el) => {
         return {
           doctorNames: `${el.doctor?.firstName} ${el.doctor?.lastName}`,
@@ -223,30 +215,29 @@ function Report() {
     }
   };
 
-
-
+  const reset = () => {
+    setReportType({ value: "DATE_RANGE", label: "Date range" });
+    setDoctor('');
+    setInsurance('');
+    setStartDate('');
+    setEndDate('');
+    setDate('');
+  }
 
   const formatDate = (date) => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const day = String(date.getDate()).padStart(2, '0');
-    
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, "0");
+
     return `${year}-${month}-${day}`;
   };
-
-
-
-
-
-
-
 
   const fetchReports = async () => {
     let my_token = localStorage.getItem("token");
     let url;
     let config;
 
-    if(reportType==='DATE_RANGE'){
+    if (reportType.value === "DATE_RANGE") {
       config = {
         headers: {
           "Content-Type": "application/json",
@@ -255,70 +246,67 @@ function Report() {
           endDate: endDate,
         },
       };
-      url = `http://www.ubuzima.rw/rec/report/range`
+      url = `http://www.ubuzima.rw/rec/report/range`;
     }
-    if(reportType==='INSURANCE_RANGE'){
+    if (reportType.value === "INSURANCE_RANGE") {
       config = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${my_token}`,
           startDate: startDate,
           endDate: endDate,
-          insuranceId:insurance
+          insuranceId: insurance.value,
         },
       };
-      url = `http://www.ubuzima.rw/rec/report/insurance-range`
+      url = `http://www.ubuzima.rw/rec/report/insurance-range`;
     }
-    if(reportType==='INSURANCE_DATE'){
+    if (reportType.value === "INSURANCE_DATE") {
       config = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${my_token}`,
           selectedDate: date,
-          insuranceId:insurance
+          insuranceId: insurance.value,
         },
       };
-      url = `http://www.ubuzima.rw/rec/report/insurance-date`
+      url = `http://www.ubuzima.rw/rec/report/insurance-date`;
     }
-    if(reportType==='DOCTOR_RANGE'){
+    if (reportType.value === "DOCTOR_RANGE") {
       config = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${my_token}`,
           startDate: startDate,
           endDate: endDate,
-          doctorId:doctor
+          doctorId: doctor.value,
         },
       };
-      url = `http://www.ubuzima.rw/rec/report/doctor-range`
+      url = `http://www.ubuzima.rw/rec/report/doctor-range`;
     }
-    if(reportType==='DOCTOR_DATE'){
+    if (reportType.value === "DOCTOR_DATE") {
       config = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${my_token}`,
           selectedDate: date,
-          doctorId:doctor
+          doctorId: doctor.value,
         },
       };
-      url = `http://www.ubuzima.rw/rec/report/doctor-date`
+      url = `http://www.ubuzima.rw/rec/report/doctor-date`;
     }
-    if(reportType==='DATE'){
+    if (reportType.value === "DATE") {
       config = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${my_token}`,
-          selectedDate: date
+          selectedDate: date,
         },
       };
-      url = `http://www.ubuzima.rw/rec/report/date`
+      url = `http://www.ubuzima.rw/rec/report/date`;
     }
 
     try {
-      const response = await axios.get(
-        url,
-        config
-      );
+      const response = await axios.get(url, config);
       const reports_ = response.data.response.map((el) => {
         return {
           doctorNames: `${el.doctor?.firstName} ${el.doctor?.lastName}`,
@@ -345,34 +333,153 @@ function Report() {
   }, []);
 
   return (
-    <div>
+    <div style={{minHeight:'50vh'}}>
       <Row>
         <Col lg={12}>
           <Card>
             <Card.Header className="d-flex justify-content-between align-items-center">
               <Card.Title>Report</Card.Title>
-              <Row>
+              <Row style={{ width: "90%" }}>
+                <Col lg={2}>
+                  <Form.Group className="form-group">
+                    <Select
+                      className="basic-single"
+                      options={[
+                        { value: "DATE_RANGE", label: "Date range" },
+                        {
+                          value: "INSURANCE_RANGE",
+                          label: "Insurance date range",
+                        },
+                        { value: "INSURANCE_DATE", label: "Insurance date" },
+                        { value: "DOCTOR_RANGE", label: "Doctor date range" },
+                        { value: "DOCTOR_DATE", label: "Doctor date" },
+                        { value: "DATE", label: "By date" },
+                      ]}
+                      onChange={(e) => setReportType(e)}
+                      value={reportType}
+                      classNamePrefix="Select2"
+                      placeholder="Filter by"
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+
+                {(reportType.value === "INSURANCE_RANGE" ||
+                  reportType.value === "INSURANCE_DATE") && (
+                  <Col lg={2}>
+                    <Form.Group className="form-group">
+                      <Select
+                        className="basic-single"
+                        options={insurances}
+                        onChange={(e) => setInsurance(e)}
+                        value={insurance}
+                        classNamePrefix="Select2"
+                        placeholder="Select insurance"
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                )}
+
+                {(reportType.value === "DOCTOR_RANGE" ||
+                  reportType.value === "DOCTOR_DATE") && (
+                  <Col lg={2}>
+                    <Form.Group className="form-group">
+                      <Select
+                        className="basic-single"
+                        options={doctors}
+                        onChange={(e) => setDoctor(e)}
+                        value={doctor}
+                        classNamePrefix="Select2"
+                        placeholder="Select doctor"
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                )}
+
+                {(reportType.value === "DATE_RANGE" ||
+                  reportType.value === "INSURANCE_RANGE" ||
+                  reportType.value === "DOCTOR_RANGE") && (
+                  <>
+                    <Col lg={2}>
+                      <Form.Group>
+                        <Form.Control
+                          type="date"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="Start Date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          required
+                        />
+                      </Form.Group>
+                    </Col>
+
+                    <Col lg={2}>
+                      <Form.Group>
+                        <Form.Control
+                          type="date"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="End Date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          required
+                        />
+                      </Form.Group>
+                    </Col>
+                  </>
+                )}
+
+                {(reportType.value === "INSURANCE_DATE" ||
+                  reportType.value === "DOCTOR_DATE" ||
+                  reportType.value === "DATE") && (
+                  <Col lg={2}>
+                    <Form.Group className="form-group">
+                      <Form.Control
+                        type="date"
+                        className="form-control"
+                        name="example-text-input"
+                        placeholder="Select date"
+                        onChange={(e) => setDate(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                )}
+
+                <Col>
+                  <Button variant="primary" onClick={fetchReports}>
+                    Filter
+                  </Button>
+                </Col>
+
+                <Col>
+                  <Button variant="primary" onClick={reset}>
+                    Reset
+                  </Button>
+                </Col>
+
                 <Col>
                   <div>
-                    {reports.length>0 ? (
+                    {reports.length > 0 ? (
                       <PDFDownloadLink
                         document={<PDFDocument reports={reports} />}
                         fileName="data.pdf"
                       >
                         {({ blob, url, loading, error }) =>
-                          loading ? "Loading document..." : <Button>Download PDF</Button>
+                          loading ? (
+                            "Loading document..."
+                          ) : (
+                            <Button>Download PDF</Button>
+                          )
                         }
                       </PDFDownloadLink>
                     ) : (
                       <p></p>
                     )}
                   </div>
-                </Col>
-
-                <Col>
-                  <Button variant="primary" onClick={handleShow}>
-                    Generate Report
-                  </Button>
                 </Col>
               </Row>
             </Card.Header>
@@ -382,133 +489,6 @@ function Report() {
           </Card>
         </Col>
       </Row>
-      <Modal show={show} onHide={handleClose}>
-        <Form onSubmit={handleSubmit}>
-          <Modal.Header closeButton>
-            <Modal.Title>Report</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Row>
-              <Col lg={12}>
-                <Form.Group className="form-group">
-                  <Form.Label>Select report type</Form.Label>
-                  <Select
-                    className="basic-single"
-                    options={[
-                      { value: "DATE_RANGE", label: "Date range" },
-                      {
-                        value: "INSURANCE_RANGE",
-                        label: "Insurance date range",
-                      },
-                      { value: "INSURANCE_DATE", label: "Insurance date" },
-                      { value: "DOCTOR_RANGE", label: "Doctor date range" },
-                      { value: "DOCTOR_DATE", label: "Doctor date" },
-                      { value: "DATE", label: "By date" },
-                    ]}
-                    onChange={(e) => setReportType(e.value)}
-                    classNamePrefix="Select2"
-                    placeholder="Select them"
-                    required
-                  />
-                </Form.Group>
-              </Col>
-              {(reportType === "DATE_RANGE" ||
-                reportType === "INSURANCE_RANGE" ||
-                reportType === "DOCTOR_RANGE") && (
-                <>
-                  <Col lg={6} style={{ marginTop: 10 }}>
-                    <Form.Group>
-                      <Form.Label>start Date</Form.Label>
-                      <Form.Control
-                        type="date"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="starting time"
-                        onChange={(e) => setStartDate(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-
-                  <Col lg={6} style={{ marginTop: 10 }}>
-                    <Form.Group>
-                      <Form.Label>End Date</Form.Label>
-                      <Form.Control
-                        type="date"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="starting time"
-                        onChange={(e) => setEndDate(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                </>
-              )}
-
-              {(reportType === "INSURANCE_RANGE" ||
-                reportType === "INSURANCE_DATE") && (
-                <Col lg={6}>
-                  <Form.Group className="form-group">
-                    <Form.Label>Select Insurance</Form.Label>
-                    <Select
-                      className="basic-single"
-                      options={insurances}
-                      onChange={(e) => setInsurance(e.value)}
-                      classNamePrefix="Select2"
-                      placeholder="Select them"
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-              )}
-
-              {(reportType === "DOCTOR_RANGE" ||
-                reportType === "DOCTOR_DATE") && (
-                <Col lg={6}>
-                  <Form.Group className="form-group">
-                    <Form.Label>Select Doctor</Form.Label>
-                    <Select
-                      className="basic-single"
-                      options={doctors}
-                      onChange={(e) => setDoctor(e.value)}
-                      classNamePrefix="Select2"
-                      placeholder="Select them"
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-              )}
-
-              {(reportType === "INSURANCE_DATE" ||
-                reportType === "DOCTOR_DATE" ||
-                reportType === "DATE") && (
-                <Col lg={6}>
-                  <Form.Group className="form-group">
-                    <Form.Label>Select Date</Form.Label>
-                    <Form.Control
-                      type="date"
-                      className="form-control"
-                      name="example-text-input"
-                      placeholder="starting time"
-                      onChange={(e) => setDate(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-              )}
-            </Row>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button type="submit" variant="primary" onClick={fetchReports}>
-              Generate
-            </Button>
-            {/* <Button variant="secondary" onClick={handleClose}>
-              Close
-            </Button> */}
-          </Modal.Footer>
-        </Form>
-      </Modal>
     </div>
   );
 }

@@ -77,15 +77,14 @@ import DataTable from "react-data-table-component";
 function Report() {
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
-
   const [reportType, setReportType] = useState("");
   const [date, setDate] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reports, setReports] = useState([]);
   const [insurances, setInsurances] = useState([]);
-  const [doctors, setDoctors] = useState([]);
   const [insurance, setInsurance] = useState("");
+  const [doctors, setDoctors] = useState([]);
   const [doctor, setDoctor] = useState("");
 
   const [show, setShow] = useState(false);
@@ -93,32 +92,7 @@ function Report() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const fetchAllDoctors = async () => {
-    let my_token = await localStorage.getItem("token");
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
-      },
-    };
-
-    try {
-      const response = await axios.get(
-        `http://www.ubuzima.rw/rec/medical/doctors`,
-        config
-      );
-
-      const allDoctors_ = response.data.response.map((el) => {
-        return { label: `${el.firstName} ${el.lastName}`, value: el.id };
-      });
-      setDoctors(allDoctors_);
-    } catch (error) {
-      console.error(error);
-
-      console.log(response.data);
-    }
-  };
-
+ 
   const handleSubmit = async (e) => {
     //handle submit is the second step
     e.preventDefault();
@@ -154,6 +128,35 @@ function Report() {
         console.log(error.message);
       });
   };
+
+
+  const fetchAllDoctors = async () => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/medical/doctors`,
+        config
+      );
+
+      const allDoctors_ = response.data.response.map((el) => {
+        return { label: `${el.firstName} ${el.lastName}`, value: el.id };
+      });
+      setDoctors(allDoctors_);
+    } catch (error) {
+      console.error(error);
+
+      console.log(response.data);
+    }
+  };
+
+
 
   const fetchInsurances = async () => {
     let my_token = localStorage.getItem("token");

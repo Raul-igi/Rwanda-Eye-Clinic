@@ -876,7 +876,7 @@ export const BasicCell = [
 // Select membership Type
 export const membershipTypes = [
   { value: "PRINCIPAL", label: "Principal" },
-  { value: " DEPENDENT", label: " Dependent" },
+  { value: "DEPENDENT", label: "Dependent" },
 ];
 
 // Select Case Type

@@ -20,20 +20,22 @@ function Patients() {
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
   const [names, setNames] = useState("");
-  const [patients_, setPatients_] = useState("");
-  const [patients, setPatients] = useState("");
+  const [patients_, setPatients_] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [appPatients, setAppPatients] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [sectors, setSectors] = useState([]);
   const [cells, setCells] = useState([]);
   const [villages, setVillages] = useState([]);
+  const [schedulesDayId, setSchedulesDayId] = useState([]);
   const [insuranceId, setInsuranceId] = useState("");
   const [insurances, setInsurances] = useState();
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [gender, setGender] = useState("");
   const [dob, setDob] = useState("");
-
+  const [startingTime, setStartingTime] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   const [selectedProvince, setSelectedProvince] = useState("");
@@ -68,8 +70,8 @@ function Patients() {
   const [visitType, setVisitType] = useState("");
   const [doctors, setDoctors] = useState([]);
   const [doctorId, setDoctorId] = useState("");
-  const[previousVisits,setPreviousVisits] =useState("");
-  const[previousVisits_,setPreviousVisits_] =useState("");
+  const[previousVisits,setPreviousVisits] =useState([]);
+  const[previousVisits_,setPreviousVisits_] =useState([]);
   const [allDoctors, setAllDoctors] = useState([]);
   const [scheduleDayId,setscheduleDayId] =useState("");
 
@@ -77,7 +79,41 @@ function Patients() {
 
 
 
-  
+  const handleSubmit3 = async (e) => {
+    //handle submit is the second step
+    e.preventDefault();
+    setLoading(true);
+    const postObj = JSON.stringify({
+      day: scheduleDayId, // modify body properties
+      doctorId: doctorId,
+      startingTime: startingTime+":00",
+      patientId: patientId.value || patientId,
+      names: names,
+      phoneNumber:phoneNumber,
+    });
+    console.log(postObj);
+    let my_token = await localStorage.getItem("token");
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${my_token}`,
+    };
+    axios
+      .post(`http://www.ubuzima.rw/rec/schedule/booking`, postObj) //declare api Path
+      .then((res) => {
+        // console.log(res.data)
+        setShow5(false);
+        if (res.data.status === true) {
+          alert("Appointment Added successfully");
+        } else {
+          alert(res.data.message);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        setShow5(false);
+        alert(error.message);
+      });
+  };
 
 
   const columns = [
@@ -118,6 +154,7 @@ function Patients() {
       cell: (row) => (
         <div
           onClick={() => {
+            setPatientsInsurances([])
             setShow2(true);
             fetchPatientsInsuranceID(row.id);
             setPatientId(row.id);
@@ -269,6 +306,8 @@ function Patients() {
         setShow(false);
         if (res.data.status === true) {
           setShow4(true);
+          fetchPatientsInsuranceID(res.data.response.id);
+          setPatientId({label:res.data.response.names,value:res.data.response.id});
           fetchPatients();
         } else {
           alert("something went wrong");
@@ -287,8 +326,6 @@ function Patients() {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${my_token}`,
-        "size":10,
-        "page":currentPage
       },
     };
 
@@ -297,6 +334,10 @@ function Patients() {
         `http://www.ubuzima.rw/rec/patient`,
         config
       );
+      const p_ = response.data.response.map((el) => {
+        return { label: el.names, value: el.code };
+      });
+      setAppPatients(p_)
       setPatients_(response.data.response);
       setPatients(response.data.response);
       if(response.data.response.totalElements){
@@ -431,7 +472,7 @@ function Patients() {
     e.preventDefault();
     setLoading(true);
     const postObj = JSON.stringify({
-      patientId: patientId, // modify body properties
+      patientId: patientId.value || patientId, // modify body properties
       patientInsuranceId: patientInsuranceId || null,
       visitType: visitType,
       caseType: caseType,
@@ -526,6 +567,32 @@ function Patients() {
       });
   };
 
+  const fetchAllDoctors = async () => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+      },
+    };
+    
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/medical/doctors`,
+        config
+      );
+      
+      const allDoctors_ = response.data.response.map((el) => {
+        return { label: `${el.firstName} ${el.lastName}`, value: el.id };
+      });
+      setAllDoctors(allDoctors_);
+    } catch (error) {
+      console.error(error);
+
+      console.log(response.data)
+    }
+  };
+
   const fetchDepartments = async () => {
     let my_token = await localStorage.getItem("token");
     const config = {
@@ -600,7 +667,7 @@ function Patients() {
         const schedulesDayId = res.data.response.map((el) => {
           return ({ label: `${el.day}`, value: el.day });
         }); //const that assign value to the property
-        setschedulesDayId(schedulesDayId);
+        setSchedulesDayId(schedulesDayId);
       })
       .catch((error) => {
         setLoading(false);
@@ -616,6 +683,8 @@ function Patients() {
 
 
   const fetchPreviousVisits = async (id) => {
+    setPreviousVisits_([]);
+      setPreviousVisits([]);
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -708,13 +777,13 @@ function Patients() {
 
   
   useEffect(() => {
+    fetchPatients();
     fetchInsurances();
     fetchProvinces();
     fetchDepartments();
+    fetchAllDoctors();
   }, []);
-  useEffect(()=>{
-    fetchPatients();
-  },[currentPage])
+
 
   return (
     <div>
@@ -741,7 +810,7 @@ function Patients() {
             </Card.Header>
             <Card.Body>
               <Card.Body>
-                <DataTable columns={columns} data={patients} paginationTotalRows={totalRows?totalRows:patients.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]} onChangePage={page=>setCurrentPage(page)} pagination paginationServer/>
+                <DataTable columns={columns} data={patients}  pagination/>
               </Card.Body>
             </Card.Body>
           </Card>
@@ -1165,13 +1234,13 @@ function Patients() {
 
               <Col xl={6}>
                 <Form.Group className="form-group">
-                  <Form.Label>Doctor Id</Form.Label>
+                  <Form.Label>Doctor</Form.Label>
                   <Select
                     options={doctors}
                     onChange={(e) => setDoctorId(e.value)}
                     classNamePrefix="Select2"
                     className="multi-select"
-                    placeholder="Doctor Id"
+                    placeholder="Doctor"
                     required
                   />
                 </Form.Group>
@@ -1244,7 +1313,7 @@ function Patients() {
 
 
       <Modal show={show5} onHide={() => setShow5(false)}>
-        <Form onSubmit={handleSubmit}>
+        <Form>
           <Modal.Header closeButton>
             <Modal.Title>Book Appointments</Modal.Title>
           </Modal.Header>
@@ -1255,7 +1324,7 @@ function Patients() {
 
                       <Col lg={6}>
                 <Form.Group className="form-group">
-                  <Form.Label>Doctor ID</Form.Label>
+                  <Form.Label>Doctor</Form.Label>
                   <Select
                     className="basic-single"
                     options={allDoctors}
@@ -1269,10 +1338,10 @@ function Patients() {
 
                       <Col lg={6}>
                 <Form.Group className="form-group">
-                  <Form.Label>Day ID</Form.Label>
+                  <Form.Label>Day</Form.Label>
                   <Select
                     className="basic-single"
-                    options={scheduleDayId}
+                    options={schedulesDayId}
                     onChange={(e) =>  setscheduleDayId(e.value)} // value onChange on input is the third step
                     classNamePrefix="Select2"
                     placeholder="Select them"
@@ -1306,7 +1375,8 @@ function Patients() {
                   <Form.Label>Patient ID</Form.Label>
                   <Select
                     className="basic-single"
-                    options={patients}
+                    options={appPatients}
+                    value={patientId}
                     onChange={(e) =>  setPatientId(e.value)} // value onChange on input is the third step
                     classNamePrefix="Select2"
                     placeholder="Select them"
@@ -1350,7 +1420,7 @@ function Patients() {
             </Row>
           </Modal.Body>
           <Modal.Footer>
-            <Button type="submit" variant="primary" onClick={handleSubmit}>
+            <Button variant="primary" onClick={handleSubmit3}>
               Submit
             </Button>
             <Button variant="secondary" onClick={()=>{setShow5(false)}}>

@@ -32,7 +32,6 @@ class AppRoot extends React.Component {
   }
 
   render() {
-    const { isAuthenticated, userRoles } = this.state;
     return (
       <Fragment>
         <BrowserRouter>
@@ -44,7 +43,7 @@ class AppRoot extends React.Component {
                   {Routingdata.map(idx =>{
                     return (
                     
-                  <Route element={<PrivateRoute   isAuthenticated={isAuthenticated} userRoles={userRoles} roles={idx.roles} />}>
+                  <Route element={<PrivateRoute roles={idx.roles} />}>
                       <Route key={idx.path} path={idx.path} element={idx.element} />
                       
                       </Route>

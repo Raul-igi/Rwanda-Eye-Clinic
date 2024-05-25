@@ -75,6 +75,7 @@ function Visits() {
   const [diagnostics, setDiagnostics] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [tab, setTab] = useState('tab1');
   const [totalRows, setTotalRows] = useState(0);
 
   const [patientInsuranceId, setPatientInsuranceId] = useState("");
@@ -82,6 +83,7 @@ function Visits() {
   const [caseType, setCaseType] = useState("");
   const [doctorId, setDoctorId] = useState("");
   const [visits, setVisits] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [visits_, setVisits_] = useState([]);
 
   const [show, setShow] = useState(false);
@@ -288,8 +290,6 @@ function Visits() {
       });
   };
 
-
-
   const fetchVisitsDiagnostics = async (id) => {
     let my_token = await localStorage.getItem("token");
     const config = {
@@ -311,11 +311,8 @@ function Visits() {
       .catch((error) => {
         setLoading(false);
         console.log(error.message);
-        
       });
   };
-
-
 
   useEffect(() => {
     fetchVisits();
@@ -324,7 +321,9 @@ function Visits() {
   useEffect(() => {
     fetchPatients();
     fetchDepartments();
-   
+    const roles_ = localStorage.getItem("role");
+    const userRoles = JSON.parse(roles_);
+    setRoles(userRoles);
   }, []);
 
   return (
@@ -335,7 +334,46 @@ function Visits() {
             <Card.Header className="d-flex justify-content-between align-items-center">
               <Card.Title>Visits</Card.Title>
 
-              <Button variant="primary" onClick={fetchVisitsDiagnostics}>
+              {roles.includes('Nurse')&&(
+                <div
+                class="tabs"
+                style={{ display: "flex", borderBottom: " 1px solid #ccc" }}
+              >
+                <div
+                  class="tab"
+                  onClick={()=>{setTab('tab1');fetchVisits()}}
+                  style={{
+                    padding: "10px 20px",
+                    cursor: "pointer",
+                    border: "1px solid #ccc",
+                    borderBottom: tab === 'tab1'?"1px solid blue":"none",
+                    backgroundColor: tab === 'tab1'?'white':"#f1f1f1",
+                    fontWeight: tab === 'tab1'?'bold':"normal",
+                  }}
+                  id="tab1"
+                >
+                  
+                  All Visits
+                </div>
+                <div
+                  class="tab"
+                  onClick={()=>{setTab('tab2');fetchVisitsDiagnostics()}}
+                  style={{
+                    padding: "10px 20px",
+                    cursor: "pointer",
+                    border: "1px solid #ccc",
+                    borderBottom: tab === 'tab2'?"1px solid blue":"none",
+                    backgroundColor: tab === 'tab2'?'white':"#f1f1f1",
+                    fontWeight: tab === 'tab2'?'bold':"normal",
+                  }}
+                  id="tab2"
+                >
+                 Visits without diagnostics
+                </div>
+              </div>
+              )}
+
+              {/* <Button variant="primary" onClick={fetchVisitsDiagnostics}>
                 Visit Without Diagnostics
               </Button>
 
@@ -345,7 +383,7 @@ function Visits() {
                 
               >
                 All visits
-              </Button>
+              </Button> */}
 
               <Row>
                 <Col>

@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import DataTable from "react-data-table-component";
+import { debounce } from "lodash";
 import { lensType_, dip_ } from "../../data/elementsdata";
 export default function VisitDetails() {
   const location = useLocation();
@@ -13,11 +14,16 @@ export default function VisitDetails() {
   const [show3, setShow3] = useState(false);
   const [show4, setShow4] = useState(false);
   const [show5, setShow5] = useState(false);
+
+  const [isVaSaved, setIsVaSaved] = useState(true);
+  const [isReSaved, setIsReSaved] = useState(true);
+
   const [acts, setActs] = useState([]);
   const [roles, setRoles] = useState([]);
   const [act, setAct] = useState("");
   const [invoice, setInvoice] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("INSURANCE");
+  const [paymentMode, setPaymentMode] = useState(null);
 
   const [insuranceAmount, setInsuranceAmount] = useState(0);
   const [topUpAmount, setTopUpAmount] = useState(0);
@@ -26,7 +32,37 @@ export default function VisitDetails() {
   const [savedTreatment, setSavedTreatment] = useState("");
   const [diagnostic, setDiagnostic] = useState("");
   const [savedDiagnostic, setSavedDiagnostic] = useState("");
-  const [refraction, setRefraction] = useState("");
+  const [refraction, setRefraction] = useState([
+    {
+      name: "Sphere Right Eye",
+      right: "",
+      left: "",
+    },
+
+    {
+      name: "Cylindre Right Eye",
+      right: "",
+      left: "",
+    },
+
+    {
+      name: "Axe Right Eye",
+      right: "",
+      left: "",
+    },
+
+    {
+      name: "Lens Type",
+      select: true,
+      right: "",
+    },
+
+    {
+      name: "DIP",
+      select: true,
+      right: "",
+    },
+  ]);
 
   const [savedRefraction, setSavedRefraction] = useState("");
 
@@ -64,19 +100,6 @@ export default function VisitDetails() {
     },
   ]);
 
-  const [scRightEye, setScRightEye] = useState("");
-  const [scLeftEye, setScLeftEye] = useState("");
-  const [acRightEye, setAcRightEye] = useState("");
-  const [acLeftEye, setAcLeftEye] = useState("");
-  const [phRightEye, setPhRightEye] = useState("");
-  const [phLeftEye, setPhLeftEye] = useState("");
-  const [glassSphereRightEye, setGlassSphereRightEye] = useState("");
-  const [glassSphereLeftEye, setGlassSphereLeftEye] = useState("");
-  const [glassCylindreRightEye, setGlassCylindreRightEye] = useState("");
-  const [glassCylindreLeftEye, setGlassCylindreLeftEye] = useState("");
-  const [glassAxeRightEye, setGlassAxeRightEye] = useState("");
-  const [glassAxeLeftEye, setGlassAxeLeftEye] = useState("");
-
   const [sphereRightEye, setSphereRightEye] = useState("");
   const [sphereLeftEye, setSphereLeftEye] = useState("");
   const [cylindreRightEye, setCylindreRightEye] = useState("");
@@ -103,6 +126,17 @@ export default function VisitDetails() {
     setVisualAcuity(newData);
   };
 
+  const handleInputChange2 = (e, name, field) => {
+    // Update the corresponding data item with the new value
+    const newData = refraction.map((item) => {
+      if (item.name === name) {
+        return { ...item, [field]: e };
+      }
+      return item;
+    });
+    setRefraction(newData);
+  };
+
   const paymentMethods = [
     { value: "INSURANCE", label: "Insurance" },
     { value: "INSURANCE_AND_TOP_UP", label: "Insurance and Top Up" },
@@ -122,6 +156,7 @@ export default function VisitDetails() {
         <input
           className="form-control"
           type="text"
+          readOnly={isVaSaved}
           value={row.right}
           onChange={(e) => handleInputChange(e, row.name, "right")}
         />
@@ -134,6 +169,7 @@ export default function VisitDetails() {
         <input
           className="form-control"
           type="text"
+          readOnly={isVaSaved}
           value={row.left}
           onChange={(e) => handleInputChange(e, row.name, "left")}
         />
@@ -173,13 +209,48 @@ export default function VisitDetails() {
     },
     {
       name: "Right",
-      selector: (row) => [row.right],
       sortable: true,
+      cell: (row) =>
+        !row.select ? (
+          <input
+            className="form-control"
+            type="text"
+            readOnly={isReSaved}
+            value={row.right}
+            onChange={(e) =>
+              handleInputChange2(e.target.value, row.name, "right")
+            }
+          />
+        ) : (
+          <div style={{ width: "100%" }}>
+            <Select
+              options={row.name === "Lens Type" ? lensType_ : dip_}
+              value={{ label: row.right, value: row.right }}
+              style={{ width: "100%" }}
+              onChange={(e) => handleInputChange2(e.value, row.name, "right")}
+              classNamePrefix="Select2"
+              className="multi-select"
+              // placeholder="Select them"
+              required
+            />
+          </div>
+        ),
     },
     {
       name: "Left",
-      selector: (row) => [row.left],
       sortable: true,
+      cell: (row) =>
+        row.left !== undefined && (
+          <input
+            className="form-control"
+            type="text"
+            readOnly={isReSaved}
+            value={row.left}
+            onChange={(e) =>
+              handleInputChange2(e.target.value, row.name, "left")
+            }
+          />
+        ),
     },
   ];
 
@@ -189,7 +260,7 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state.data.visitId,
+        patientVisitId: location.state?.data?.visitId,
         medicalActId: actId,
       },
     };
@@ -239,7 +310,7 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state.data.visitId,
+        patientVisitId: location.state?.data?.visitId,
       },
     };
 
@@ -249,7 +320,7 @@ export default function VisitDetails() {
         config
       );
       if (response.data.status) {
-        setSavedDiagnostic(response.data.response.diagnostic);
+        setSavedDiagnostic(response.data.response?.diagnostic);
       }
     } catch (error) {
       console.error(error);
@@ -262,7 +333,7 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state.data.visitId,
+        patientVisitId: location.state?.data?.visitId,
       },
     };
 
@@ -272,7 +343,7 @@ export default function VisitDetails() {
         config
       );
       if (response.data.status) {
-        setSavedTreatment(response.data.response.treatment);
+        setSavedTreatment(response.data.response?.treatment);
       }
     } catch (error) {
       console.error(error);
@@ -285,16 +356,16 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state.data.visitId,
+        id: location.state?.data?.visitId,
       },
     };
 
     try {
       const response = await axios.get(
-        `http://www.ubuzima.rw/rec/visit/nurse/patient-acts`,
+        `http://www.ubuzima.rw/rec/visit/id`,
         config
       );
-      setMedicalActs(response.data.response);
+      setMedicalActs(response.data.response.medicalAct.map((el) => el.id));
     } catch (error) {
       console.error(error);
     }
@@ -306,7 +377,7 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state.data.visitId,
+        patientVisitId: location.state?.data?.visitId,
       },
     };
 
@@ -327,7 +398,7 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state.data.visitId,
+        patientVisitId: location.state?.data?.visitId,
       },
     };
 
@@ -336,82 +407,106 @@ export default function VisitDetails() {
         `http://www.ubuzima.rw/rec/visit/nurse/va/visit-id`,
         config
       );
-      const visualAcuity_ = [
-        {
-          name: "SC",
-          right: response.data.response.scRightEye,
-          left: response.data.response.scLeftEye,
-        },
-        {
-          name: "AC",
-          right: response.data.response.acRightEye,
-          left: response.data.response.acLeftEye,
-        },
-        {
-          name: "PH",
-          right: response.data.response.phRightEye,
-          left: response.data.response.phLeftEye,
-        },
-        {
-          name: "Glass Sphere",
-          right: response.data.response.glassSphereRightEye,
-          left: response.data.response.glassSphereLeftEye,
-        },
-        {
-          name: "Glass Cylindre",
-          right: response.data.response.glassCylindreRightEye,
-          left: response.data.response.glassCylindreLeftEye,
-        },
-        {
-          name: "Glass Axe",
-          right: response.data.response.glassAxeRightEye,
-          left: response.data.response.glassAxeLeftEye,
-        },
-      ];
-      setVisualAcuity(visualAcuity_);
+      if (response.data.response) {
+        setIsVaSaved(true);
+        const visualAcuity_ = [
+          {
+            name: "SC",
+            right: response.data.response.scRightEye,
+            left: response.data.response.scLeftEye,
+          },
+          {
+            name: "AC",
+            right: response.data.response.acRightEye,
+            left: response.data.response.acLeftEye,
+          },
+          {
+            name: "PH",
+            right: response.data.response.phRightEye,
+            left: response.data.response.phLeftEye,
+          },
+          {
+            name: "Glass Sphere",
+            right: response.data.response.glassSphereRightEye,
+            left: response.data.response.glassSphereLeftEye,
+          },
+          {
+            name: "Glass Cylindre",
+            right: response.data.response.glassCylindreRightEye,
+            left: response.data.response.glassCylindreLeftEye,
+          },
+          {
+            name: "Glass Axe",
+            right: response.data.response.glassAxeRightEye,
+            left: response.data.response.glassAxeLeftEye,
+          },
+        ];
+        setVisualAcuity(visualAcuity_);
+      } else {
+        setIsVaSaved(false);
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
   const addVisualAcuity = async () => {
-    let my_token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
-      },
-    };
-    const postObj = JSON.stringify({
-      patientVisitId: location.state.data.visitId,
-      scRightEye: visualAcuity[0].right,
-      scLeftEye: visualAcuity[0].left,
-      acRightEye: visualAcuity[1].right,
-      acLeftEye: visualAcuity[1].left,
-      phRightEye: visualAcuity[2].right,
-      phLeftEye: visualAcuity[2].left,
-      glassSphereRightEye: visualAcuity[3].left,
-      glassSphereLeftEye: visualAcuity[3].left,
-      glassCylindreRightEye: visualAcuity[4].right,
-      glassCylindreLeftEye: visualAcuity[4].left,
-      glassAxeRightEye: visualAcuity[5].right,
-      glassAxeLeftEye: visualAcuity[5].left,
-    });
-    console.log(postObj);
-    try {
-      const response = await axios.post(
-        `http://www.ubuzima.rw/rec/visit/nurse/va`,
-        postObj,
-        config
-      );
-      setShow(false);
-      if (response.data.status) {
-        alert("Visual acuity added successfully!");
-        fetchVisualAcuity();
+    if (
+      !(
+        visualAcuity[0].right &&
+        visualAcuity[0].left &&
+        visualAcuity[1].right &&
+        visualAcuity[1].left &&
+        visualAcuity[2].right &&
+        visualAcuity[2].left &&
+        visualAcuity[3].right &&
+        visualAcuity[3].left &&
+        visualAcuity[4].right &&
+        visualAcuity[4].left &&
+        visualAcuity[5].right &&
+        visualAcuity[5].left
+      )
+    ) {
+      alert("Fill all the visual acuity fields");
+    } else {
+      let my_token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${my_token}`,
+        },
+      };
+      const postObj = JSON.stringify({
+        patientVisitId: location.state?.data?.visitId,
+        scRightEye: visualAcuity[0].right,
+        scLeftEye: visualAcuity[0].left,
+        acRightEye: visualAcuity[1].right,
+        acLeftEye: visualAcuity[1].left,
+        phRightEye: visualAcuity[2].right,
+        phLeftEye: visualAcuity[2].left,
+        glassSphereRightEye: visualAcuity[3].left,
+        glassSphereLeftEye: visualAcuity[3].left,
+        glassCylindreRightEye: visualAcuity[4].right,
+        glassCylindreLeftEye: visualAcuity[4].left,
+        glassAxeRightEye: visualAcuity[5].right,
+        glassAxeLeftEye: visualAcuity[5].left,
+      });
+      console.log(postObj);
+      try {
+        const response = await axios.post(
+          `http://www.ubuzima.rw/rec/visit/nurse/va`,
+          postObj,
+          config
+        );
+        setShow(false);
+        if (response.data.status) {
+          alert("Visual acuity added successfully!");
+          fetchVisualAcuity();
+        }
+      } catch (error) {
+        setShow(false);
+        console.error(error);
       }
-    } catch (error) {
-      setShow(false);
-      console.error(error);
     }
   };
 
@@ -426,7 +521,8 @@ export default function VisitDetails() {
     var paymentDto = {
       invoiceNumber: invoice.invoiceNumber,
       paymentMethod,
-      amount: invoice.patientAmount,
+      amount: invoice?.patientAmount,
+      paymentMode: paymentMode,
     };
     if (topUpAmount > 0) {
       paymentDto.topUpAmount = topUpAmount;
@@ -440,7 +536,8 @@ export default function VisitDetails() {
       );
       setShowModal(false);
       if (response.data.status) {
-        alert("Medical act added successfully!");
+        alert("Paid successfully!");
+        fetchInvoice();
       }
     } catch (error) {
       setShowModal(false);
@@ -448,32 +545,63 @@ export default function VisitDetails() {
     }
   };
 
-  const addAct = async (e) => {
-    e.preventDefault();
-    let my_token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state.data.visitId,
-        medicalActId: act,
-      },
-    };
-    console.log(config);
-    try {
-      const response = await axios.post(
-        `http://www.ubuzima.rw/rec/visit/nurse/patient/add-act`,
-        {},
-        config
-      );
-      setShow2(false);
-      if (response.data.status) {
-        alert("Medical act added successfully!");
-        fetchMedicalActs();
+  const handleCheckboxChange = (event) => {
+    const { value, checked } = event.target;
+    setMedicalActs((prev) => {
+      if (checked) {
+        return [...prev, value];
+      } else {
+        return prev.filter((act) => act !== value);
       }
-    } catch (error) {
-      setShow2(false);
-      console.error(error);
+    });
+  };
+
+  // Debounced function to be executed after changes
+  const debouncedFunction = debounce((updatedMedicalActs) => {
+    addAct(updatedMedicalActs);
+  }, 3000);
+
+  // Effect to handle changes to medicalActs state
+  useEffect(() => {
+    debouncedFunction(medicalActs);
+
+    // Cleanup the debounce on unmount
+    return () => debouncedFunction.cancel();
+  }, [medicalActs, debouncedFunction]);
+
+  const addAct = async (acts_) => {
+    const roles_ = localStorage.getItem("role");
+    const userRoles = JSON.parse(roles_);
+    if (
+      userRoles.includes("Nurse") &&
+      location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+    ) {
+      let my_token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${my_token}`,
+        },
+      };
+      const postObj = JSON.stringify({
+        patientVisitId: location.state?.data?.visitId,
+        medicalActId: acts_,
+      });
+      console.log(config);
+      try {
+        const response = await axios.post(
+          `http://www.ubuzima.rw/rec/visit/nurse/patient/add-act-all`,
+          postObj,
+          config
+        );
+        setShow2(false);
+        if (response.data.status) {
+          // alert("Medical acts added successfully!");
+        }
+      } catch (error) {
+        setShow2(false);
+        console.error(error);
+      }
     }
   };
 
@@ -483,7 +611,7 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state.data.visitId,
+        patientVisitId: location.state?.data?.visitId,
       },
     };
     try {
@@ -507,7 +635,7 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state.data.visitId,
+        patientVisitId: location.state?.data?.visitId,
       },
     };
     try {
@@ -535,7 +663,7 @@ export default function VisitDetails() {
       },
     };
     const postObj = JSON.stringify({
-      patientVisitId: location.state.data.visitId,
+      patientVisitId: location.state?.data?.visitId,
       treatment: treatment,
     });
     try {
@@ -565,7 +693,7 @@ export default function VisitDetails() {
       },
     };
     const postObj = JSON.stringify({
-      patientVisitId: location.state.data.visitId,
+      patientVisitId: location.state?.data?.visitId,
       diagnostic: diagnostic,
     });
     try {
@@ -585,42 +713,56 @@ export default function VisitDetails() {
     }
   };
 
-  const addRefraction = async (e) => {
-    e.preventDefault();
-    let my_token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
-      },
-    };
-    const postObj = JSON.stringify({
-      patientVisitId: location.state.data.visitId,
-      sphereRightEye: sphereRightEye,
-      sphereLeftEye: sphereLeftEye,
-      cylindreRightEye: cylindreRightEye,
-      cylindreLeftEye: cylindreLeftEye,
-      axeRightEye: axeRightEye,
-      axeLeftEye: axeLeftEye,
-      lensType: lensType,
-      dip: dip,
-    });
+  const addRefraction = async () => {
+    if (
+      !(
+        refraction[0].right &&
+        refraction[0].left &&
+        refraction[1].right &&
+        refraction[1].left &&
+        refraction[2].right &&
+        refraction[2].left &&
+        refraction[3].right &&
+        refraction[4].right
+      )
+    ) {
+      alert("Fill all the refraction fields");
+    } else {
+      let my_token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${my_token}`,
+        },
+      };
+      const postObj = JSON.stringify({
+        patientVisitId: location.state?.data?.visitId,
+        sphereRightEye: refraction[0].right,
+        sphereLeftEye: refraction[0].left,
+        cylindreRightEye: refraction[1].right,
+        cylindreLeftEye: refraction[1].left,
+        axeRightEye: refraction[2].right,
+        axeLeftEye: refraction[2].left,
+        lensType: refraction[3].right,
+        dip: refraction[4].right,
+      });
 
-    try {
-      const response = await axios.post(
-        `http://www.ubuzima.rw/rec/visit/doctor/refraction`,
-        postObj,
-        config
-      );
-      setShow5(false);
-      if (response.data.status) {
-        alert("Refraction added successfully!");
-        fetchRefraction();
+      try {
+        const response = await axios.post(
+          `http://www.ubuzima.rw/rec/visit/doctor/refraction`,
+          postObj,
+          config
+        );
+        setShow5(false);
+        if (response.data.status) {
+          alert("Refraction added successfully!");
+          fetchRefraction();
+        }
+      } catch (error) {
+        setShow5(false);
+        console.error(error);
+        console.log(res.data);
       }
-    } catch (error) {
-      setShow5(false);
-      console.error(error);
-      console.log(res.data);
     }
   };
 
@@ -630,7 +772,7 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state.data.visitId,
+        patientVisitId: location.state?.data?.visitId,
       },
     };
 
@@ -639,36 +781,43 @@ export default function VisitDetails() {
         `http://www.ubuzima.rw/rec/visit/doctor/refraction/visit-id`,
         config
       );
-      const refraction_ = [
-        {
-          name: "Sphere Right Eye",
-          right: response.data.response.sphereRightEye,
-          left: response.data.response.sphereLeftEye,
-        },
+      if (response.data.status && response.data.response) {
+        setIsReSaved(true);
+        const refraction_ = [
+          {
+            name: "Sphere Right Eye",
+            right: response.data.response.sphereRightEye,
+            left: response.data.response.sphereLeftEye,
+          },
 
-        {
-          name: "Cylindre Right Eye",
-          right: response.data.response.cylindreRightEye,
-          left: response.data.response.cylindreLeftEye,
-        },
+          {
+            name: "Cylindre Right Eye",
+            right: response.data.response.cylindreRightEye,
+            left: response.data.response.cylindreLeftEye,
+          },
 
-        {
-          name: "Axe Right Eye",
-          right: response.data.response.axeRightEye,
-          left: response.data.response.axeLeftEye,
-        },
+          {
+            name: "Axe Right Eye",
+            right: response.data.response.axeRightEye,
+            left: response.data.response.axeLeftEye,
+          },
 
-        {
-          name: "Lens Type",
-          right: response.data.response.lensType,
-        },
+          {
+            name: "Lens Type",
+            select: true,
+            right: response.data.response.lensType,
+          },
 
-        {
-          name: "DIP",
-          right: response.data.response.dip,
-        },
-      ];
-      setRefraction(refraction_);
+          {
+            name: "DIP",
+            select: true,
+            right: response.data.response.dip,
+          },
+        ];
+        setRefraction(refraction_);
+      } else {
+        setIsReSaved(false);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -690,31 +839,26 @@ export default function VisitDetails() {
   return (
     <Fragment>
       {roles.includes("Doctor") &&
-        location.state.data.visitStatus === "TRANSFER_TO_DOCTOR" && (
+        location.state?.data?.visitStatus === "TRANSFER_TO_DOCTOR" && (
           <>
             <Button onClick={() => setShow3(true)} style={{ marginRight: 10 }}>
               Add Dr.Note
             </Button>
-            <Button onClick={() => setShow5(true)} style={{ marginRight: 10 }}>
-              Add Refraction
-            </Button>
           </>
         )}
-      {roles.includes("Nurse") &&
-        location.state.data.visitStatus === "TRANSFER_TO_NURSE" &&
-        savedTreatment && (
-          <Button onClick={() => setShow4(true)} style={{ marginRight: 10 }}>
-            Add diagnostic
-          </Button>
-        )}
+      {roles.includes("Nurse") && savedTreatment && !savedDiagnostic && (
+        <Button onClick={() => setShow4(true)} style={{ marginRight: 10 }}>
+          Add diagnostic
+        </Button>
+      )}
 
       {visualAcuity.length > 0 &&
-        medicalActs.length > 0 &&
-        (roles.includes("Nurse") || roles.includes("Doctor")) && (
+        // medicalActs.length > 0 &&
+        roles.includes("Doctor") && (
           <Button
             onClick={() => {
               if (window.confirm("Are you sure you want to save?")) {
-                roles.includes("Nurse") ? nurseSave() : doctorSave();
+                doctorSave();
               }
             }}
             style={{ marginRight: 10 }}
@@ -722,64 +866,237 @@ export default function VisitDetails() {
             save and send
           </Button>
         )}
-      {invoice && (
-        <Row>
-          <Col md={4} xl={4} style={{ marginTop: 20, margin: "auto" }}>
-            <Card style={{ minHeight: 180 }}>
+
+      {visualAcuity.length > 0 &&
+        medicalActs.length > 0 &&
+        roles.includes("Nurse") &&
+        !savedTreatment && (
+          <Button
+            onClick={() => {
+              if (window.confirm("Are you sure you want to save?")) {
+                nurseSave();
+              }
+            }}
+            style={{ marginRight: 10 }}
+          >
+            save and send
+          </Button>
+        )}
+      <Row>
+        {invoice && (
+          <Col md={4} xl={4} style={{ marginTop: 20 }}>
+            <Card style={{ minHeight: 250 }}>
               <Card.Header className=" d-flex justify-content-between align-items-center">
                 <Card.Title>
                   Invoice Number: {invoice.invoiceNumber}
-                  {invoice.paymentStatus == "NOT_PAID" && (
-                    <Button
-                      style={{ marginLeft: 50 }}
-                      variant="green"
-                      onClick={handleShow8}
-                    >
-                      Pay Invoice
-                    </Button>
-                  )}
+                  {invoice.paymentStatus == "NOT_PAID" &&
+                    roles.includes("Receptionist") && (
+                      <Button
+                        style={{ marginLeft: 50 }}
+                        variant="green"
+                        onClick={handleShow8}
+                      >
+                        Pay Invoice
+                      </Button>
+                    )}
                 </Card.Title>
               </Card.Header>
               <Card.Body>
                 <Card.Title>
                   {" "}
-                  Total Amount: Rwf {invoice.totalAmount.toLocaleString()}{" "}
+                  Total Amount: Rwf {invoice?.totalAmount.toLocaleString()}{" "}
                 </Card.Title>
                 <Card.Title>
-                  Insurer Amount: Rwf {invoice.insurerAmount.toLocaleString()}
+                  Insurer Amount: Rwf {invoice?.insurerAmount.toLocaleString()}
                 </Card.Title>
                 <Card.Title>
-                  Patient Amount: Rwf {invoice.patientAmount.toLocaleString()}
+                  Patient Amount: Rwf {invoice?.patientAmount.toLocaleString()}
                 </Card.Title>
                 <Card.Title>
                   Remaining Amount: Rwf{" "}
-                  {invoice.remainingAmount.toLocaleString()}
+                  {invoice?.remainingAmount.toLocaleString()}
                 </Card.Title>
                 <Card.Title
                   style={{
                     color:
-                      invoice.paymentStatus == "NOT_PAID" ? "red" : "green",
+                      invoice?.paymentStatus == "NOT_PAID" ? "red" : "green",
                   }}
                 >
-                  Status: {invoice.paymentStatus}
+                  Status: {invoice?.paymentStatus}
                 </Card.Title>
               </Card.Body>
             </Card>
+          </Col>
+        )}
+        <Col md={4} xl={4} style={{ marginTop: 20 }}>
+          <Card style={{ minHeight: 250 }}>
+            <Card.Header className=" d-flex justify-content-between align-items-center">
+              <div className="">
+                <Card.Title>
+                  {location.state?.data?.createdAt?.slice(0, 10)}
+                </Card.Title>
+                {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
+              </div>
+            </Card.Header>
+            <Card.Body>
+              <Card.Title>
+                Sex: {location.state?.data?.patient?.gender}
+              </Card.Title>
+              <Card.Title>DOB: {location.state?.data?.patient?.dob}</Card.Title>
+              <Card.Title style={{ fontSize: "15px" }}>
+                Doctor: Dr {location.state?.data?.doctor}
+              </Card.Title>
+            </Card.Body>
+          </Card>
+        </Col>
+        {!roles.includes("Receptionist") && (
+          <>
+            <Col md={4} xl={4} style={{ marginTop: 20 }}>
+              <Card style={{ minHeight: 250 }}>
+                <Card.Header className=" d-flex justify-content-between align-items-center">
+                  <div className="">
+                    <Card.Title>Dr.Note</Card.Title>
+                    {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
+                  </div>
+                </Card.Header>
+                <Card.Body>
+                  <Card.Title>
+                    {savedTreatment
+                      ? `Dr.Note: ${savedTreatment}`
+                      : "No treatment yet..."}
+                  </Card.Title>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={4} xl={4} style={{ marginTop: 20 }}>
+              <Card style={{ minHeight: 250 }}>
+                <Card.Header className=" d-flex justify-content-between align-items-center">
+                  <div className="">
+                    <Card.Title>Diagnostic</Card.Title>
+                    {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
+                  </div>
+                </Card.Header>
+                <Card.Body>
+                  <Card.Title>
+                    {savedDiagnostic
+                      ? `Diagnostic: ${savedDiagnostic}`
+                      : "No Diagnostic yet..."}
+                  </Card.Title>
+                </Card.Body>
+              </Card>
+            </Col>
+          </>
+        )}
+        {!roles.includes("Receptionist") && (
+        <>
+          <Col md={6} xl={6} style={{ marginTop: 20 }}>
+            <h1>Visual Acuity</h1>
+            <DataTable columns={vaColumns} data={visualAcuity} />
+            {roles.includes("Nurse") &&
+              location.state?.data?.visitStatus === "TRANSFER_TO_NURSE" &&
+              !isVaSaved && (
+                <>
+                  <Button
+                    onClick={() => addVisualAcuity()}
+                    style={{ marginTop: 20 }}
+                  >
+                    Save
+                  </Button>
+                </>
+              )}
+          </Col>
 
-            <Col sm={12} md={12} lg={6} xl={4}>
-              {/* <Card.Header>
-            <Card.Title>Select2 Inside Modal</Card.Title>
-            <Form.Check label="show code" type='switch' id="custom-switch" className="ms-auto" onClick={() => { setEight(!eight) }} />
-          </Card.Header> */}
-              <Card.Body>
-                <Modal show={showModal} onHide={handleClose8}>
+          {roles.includes("Doctor") && (
+            <Col md={6} xl={6} style={{ marginTop: 20 }}>
+              <h1>Refraction</h1>
+              <DataTable columns={reColumns} data={refraction} />
+              {roles.includes("Doctor") &&
+                location.state?.data?.visitStatus === "TRANSFER_TO_DOCTOR" &&
+                !isReSaved && (
+                  <>
+                    <Button
+                      onClick={() => addRefraction()}
+                      style={{ marginTop: 20 }}
+                    >
+                      Save
+                    </Button>
+                  </>
+                )}
+            </Col>
+          )}
+
+          <Col md={6} xl={6} style={{ marginTop: 20 }}>
+            <h1>Medical Acts</h1>
+            {acts.length > 0 ? (
+              acts.map((act) => (
+                <Fragment key={act.id}>
+                  <input
+                    type="checkbox"
+                    style={{ marginBottom: 15 }}
+                    value={act.value}
+                    checked={medicalActs.includes(act.value)}
+                    onChange={handleCheckboxChange}
+                  />{" "}
+                  {act.label}
+                  <br />
+                </Fragment>
+              ))
+            ) : (
+              <p>No medical acts</p>
+            )}
+          </Col>
+        </>
+      )}
+      </Row>
+
+
+      
+
+      <Modal show={show3} onHide={() => setShow3(false)}>
+        <Form onSubmit={addTreatment}>
+          <Modal.Header closeButton></Modal.Header>
+          <Modal.Body>
+            <Col lg={12} className="col-md-">
+              <Card className="custom-card">
+                <Card.Header>
+                  <Card.Title>Add Dr.Note</Card.Title>
+                </Card.Header>
+                <Card.Body>
+                  <div className="d-flex flex-column">
+                    <Form.Group as={Col} md="12" className="form-group">
+                      <Form.Label>DR.Note</Form.Label>
+                      <Form.Control
+                        required
+                        type="text"
+                        placeholder="Enter treatment"
+                        onChange={(e) => setTreatment(e.target.value)}
+                      />
+                    </Form.Group>
+
+                    <Button
+                      type="submit"
+                      className="btn ripple btn-primary my-3"
+                      style={{ width: "40%", marginLeft: "320px" }}
+                      variant="primary"
+                    >
+                      Submit
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Modal.Body>
+        </Form>
+      </Modal>
+
+      <Modal show={showModal} onHide={handleClose8}>
                   <Modal.Header closeButton>
                     <Modal.Title>
-                      Pay Invoice | Amount to pay: {invoice.patientAmount} Rwf
+                      Pay Invoice | Amount to pay: {invoice?.patientAmount} Rwf
                     </Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    {invoice.patientAmount > 0 ? (
+                    {invoice?.patientAmount > 0 ? (
                       <>
                         <Col xl={12}>
                           <Form>
@@ -803,7 +1120,7 @@ export default function VisitDetails() {
                           <>
                             <Col xl={12}>
                               <Form.Group className="form-group">
-                                <Form.Label>Insurance Amount</Form.Label>
+                                <Form.Label>Insurance Percentage %</Form.Label>
                                 <Form.Control
                                   type="number"
                                   value={insuranceAmount}
@@ -815,12 +1132,12 @@ export default function VisitDetails() {
                                     // Ensure the value is between 0 and 20
                                     newValue = Math.min(
                                       Math.max(newValue, 0),
-                                      invoice.patientAmount
+                                      100
                                     );
 
                                     setInsuranceAmount(newValue);
                                     setTopUpAmount(
-                                      invoice.patientAmount - newValue
+                                      invoice?.patientAmount - (invoice?.patientAmount*newValue/100)
                                     );
                                   }}
                                   required
@@ -840,6 +1157,23 @@ export default function VisitDetails() {
                                 />
                               </Form.Group>
                             </Col>
+                            <Col xl={12}>
+                              <Form.Group className="form-group">
+                                <Form.Label>Select payment mode</Form.Label>
+                                <Select
+                                  options={[
+                                    { label: "Cash", value: "CASH" },
+                                    { label: "MoMo", value: "MOMO" },
+                                    { label: "POS", value: "POS" },
+                                  ]}
+                                  onChange={(e) => setPaymentMode(e.value)}
+                                  classNamePrefix="Select2"
+                                  className="multi-select"
+                                  // placeholder="Select them"
+                                  required
+                                />
+                              </Form.Group>
+                            </Col>
                           </>
                         )}
                       </>
@@ -849,332 +1183,34 @@ export default function VisitDetails() {
                   </Modal.Body>
                   <Modal.Footer>
                     <Button onClick={() => pay()} variant="success">
-                      {invoice.patientAmount > 0 ? "Pay Now" : "Mark as paid"}
+                      {invoice?.patientAmount > 0 ? "Pay Now" : "Mark as paid"}
                     </Button>
                     <Button variant="danger" onClick={handleClose8}>
                       Cancel
                     </Button>
                   </Modal.Footer>
-                </Modal>{" "}
-              </Card.Body>
-            </Col>
-          </Col>
-        </Row>
-      )}
-      <Row>
-        <Col md={4} xl={4} style={{ marginTop: 20 }}>
-          <Card style={{ minHeight: 180 }}>
-            <Card.Header className=" d-flex justify-content-between align-items-center">
-              <div className="">
-                <Card.Title>
-                  {location.state.data?.createdAt?.slice(0, 10)}
-                </Card.Title>
-                {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
-              </div>
-            </Card.Header>
-            <Card.Body>
-              <Card.Title>
-                Sex: {location.state.data.patient?.gender}
-              </Card.Title>
-              <Card.Title>DOB: {location.state.data.patient?.dob}</Card.Title>
-              <Card.Title style={{ fontSize: "15px" }}>
-                Doctor: Dr {location.state.data.doctor}
-              </Card.Title>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={4} xl={4} style={{ marginTop: 20 }}>
-          <Card style={{ minHeight: 180 }}>
-            <Card.Header className=" d-flex justify-content-between align-items-center">
-              <div className="">
-                <Card.Title>Dr.Note</Card.Title>
-                {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
-              </div>
-            </Card.Header>
-            <Card.Body>
-              <Card.Title>
-                {savedTreatment
-                  ? `Dr.Note: ${savedTreatment}`
-                  : "No treatment yet..."}
-              </Card.Title>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={4} xl={4} style={{ marginTop: 20 }}>
-          <Card style={{ minHeight: 180 }}>
-            <Card.Header className=" d-flex justify-content-between align-items-center">
-              <div className="">
-                <Card.Title>Diagnostic</Card.Title>
-                {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
-              </div>
-            </Card.Header>
-            <Card.Body>
-              <Card.Title>
-                {savedDiagnostic
-                  ? `Diagnostic: ${savedDiagnostic}`
-                  : "No Diagnostic yet..."}
-              </Card.Title>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+                </Modal>
 
-      <Row>
-        <Col md={6} xl={6} style={{ marginTop: 20 }}>
-          <h1>Visual Acuity</h1>
-          <DataTable columns={vaColumns} data={visualAcuity} />
-          {roles.includes("Nurse") &&
-            location.state.data.visitStatus === "TRANSFER_TO_NURSE" && (
-              <>
-                <Button
-                  onClick={() => addVisualAcuity()}
-                  style={{ marginRight: 10, marginLeft: 20 }}
-                >
-                  Save
-                </Button>
-              </>
-            )}
-        </Col>
-
-        <Col md={6} xl={6} style={{ marginTop: 20 }}>
-          <h1>Refraction</h1>
-          <DataTable columns={reColumns} data={refraction} />
-        </Col>
-
-        <Col md={6} xl={6} style={{ marginTop: 20 }}>
-          <h1>Medical Acts</h1>
-          <DataTable columns={maColumns} data={medicalActs} />
-          {roles.includes("Nurse") &&
-            location.state.data.visitStatus === "TRANSFER_TO_NURSE" && (
-              <>
-                <Button
-                  onClick={() => addMedicalaC()}
-                  style={{ marginRight: 10, marginLeft: 20 }}
-                >
-                  Save
-                </Button>
-              </>
-            )}
-        </Col>
-
-        <Modal show={show2} onHide={() => setShow2(false)}>
-          <Form onSubmit={addAct}>
-            <Modal.Header closeButton></Modal.Header>
-            <Modal.Body>
-              <Col lg={12} className="col-md-">
-                <Card className="custom-card">
-                  <Card.Header>
-                    <Card.Title>Add medical act</Card.Title>
-                  </Card.Header>
-                  <Card.Body>
-                    <div className="d-flex flex-column">
-                      <Row>
-                        <Col xl={12}>
-                          <Form.Group className="form-group">
-                            <Form.Label>Select Act</Form.Label>
-                            <Select
-                              options={acts}
-                              onChange={(e) => setAct(e.value)}
-                              classNamePrefix="Select2"
-                              className="multi-select"
-                              // placeholder="Select them"
-                              required
-                            />
-                          </Form.Group>
-                        </Col>
-                      </Row>
-
-                      <Button
-                        type="submit"
-                        className="btn ripple btn-primary my-3"
-                        style={{ width: "40%", marginLeft: "320px" }}
-                        variant="primary"
-                      >
-                        Submit
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Modal.Body>
-          </Form>
-        </Modal>
-
-        <Modal show={show3} onHide={() => setShow3(false)}>
-          <Form onSubmit={addTreatment}>
-            <Modal.Header closeButton></Modal.Header>
-            <Modal.Body>
-              <Col lg={12} className="col-md-">
-                <Card className="custom-card">
-                  <Card.Header>
-                    <Card.Title>Add Dr.Note</Card.Title>
-                  </Card.Header>
-                  <Card.Body>
-                    <div className="d-flex flex-column">
-                      <Form.Group as={Col} md="12" className="form-group">
-                        <Form.Label>DR.Note</Form.Label>
-                        <Form.Control
-                          required
-                          type="text"
-                          placeholder="Enter treatment"
-                          onChange={(e) => setTreatment(e.target.value)}
-                        />
-                      </Form.Group>
-
-                      <Button
-                        type="submit"
-                        className="btn ripple btn-primary my-3"
-                        style={{ width: "40%", marginLeft: "320px" }}
-                        variant="primary"
-                      >
-                        Submit
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Modal.Body>
-          </Form>
-        </Modal>
-
-        <Modal show={show4} onHide={() => setShow4(false)}>
-          <Form onSubmit={addDiagnostic}>
-            <Modal.Header closeButton></Modal.Header>
-            <Modal.Body>
-              <Col lg={12} className="col-md-">
-                <Card className="custom-card">
-                  <Card.Header>
-                    <Card.Title>Add diagnostic</Card.Title>
-                  </Card.Header>
-                  <Card.Body>
-                    <div className="d-flex flex-column">
-                      <Form.Group as={Col} md="12" className="form-group">
-                        <Form.Label>Diagnostic</Form.Label>
-                        <Form.Control
-                          required
-                          type="text"
-                          placeholder="Enter diagnostic"
-                          onChange={(e) => setDiagnostic(e.target.value)}
-                        />
-                      </Form.Group>
-
-                      <Button
-                        type="submit"
-                        className="btn ripple btn-primary my-3"
-                        style={{ width: "40%", marginLeft: "320px" }}
-                        variant="primary"
-                      >
-                        Submit
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Modal.Body>
-          </Form>
-        </Modal>
-
-        <Modal show={show5} onHide={() => setShow5(false)}>
-          <Form onSubmit={addRefraction}>
-            <Modal.Header closeButton></Modal.Header>
-            <Modal.Body>
-              <Col lg={12} className="col-md-">
-                <Card className="custom-card">
-                  <Card.Header>
-                    <Card.Title>Add Refraction</Card.Title>
-                  </Card.Header>
-                  <Card.Body>
-                    <div className="d-flex flex-col">
-                      <Form.Group as={Col} md="6" className="form-group">
-                        <Form.Label>Sphere Right Eye</Form.Label>
-                        <Form.Control
-                          required
-                          type="text"
-                          placeholder="Enter Sphere Right Eye"
-                          onChange={(e) => setSphereRightEye(e.target.value)}
-                        />
-                      </Form.Group>
-
-                      <Form.Group as={Col} md="6" className="form-group">
-                        <Form.Label>Sphere Left Eye</Form.Label>
-                        <Form.Control
-                          required
-                          type="text"
-                          placeholder="Enter Sphere Right Eye"
-                          onChange={(e) => setSphereLeftEye(e.target.value)}
-                        />
-                      </Form.Group>
-                    </div>
-
-                    <div className="d-flex flex-col">
-                      <Form.Group as={Col} md="6" className="form-group">
-                        <Form.Label>Cylindre Right Eye</Form.Label>
-                        <Form.Control
-                          required
-                          type="text"
-                          placeholder="Enter Cylindre Right Eye"
-                          onChange={(e) => setCylindreRightEye(e.target.value)}
-                        />
-                      </Form.Group>
-
-                      <Form.Group as={Col} md="6" className="form-group">
-                        <Form.Label>Cylindre Left Eye</Form.Label>
-                        <Form.Control
-                          required
-                          type="text"
-                          placeholder="Enter Cylindre Felt Eye"
-                          onChange={(e) => setCylindreLeftEye(e.target.value)}
-                        />
-                      </Form.Group>
-                    </div>
-
-                    <div className="d-flex flex-col">
-                      <Form.Group as={Col} md="6" className="form-group">
-                        <Form.Label>Axe Right Eye</Form.Label>
-                        <Form.Control
-                          required
-                          type="text"
-                          placeholder="Enter Axe Right Eye"
-                          onChange={(e) => setAxeRightEye(e.target.value)}
-                        />
-                      </Form.Group>
-
-                      <Form.Group as={Col} md="6" className="form-group">
-                        <Form.Label>Axe Left Eye</Form.Label>
-                        <Form.Control
-                          required
-                          type="text"
-                          placeholder="Enter Axe Felt Eye"
-                          onChange={(e) => setAxeLeftEye(e.target.value)}
-                        />
-                      </Form.Group>
-                    </div>
-
-                    <div className="d-flex flex-col">
-                      <Form.Group as={Col} md="6" className="form-group">
-                        <Form.Label>Lens Type</Form.Label>
-                        <Select
-                          options={lensType_}
-                          onChange={(e) => setLensType(e.value)}
-                          classNamePrefix="Select2"
-                          className="multi-select"
-                          // placeholder="Select them"
-                          required
-                        />
-                      </Form.Group>
-
-                      <Form.Group as={Col} md="6" className="form-group">
-                        <Form.Label>Dip</Form.Label>
-                        <Select
-                          options={dip_}
-                          onChange={(e) => setDip(e.value)}
-                          classNamePrefix="Select2"
-                          className="multi-select"
-                          // placeholder="Select them"
-                          required
-                        />
-                      </Form.Group>
-                    </div>
+      <Modal show={show4} onHide={() => setShow4(false)}>
+        <Form onSubmit={addDiagnostic}>
+          <Modal.Header closeButton></Modal.Header>
+          <Modal.Body>
+            <Col lg={12} className="col-md-">
+              <Card className="custom-card">
+                <Card.Header>
+                  <Card.Title>Add diagnostic</Card.Title>
+                </Card.Header>
+                <Card.Body>
+                  <div className="d-flex flex-column">
+                    <Form.Group as={Col} md="12" className="form-group">
+                      <Form.Label>Diagnostic</Form.Label>
+                      <Form.Control
+                        required
+                        type="text"
+                        placeholder="Enter diagnostic"
+                        onChange={(e) => setDiagnostic(e.target.value)}
+                      />
+                    </Form.Group>
 
                     <Button
                       type="submit"
@@ -1184,13 +1220,13 @@ export default function VisitDetails() {
                     >
                       Submit
                     </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Modal.Body>
-          </Form>
-        </Modal>
-      </Row>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Modal.Body>
+        </Form>
+      </Modal>
     </Fragment>
   );
 }

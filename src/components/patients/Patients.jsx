@@ -53,6 +53,7 @@ function Patients() {
   const [cardNumber, setcardNumber] = useState("");
   const [employer, setemployer] = useState("");
   const [expiryDate, setexpiryDate] = useState("");
+  const [ticket,setTicket] = useState(0);
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);
   const [show3, setShow3] = useState(false);
@@ -167,7 +168,7 @@ function Patients() {
     },
 
     {
-      name: "Records",
+      name: "Actions",
       cell: (row) => (
         <div
           onClick={() => {
@@ -218,7 +219,7 @@ function Patients() {
       sortable: true,
     },
     {
-      name: "Case Type",
+      name: "Visit Type",
       selector: (row) => [row.visitType],
       sortable: true,
     },
@@ -290,7 +291,7 @@ function Patients() {
         cardNumber: cardNumber,
         employer: employer,
         expiryDate: expiryDate,
-        ticket: 0,
+        ticket: ticket,
       },
     });
     console.log(postObj);
@@ -1145,6 +1146,25 @@ function Patients() {
                           </Form.Group>
                         </Col>
                       )}
+
+
+                      
+                      {insuranceId?.label?.toLowerCase() !== "private" && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Ticket</Form.Label>
+                            <Form.Control  
+                              type="text"
+                              className="form-control"
+                              name="example-text-input"
+                              // placeholder="Address"
+                              onChange={(e) => setTicket(e.target.value)}
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
+
                     </Row>
 
 

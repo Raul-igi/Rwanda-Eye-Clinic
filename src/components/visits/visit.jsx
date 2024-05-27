@@ -15,8 +15,7 @@ import axios from "axios";
 import DataTable from "react-data-table-component";
 import { debounce } from "lodash";
 import { lensType_, dip_ } from "../../data/elementsdata";
-import Visit from "./visit";
-export default function VisitDetails() {
+export default function Visit({visitId}) {
   const location = useLocation();
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
@@ -46,11 +45,27 @@ export default function VisitDetails() {
 
   const [previousVisits, setPreviousVisits] = useState("");
   const [previousVisits_, setPreviousVisits_] = useState("");
-  const [visitId,setVisitId] = useState("");
+  const [patientId, setPatientId] = useState(false);
   const [totalRows, setTotalRows] = useState("");
 
   const [tab, setTab] = useState("tab1");
   const [toggle, setToggle] = useState(1);
+  const [sphereRightEye, setSphereRightEye] = useState("");
+  const [sphereLeftEye, setSphereLeftEye] = useState("");
+  const [cylindreRightEye, setCylindreRightEye] = useState("");
+  const [cylindreLeftEye, setCylindreLeftEye] = useState("");
+  const [axeRightEye, setAxeRightEye] = useState("");
+  const [axeLeftEye, setAxeLeftEye] = useState("");
+  const [lensType, setLensType] = useState("");
+  const [dip, setDip] = useState("");
+
+  const [refraction_,setRefraction_]= useState("")
+
+  const [showModal, setShowModal] = useState(false);
+  const handleClose8 = () => setShowModal(false);
+  const handleShow8 = () => setShowModal(true);
+
+  const [eight, setEight] = useState(false);
 
   function updateToggle(id) {
     setToggle(id);
@@ -90,7 +105,8 @@ export default function VisitDetails() {
         <div
           onClick={() => {
             setShow6(true);
-            setVisitId(row.id);
+            fetchPreviousVisits(row.id);
+            setPatientId(row.id);
           }}
           style={{ color: "#2D6CC5", cursor: "pointer" }}
         >
@@ -169,21 +185,6 @@ export default function VisitDetails() {
     //   left: "",
     // },
   ]);
-
-  const [sphereRightEye, setSphereRightEye] = useState("");
-  const [sphereLeftEye, setSphereLeftEye] = useState("");
-  const [cylindreRightEye, setCylindreRightEye] = useState("");
-  const [cylindreLeftEye, setCylindreLeftEye] = useState("");
-  const [axeRightEye, setAxeRightEye] = useState("");
-  const [axeLeftEye, setAxeLeftEye] = useState("");
-  const [lensType, setLensType] = useState("");
-  const [dip, setDip] = useState("");
-
-  const [showModal, setShowModal] = useState(false);
-  const handleClose8 = () => setShowModal(false);
-  const handleShow8 = () => setShowModal(true);
-
-  const [eight, setEight] = useState(false);
 
   const handleInputChange = (e, name, field) => {
     // Update the corresponding data item with the new value
@@ -457,36 +458,14 @@ export default function VisitDetails() {
     }
   };
 
-  const fetchActs = async () => {
-    let my_token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
-      },
-    };
-
-    try {
-      const response = await axios.get(
-        `http://www.ubuzima.rw/rec/visit/nurse/acts`,
-        config
-      );
-      const acts_ = response.data.response.map((el) => {
-        return { label: el.name, value: el.id };
-      });
-      setActs(acts_);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
+  
   const fetchDiagnostic = async () => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state?.data?.visitId,
+        patientVisitId: "081926e7-5a73-4c75-abb3-b27a94986e20",
       },
     };
 
@@ -574,7 +553,7 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state?.data?.visitId,
+        patientVisitId:visitId
       },
     };
 
@@ -733,53 +712,11 @@ export default function VisitDetails() {
   };
 
   // Debounced function to be executed after changes
-  const debouncedFunction = debounce((updatedMedicalActs) => {
-    addAct(updatedMedicalActs);
-  }, 3000);
 
   // Effect to handle changes to medicalActs state
-  useEffect(() => {
-    debouncedFunction(medicalActs);
+ 
 
-    // Cleanup the debounce on unmount
-    return () => debouncedFunction.cancel();
-  }, [medicalActs, debouncedFunction]);
 
-  const addAct = async (acts_) => {
-    const roles_ = localStorage.getItem("role");
-    const userRoles = JSON.parse(roles_);
-    if (
-      userRoles.includes("Nurse") &&
-      location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
-    ) {
-      let my_token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${my_token}`,
-        },
-      };
-      const postObj = JSON.stringify({
-        patientVisitId: location.state?.data?.visitId,
-        medicalActId: acts_,
-      });
-      console.log(config);
-      try {
-        const response = await axios.post(
-          `http://www.ubuzima.rw/rec/visit/nurse/patient/add-act-all`,
-          postObj,
-          config
-        );
-        setShow2(false);
-        if (response.data.status) {
-          // alert("Medical acts added successfully!");
-        }
-      } catch (error) {
-        setShow2(false);
-        console.error(error);
-      }
-    }
-  };
 
   const nurseSave = async () => {
     let my_token = localStorage.getItem("token");
@@ -948,7 +885,7 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state?.data?.visitId,
+        patientVisitId:visitId
       },
     };
 
@@ -1029,14 +966,14 @@ export default function VisitDetails() {
   };
 
   useEffect(() => {
-    fetchActs();
+    
     fetchVisualAcuity();
     fetchMedicalActs();
     fetchDiagnostic();
     fetchRefraction();
     fetchTreatment();
-    fetchInvoice();
-    fetchPreviousVisits();
+    
+   
     const roles_ = localStorage.getItem("role");
     const userRoles = JSON.parse(roles_);
     setRoles(userRoles);
@@ -1044,559 +981,31 @@ export default function VisitDetails() {
 
   return (
     <Fragment>
-      {roles.includes("Doctor") &&
-        location.state?.data?.visitStatus === "TRANSFER_TO_DOCTOR" && (
-          <>
-            <Button onClick={() => setShow3(true)} style={{ marginRight: 10 }}>
-              Add Dr.Note
-            </Button>
-          </>
-        )}
-      {roles.includes("Nurse") && savedTreatment && !savedDiagnostic && (
-        <Button onClick={() => setShow4(true)} style={{ marginRight: 10 }}>
-          Add diagnostic
-        </Button>
-      )}
-
-      {visualAcuity.length > 0 &&
-        // medicalActs.length > 0 &&
-        roles.includes("Doctor") && (
-          <Button
-            onClick={() => {
-              if (window.confirm("Are you sure you want to save?")) {
-                doctorSave();
-              }
-            }}
-            style={{ marginRight: 10 }}
-          >
-            save and send
-          </Button>
-        )}
-
-      {visualAcuity.length > 0 &&
-        medicalActs.length > 0 &&
-        roles.includes("Nurse") &&
-        !savedTreatment && (
-          <Button
-            onClick={() => {
-              if (window.confirm("Are you sure you want to save?")) {
-                nurseSave();
-              }
-            }}
-            style={{ marginRight: 10 }}
-          >
-            save and send
-          </Button>
-        )}
       <Row>
-        {invoice && (
-          <Col md={4} xl={4} style={{ marginTop: 20 }}>
-            <Card style={{ minHeight: 250 }}>
-              <Card.Header className=" d-flex justify-content-between align-items-center">
-                <Card.Title>
-                  Invoice Number: {invoice.invoiceNumber}
-                  {invoice.paymentStatus == "NOT_PAID" &&
-                    roles.includes("Receptionist") && (
-                      <Button
-                        style={{ marginLeft: 50 }}
-                        variant="green"
-                        onClick={handleShow8}
-                      >
-                        Pay Invoice
-                      </Button>
-                    )}
-                </Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <Card.Title>
-                  {" "}
-                  Total Amount: Rwf {invoice?.totalAmount.toLocaleString()}{" "}
-                </Card.Title>
-                <Card.Title>
-                  Insurer Amount: Rwf {invoice?.insurerAmount.toLocaleString()}
-                </Card.Title>
-                <Card.Title>
-                  Patient Amount: Rwf {invoice?.patientAmount.toLocaleString()}
-                </Card.Title>
-                <Card.Title>
-                  Remaining Amount: Rwf{" "}
-                  {invoice?.remainingAmount.toLocaleString()}
-                </Card.Title>
-                <Card.Title
-                  style={{
-                    color:
-                      invoice?.paymentStatus == "NOT_PAID" ? "red" : "green",
-                  }}
-                >
-                  Status: {invoice?.paymentStatus}
-                </Card.Title>
-              </Card.Body>
-            </Card>
-          </Col>
-        )}
+        <Col md={6} xl={6} style={{ marginTop: 20, paddingRight: 0 }}>
+          <h1>Visual Acuity</h1>
 
-        <Row>
-          <Col md={4} xl={4} style={{ marginTop: 20 }}>
-            <Card style={{ minHeight: 250 }}>
-              <Card.Header className=" d-flex justify-content-between align-items-center">
-                <div className="">
-                  <Card.Title>
-                    {location.state?.data?.createdAt?.slice(0, 10)}
-                  </Card.Title>
-                  {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
-                </div>
-              </Card.Header>
-              <Card.Body>
-                <Card.Title>
-                  Names: {location.state?.data?.patient?.names}
-                </Card.Title>
+          <DataTable columns={vaColumns} data={visualAcuity} />
+        </Col>
 
-                <Card.Title>
-                  Sex: {location.state?.data?.patient?.gender}
-                </Card.Title>
+        <Col
+          md={6}
+          xl={6}
+          style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
+        >
+          <h1>Current Glasses</h1>
+          <DataTable columns={vaColumn} data={visualAcuity} />
+        </Col>
 
-                <Card.Title>
-                  DOB: {location.state?.data?.patient?.dob}
-                </Card.Title>
-
-                <Card.Title style={{ fontSize: "15px" }}>
-                  Doctor: Dr {location.state?.data?.doctor}
-                </Card.Title>
-              </Card.Body>
-            </Card>
-          </Col>
-
-          <Col lg={8} style={{ marginTop: 20 }}>
-            <Card>
-              <Card.Header className="d-flex justify-content-between align-items-center">
-                <Card.Title>Last Visits</Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <Card.Body>
-                  <DataTable columns={columns2} data={previousVisits} />
-                </Card.Body>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-
-        {roles.includes("Nurse") && (
-          <div class="tabs" style={{ display: "flex" }}>
-            <div
-              class="tab"
-              onClick={() => {
-                setTab("tab1");
-              }}
-              style={{
-                padding: "10px 20px",
-                cursor: "pointer",
-                border: "1px solid #ccc",
-                borderBottom:
-                  tab === "tab1" ? "3px solid #467FCF" : "1px solid #ccc",
-                backgroundColor: tab === "tab1" ? "white" : "#f1f1f1",
-                fontWeight: tab === "tab1" ? "bold" : "normal",
-              }}
-              id="tab1"
-            >
-              Visual Acuity
-            </div>
-
-            <div
-              class="tab"
-              onClick={() => {
-                setTab("tab2");
-              }}
-              style={{
-                padding: "10px 20px",
-                cursor: "pointer",
-                border: "1px solid #ccc",
-                borderBottom:
-                  tab === "tab2" ? "3px solid #467FCF" : "1px solid #ccc",
-                backgroundColor: tab === "tab2" ? "white" : "#f1f1f1",
-                fontWeight: tab === "tab2" ? "bold" : "normal",
-              }}
-              id="tab2"
-            >
-              Medical Act
-            </div>
-
-            <div
-              class="tab"
-              onClick={() => {
-                setTab("tab3");
-              }}
-              style={{
-                padding: "10px 20px",
-                cursor: "pointer",
-                border: "1px solid #ccc",
-                borderBottom:
-                  tab === "tab3" ? "3px solid #467FCF" : "1px solid #ccc",
-                backgroundColor: tab === "tab3" ? "white" : "#f1f1f1",
-                fontWeight: tab === "tab3" ? "bold" : "normal",
-              }}
-              id="tab3"
-            >
-              Doctor's Refraction
-            </div>
-          </div>
-        )}
-
-        {!roles.includes("Receptionist") && (
-          <>
-            <Row>
-              {tab === "tab1" && (
-                <Col md={6} xl={6} style={{ marginTop: 20, paddingRight: 0 }}>
-                  <h1>Visual Acuity</h1>
-
-                  <DataTable columns={vaColumns} data={visualAcuity} />
-
-                  {roles.includes("Nurse") &&
-                    location.state?.data?.visitStatus === "TRANSFER_TO_NURSE" &&
-                    !isVaSaved && (
-                      <>
-                        <Button
-                          onClick={() => addVisualAcuity()}
-                          style={{ marginTop: 20 }}
-                        >
-                          Save
-                        </Button>
-                      </>
-                    )}
-                </Col>
-              )}
-
-              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
-                tab === "tab1" && (
-                  <Col
-                    md={6}
-                    xl={6}
-                    style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
-                  >
-                    <h1>Current Glasses</h1>
-                    <DataTable columns={vaColumn} data={visualAcuity} />
-
-                    {roles.includes("Doctor") &&
-                      location.state?.data?.visitStatus ===
-                        "TRANSFER_TO_DOCTOR" &&
-                      !isReSaved && (
-                        <>
-                          <Button
-                            onClick={() => addRefraction()}
-                            style={{ marginTop: 20 }}
-                          >
-                            Save
-                          </Button>
-                        </>
-                      )}
-                  </Col>
-                )}
-
-              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
-                tab === "tab1" && (
-                  <Col
-                    md={6}
-                    xl={6}
-                    style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
-                  >
-                    <h1>Optometrist Refraction</h1>
-                    <DataTable columns={reColumns} data={refraction} />
-                    {roles.includes("Doctor") &&
-                      location.state?.data?.visitStatus ===
-                        "TRANSFER_TO_DOCTOR" &&
-                      !isReSaved && <></>}
-                  </Col>
-                )}
-
-              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
-                tab === "tab3" && (
-                  <Col
-                    md={6}
-                    xl={6}
-                    style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
-                  >
-                    <h1>Doctor's Refraction</h1>
-                    <DataTable columns={reColumns} data={refraction} />
-                    {roles.includes("Doctor") &&
-                      location.state?.data?.visitStatus ===
-                        "TRANSFER_TO_NURSE" &&
-                      !isReSaved && (
-                        <>
-                          <Button
-                            onClick={() => addVisualAcuity()}
-                            style={{ marginTop: 20 }}
-                          >
-                            Save
-                          </Button>
-                        </>
-                      )}
-                  </Col>
-                )}
-
-              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
-                tab === "tab1" && (
-                  <Col
-                    md={6}
-                    xl={6}
-                    style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
-                  >
-                    <h1>Comments</h1>
-                    <DataTable columns={CommentsColumn} data={Comments} />
-                    {roles.includes("Doctor") &&
-                      location.state?.data?.visitStatus ===
-                        "TRANSFER_TO_DOCTOR" &&
-                      !isReSaved && <></>}
-                  </Col>
-                )}
-
-              {/* 
-          {!roles.includes("Receptionist") && (
-          <>
-            <Col md={4} xl={4} style={{ marginTop: 20 }}>
-              <Card style={{ minHeight: 250 }}>
-                <Card.Header className=" d-flex justify-content-between align-items-center">
-                  <div className="">
-                    <Card.Title>Dr.Note</Card.Title>
-                  </div>
-                </Card.Header>
-                <Card.Body>
-                  <Card.Title>
-                    {savedTreatment
-                      ? `Dr.Note: ${savedTreatment}`
-                      : "No treatment yet..."}
-                  </Card.Title>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={4} xl={4} style={{ marginTop: 20 }}>
-              <Card style={{ minHeight: 250 }}>
-                <Card.Header className=" d-flex justify-content-between align-items-center">
-                  <div className="">
-                    <Card.Title>Diagnostic</Card.Title>
-                  </div>
-                </Card.Header>
-                <Card.Body>
-                  <Card.Title>
-                    {savedDiagnostic
-                      ? `Diagnostic: ${savedDiagnostic}`
-                      : "No Diagnostic yet..."}
-                  </Card.Title>
-                </Card.Body>
-              </Card>
-            </Col>
-          </>
-        )} */}
-            </Row>
-
-            {/* {toggle ===1? "tab2" :"tab1"} */}
-            {tab === "tab2" && (
-              <Col md={6} xl={6} style={{ marginTop: 20 }}>
-                <h1>Medical Acts</h1>
-                {acts.length > 0 ? (
-                  acts.map((act) => (
-                    <Fragment key={act.id}>
-                      <input
-                        type="checkbox"
-                        style={{ marginBottom: 15 }}
-                        value={act.value}
-                        checked={medicalActs.includes(act.value)}
-                        onChange={handleCheckboxChange}
-                      />{" "}
-                      {act.label}
-                      <br />
-                    </Fragment>
-                  ))
-                ) : (
-                  <p>No medical acts</p>
-                )}
-              </Col>
-            )}
-          </>
-        )}
+        <Col
+          md={6}
+          xl={6}
+          style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
+        >
+          <h1>Doctor's Refraction</h1>
+          <DataTable columns={reColumns} data={refraction} />
+        </Col>
       </Row>
-
-      <Modal show={show3} onHide={() => setShow3(false)}>
-        <Form onSubmit={addTreatment}>
-          <Modal.Header closeButton></Modal.Header>
-          <Modal.Body>
-            <Col lg={12} className="col-md-">
-              <Card className="custom-card">
-                <Card.Header>
-                  <Card.Title>Add Dr.Note</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                  <div className="d-flex flex-column">
-                    <Form.Group as={Col} md="12" className="form-group">
-                      <Form.Label>DR.Note</Form.Label>
-                      <Form.Control
-                        required
-                        type="text"
-                        placeholder="Enter treatment"
-                        onChange={(e) => setTreatment(e.target.value)}
-                      />
-                    </Form.Group>
-
-                    <Button
-                      type="submit"
-                      className="btn ripple btn-primary my-3"
-                      style={{ width: "40%", marginLeft: "320px" }}
-                      variant="primary"
-                    >
-                      Submit
-                    </Button>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Modal.Body>
-        </Form>
-      </Modal>
-
-      <Modal show={show6} onHide={() => setShow6(false)}>
-        <Modal.Header closeButton></Modal.Header>
-        <Modal.Body>
-          {
-visitId &&
-<Visit visitId={visitId}/>}
-        </Modal.Body>
-      </Modal>
-
-      <Modal show={showModal} onHide={handleClose8}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Pay Invoice | Amount to pay: {invoice?.patientAmount} Rwf
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {invoice?.patientAmount > 0 ? (
-            <>
-              <Col xl={12}>
-                <Form>
-                  <Form.Group
-                    className="mb-3"
-                    controlId="exampleForm.ControlInput1"
-                  >
-                    Payment method
-                    <br />
-                    <Select
-                      options={paymentMethods}
-                      placeholder="Select method"
-                      classNamePrefix="Select2"
-                      onChange={(e) => setPaymentMethod(e.value)}
-                    />
-                  </Form.Group>
-                </Form>
-              </Col>
-
-              {paymentMethod === "INSURANCE_AND_TOP_UP" && (
-                <>
-                  <Col xl={12}>
-                    <Form.Group className="form-group">
-                      <Form.Label>Insurance Percentage %</Form.Label>
-                      <Form.Control
-                        type="number"
-                        value={insuranceAmount}
-                        className="form-control"
-                        name="example-text-input"
-                        // placeholder="names"
-                        onChange={(e) => {
-                          let newValue = parseInt(e.target.value, 10);
-                          // Ensure the value is between 0 and 20
-                          newValue = Math.min(Math.max(newValue, 0), 100);
-
-                          setInsuranceAmount(newValue);
-                          setTopUpAmount(
-                            invoice?.patientAmount -
-                              (invoice?.patientAmount * newValue) / 100
-                          );
-                        }}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col xl={12}>
-                    <Form.Group className="form-group">
-                      <Form.Label>Top Up Amount</Form.Label>
-                      <Form.Control
-                        type="number"
-                        value={topUpAmount}
-                        className="form-control"
-                        name="example-text-input"
-                        // placeholder="names"
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col xl={12}>
-                    <Form.Group className="form-group">
-                      <Form.Label>Select payment mode</Form.Label>
-                      <Select
-                        options={[
-                          { label: "Cash", value: "CASH" },
-                          { label: "MoMo", value: "MOMO" },
-                          { label: "POS", value: "POS" },
-                        ]}
-                        onChange={(e) => setPaymentMode(e.value)}
-                        classNamePrefix="Select2"
-                        className="multi-select"
-                        // placeholder="Select them"
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                </>
-              )}
-            </>
-          ) : (
-            <p>Mark Invoice as paid</p>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={() => pay()} variant="success">
-            {invoice?.patientAmount > 0 ? "Pay Now" : "Mark as paid"}
-          </Button>
-          <Button variant="danger" onClick={handleClose8}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={show4} onHide={() => setShow4(false)}>
-        <Form onSubmit={addDiagnostic}>
-          <Modal.Header closeButton></Modal.Header>
-          <Modal.Body>
-            <Col lg={12} className="col-md-">
-              <Card className="custom-card">
-                <Card.Header>
-                  <Card.Title>Add diagnostic</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                  <div className="d-flex flex-column">
-                    <Form.Group as={Col} md="12" className="form-group">
-                      <Form.Label>Diagnostic</Form.Label>
-                      <Form.Control
-                        required
-                        type="text"
-                        placeholder="Enter diagnostic"
-                        onChange={(e) => setDiagnostic(e.target.value)}
-                      />
-                    </Form.Group>
-
-                    <Button
-                      type="submit"
-                      className="btn ripple btn-primary my-3"
-                      style={{ width: "40%", marginLeft: "320px" }}
-                      variant="primary"
-                    >
-                      Submit
-                    </Button>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Modal.Body>
-        </Form>
-      </Modal>
     </Fragment>
   );
 }

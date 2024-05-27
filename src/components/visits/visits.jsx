@@ -37,7 +37,7 @@ const columns = [
     sortable: true,
   },
   {
-    name: "Case Type",
+    name: "Visit Type",
     selector: (row) => [row.visitType],
     sortable: true,
   },
@@ -346,7 +346,7 @@ function Visits() {
                     padding: "10px 20px",
                     cursor: "pointer",
                     border: "1px solid #ccc",
-                    borderBottom: tab === 'tab1'?"1px solid blue":"none",
+                    borderBottom: tab === 'tab1'?"3px solid #467FCF":"none",
                     backgroundColor: tab === 'tab1'?'white':"#f1f1f1",
                     fontWeight: tab === 'tab1'?'bold':"normal",
                   }}
@@ -355,6 +355,7 @@ function Visits() {
                   
                   All Visits
                 </div>
+
                 <div
                   class="tab"
                   onClick={()=>{setTab('tab2');fetchVisitsDiagnostics()}}
@@ -362,7 +363,7 @@ function Visits() {
                     padding: "10px 20px",
                     cursor: "pointer",
                     border: "1px solid #ccc",
-                    borderBottom: tab === 'tab2'?"1px solid blue":"none",
+                    borderBottom: tab === 'tab2'?"3px solid #467FCF":"none",
                     backgroundColor: tab === 'tab2'?'white':"#f1f1f1",
                     fontWeight: tab === 'tab2'?'bold':"normal",
                   }}

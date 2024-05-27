@@ -1,27 +1,17 @@
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  Col,
-  Row,
-  Button,
-  Form,
-  Modal,
-} from "react-bootstrap";
+import { Card, Col, Row, Button, Form, Modal } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 
-
-
-
 function Appointments() {
-  const location = useLocation()
+  const location = useLocation();
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
   const [doctorId, setDoctorId] = useState([]);
-  const [scheduleDayId,setscheduleDayId] =useState("");
-  const [schedulesDayId,setschedulesDayId] =useState("");
+  const [scheduleDayId, setscheduleDayId] = useState("");
+  const [schedulesDayId, setschedulesDayId] = useState("");
   const [startingTime, setStartingTime] = useState("");
   const [patientId, setPatientId] = useState("");
   const [names, setNames] = useState("");
@@ -34,7 +24,6 @@ function Appointments() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
-
 
   const columns = [
     {
@@ -64,7 +53,7 @@ function Appointments() {
     },
     {
       name: "Patient's number",
-      selector: (row) => [row.patientNumber || '-'],
+      selector: (row) => [row.patientNumber || "-"],
       sortable: true,
     },
     {
@@ -79,23 +68,41 @@ function Appointments() {
     },
     {
       name: "Actions",
-      cell: (row) => (
-        row.state==='ACTIVE'?
-          <div onClick={()=>{if(window.confirm('Do you really want to cancel this appointment?')){cancelAppointment(row.id)}}} style={{color:'red',cursor:'pointer'}}>
-          Cancel
-        </div>:'-'
-      ),
+      cell: (row) =>
+        row.state === "ACTIVE" ? (
+          <div
+            onClick={() => {
+              if (
+                window.confirm("Do you really want to cancel this appointment?")
+              ) {
+                cancelAppointment(row.id);
+              }
+            }}
+            style={{ color: "red", cursor: "pointer" }}
+          >
+            Cancel
+          </div>
+        ) : (
+          "-"
+        ),
     },
-    
   ];
- 
 
   const searchAppointments = (value) => {
     if (value === "") {
       fetchAppointments(); // Reset to the original list of projects
     } else {
       const filteredAppointments = Appointments_.filter((user) => {
-        const userNameLowercase = (user.doctor?.firstName + user.doctor?.lastName  + user.names + user.day + user.startingTime + user.endingTime + user.patientNumber + user.phoneNumber).toLowerCase();
+        const userNameLowercase = (
+          user.doctor?.firstName +
+          user.doctor?.lastName +
+          user.names +
+          user.day +
+          user.startingTime +
+          user.endingTime +
+          user.patientNumber +
+          user.phoneNumber
+        ).toLowerCase();
         const searchTermLowercase = value.toLowerCase();
         return userNameLowercase.includes(searchTermLowercase);
       });
@@ -114,16 +121,16 @@ function Appointments() {
     const postObj = JSON.stringify({
       day: scheduleDayId, // modify body properties
       doctorId: doctorId,
-      startingTime: startingTime+":00",
+      startingTime: startingTime + ":00",
       patientId: patientId,
       names: names,
-      phoneNumber:phoneNumber,
+      phoneNumber: phoneNumber,
     });
     console.log(postObj);
     let my_token = await localStorage.getItem("token");
     axios.defaults.headers = {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${my_token}`,
+      Authorization: `Bearer ${my_token}`,
     };
     axios
       .post(`http://www.ubuzima.rw/rec/schedule/booking`, postObj) //declare api Path
@@ -149,25 +156,22 @@ function Appointments() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        "bookingId": id
+        Authorization: `Bearer ${my_token}`,
+        bookingId: id,
       },
     };
 
     try {
-        
-        const response = await axios.post(
-          `http://www.ubuzima.rw/rec/schedule/cancel-booking`,
-          {},
-          config
-        );
-        if(response.data.status){
-          alert('Appointment cancelled!')
-        }
-        else{
-          alert('Something wrong!')
-        }
-      
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/schedule/cancel-booking`,
+        {},
+        config
+      );
+      if (response.data.status) {
+        alert("Appointment cancelled!");
+      } else {
+        alert("Something wrong!");
+      }
     } catch (error) {
       console.error("Error fetching payrolls:", error);
     }
@@ -175,76 +179,67 @@ function Appointments() {
 
   const fetchAppointments = async () => {
     let my_token = localStorage.getItem("token");
-    
 
     try {
-      if(location.state?.data?.page==='doctor'){
+      if (location.state?.data?.page === "doctor") {
         const config = {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${my_token}`,
-            "doctorId":location.state.data.doctorId
+            Authorization: `Bearer ${my_token}`,
+            doctorId: location.state.data.doctorId,
           },
         };
         const response = await axios.get(
           `http://www.ubuzima.rw/rec/schedule/booking/doctor`,
           config
         );
-        if(response.data.status){
+        if (response.data.status) {
           setAppointments(response.data.response);
-        setAppointments_(response.data.response);
-        if(response.data.response.totalElements){
-          setTotalRows(response.data.response.totalElements)
+          setAppointments_(response.data.response);
+          if (response.data.response.totalElements) {
+            setTotalRows(response.data.response.totalElements);
+          }
+        } else {
+          console.log(response.data.message);
         }
-        }else{
-          console.log(response.data.message)
-        }
-        
-      }else{
+      } else {
         const config = {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${my_token}`,
+            Authorization: `Bearer ${my_token}`,
           },
         };
         const response = await axios.get(
           `http://www.ubuzima.rw/rec/schedule/booking/all`,
           config
         );
-        if(response.data.status){
+        if (response.data.status) {
           setAppointments(response.data.response);
-        setAppointments_(response.data.response);
-        }else{
-          console.log(response.data.message)
+          setAppointments_(response.data.response);
+        } else {
+          console.log(response.data.message);
         }
       }
-      
     } catch (error) {
       console.error("Error fetching payrolls:", error);
     }
   };
-
-
-
-  
-
-
 
   const fetchAllDoctors = async () => {
     let my_token = await localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
+        Authorization: `Bearer ${my_token}`,
       },
     };
-    
+
     try {
       const response = await axios.get(
         `http://www.ubuzima.rw/rec/medical/doctors`,
         config
       );
-      
+
       const allDoctors_ = response.data.response.map((el) => {
         return { label: `${el.firstName} ${el.lastName}`, value: el.id };
       });
@@ -252,13 +247,9 @@ function Appointments() {
     } catch (error) {
       console.error(error);
 
-      console.log(response.data)
+      console.log(response.data);
     }
   };
-
-
-
-
 
   const fetchDayId = async (id) => {
     let my_token = await localStorage.getItem("token");
@@ -266,7 +257,7 @@ function Appointments() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        doctorId : id, 
+        doctorId: id,
       },
     }; //incase you have to deal with ID or Options
     axios
@@ -274,7 +265,7 @@ function Appointments() {
       .then((res) => {
         console.log(res.data);
         const schedulesDayId = res.data.response.map((el) => {
-          return ({ label: `${el.day}`, value: el.day });
+          return { label: `${el.day}`, value: el.day };
         }); //const that assign value to the property
         setschedulesDayId(schedulesDayId);
       })
@@ -283,7 +274,6 @@ function Appointments() {
         console.log(error.message);
       });
   };
-
 
   const fetchPatients = async () => {
     let my_token = await localStorage.getItem("token");
@@ -297,7 +287,7 @@ function Appointments() {
       .get(`http://www.ubuzima.rw/rec/patient`, config)
       .then((res) => {
         const patients = res.data.response.map((el) => {
-          return { label: el.names, value: el.id};
+          return { label: el.names, value: el.id };
         }); //const that assign value to the property
         setPatients(patients);
       })
@@ -308,13 +298,11 @@ function Appointments() {
       });
   };
 
-
   useEffect(() => {
     fetchAllDoctors();
     fetchPatients();
-   
   }, []);
-  
+
   useEffect(() => {
     fetchAppointments();
   }, [currentPage]);
@@ -325,7 +313,11 @@ function Appointments() {
         <Col lg={12}>
           <Card>
             <Card.Header className="d-flex justify-content-between align-items-center">
-              <Card.Title>{location.state?.data?.doctorNames&&`${location.state?.data?.doctorNames}'s`} Appointments</Card.Title>
+              <Card.Title>
+                {location.state?.data?.doctorNames &&
+                  `${location.state?.data?.doctorNames}'s`}{" "}
+                Appointments
+              </Card.Title>
               <Row>
                 <Col>
                   <input
@@ -342,8 +334,19 @@ function Appointments() {
                 </Col>
               </Row>
             </Card.Header>
-            <Card.Body> 
-              <DataTable columns={columns} data={Appointments} paginationTotalRows={totalRows?totalRows:Appointments.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]} onChangePage={page=>setCurrentPage(page)} pagination paginationServer /> 
+            <Card.Body>
+              <DataTable
+                columns={columns}
+                data={Appointments}
+                paginationTotalRows={
+                  totalRows ? totalRows : Appointments.length
+                }
+                paginationPerPage={10}
+                paginationRowsPerPageOptions={[10]}
+                onChangePage={(page) => setCurrentPage(page)}
+                pagination
+                paginationServer
+              />
             </Card.Body>
           </Card>
         </Col>
@@ -355,74 +358,6 @@ function Appointments() {
           </Modal.Header>
           <Modal.Body>
             <Row>
-
-
-
-                      <Col lg={6}>
-                <Form.Group className="form-group">
-                  <Form.Label>Doctor ID</Form.Label>
-                  <Select
-                    className="basic-single"
-                    options={allDoctors}
-                    onChange={(e) => {setDoctorId(e.value);fetchDayId(e.value)}} // value onChange on input is the third step
-                    classNamePrefix="Select2"
-                    placeholder="Select them"
-                    required
-                  />
-                </Form.Group>
-              </Col>
-
-                      <Col lg={6}>
-                <Form.Group className="form-group">
-                  <Form.Label>Day ID</Form.Label>
-                  <Select
-                    className="basic-single"
-                    options={schedulesDayId}
-                    onChange={(e) =>  setscheduleDayId(e.value)} // value onChange on input is the third step
-                    classNamePrefix="Select2"
-                    placeholder="Select them"
-                    required
-                  />
-                </Form.Group>
-              </Col>
-       
-
-
-                      
-
-              
-              <Col lg={6} style={{ marginTop: 10 }}>
-                <Form.Group>
-                  <Form.Label>starting Time</Form.Label>
-                  <Form.Control
-                    type="datetime-local"
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="starting time"
-                    onChange={(e) => setStartingTime(e.target.value)}
-                    required
-                  />
-                </Form.Group>
-              </Col>
-
-
-              <Col lg={6}>
-                <Form.Group className="form-group">
-                  <Form.Label>Patient ID</Form.Label>
-                  <Select
-                    className="basic-single"
-                    options={patients}
-                    onChange={(e) =>  setPatientId(e.value)} // value onChange on input is the third step
-                    classNamePrefix="Select2"
-                    placeholder="Select them"
-                    required
-                  />
-                </Form.Group>
-              </Col>
-       
-
-
-
               <Col lg={6} style={{ marginTop: 10 }}>
                 <Form.Group>
                   <Form.Label>Names</Form.Label>
@@ -451,7 +386,64 @@ function Appointments() {
                 </Form.Group>
               </Col>
 
-              
+              <Col lg={6} style={{ marginTop: 10 }}>
+                <Form.Group className="form-group">
+                  <Form.Label>Doctor ID</Form.Label>
+                  <Select
+                    className="basic-single"
+                    options={allDoctors}
+                    onChange={(e) => {
+                      setDoctorId(e.value);
+                      fetchDayId(e.value);
+                    }} // value onChange on input is the third step
+                    classNamePrefix="Select2"
+                    placeholder="Select them"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col lg={6} style={{ marginTop: 10 }}>
+                <Form.Group className="form-group">
+                  <Form.Label>Day ID</Form.Label>
+                  <Select
+                    className="basic-single"
+                    options={schedulesDayId}
+                    onChange={(e) => setscheduleDayId(e.value)} // value onChange on input is the third step
+                    classNamePrefix="Select2"
+                    placeholder="Select them"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              {/* <Col lg={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Patient ID</Form.Label>
+                  <Select
+                    className="basic-single"
+                    options={patients}
+                    onChange={(e) =>  setPatientId(e.value)} // value onChange on input is the third step
+                    classNamePrefix="Select2"
+                    placeholder="Select them"
+                    required
+                  />
+                </Form.Group>
+              </Col> */}
+
+              <Col lg={6} style={{ marginTop: 10 }}>
+                <Form.Group>
+                  <Form.Label>starting Time</Form.Label>
+                  <Form.Control
+                    type="datetime-local"
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="starting time"
+                    onChange={(e) => setStartingTime(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+              </Col>
             </Row>
           </Modal.Body>
           <Modal.Footer>

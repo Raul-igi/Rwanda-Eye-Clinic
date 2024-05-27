@@ -156,34 +156,31 @@ export default function Visit({visitId}) {
   const [visualAcuity, setVisualAcuity] = useState([
     {
       name: "Right Eye",
-      right: "",
-      left: "",
+      sc: "",
+      ac: "",
+      ph: "",
     },
     {
       name: "Left Eye",
-      right: "",
-      left: "",
+      sc: "",
+      ac: "",
+      ph: "",
     },
-    // {
-    //   name: "PH",
-    //   right: "",
-    //   left: "",
-    // },
-    // {
-    //   name: "Glass Sphere",
-    //   right: "",
-    //   left: "",
-    // },
-    // {
-    //   name: "Glass Cylindre",
-    //   right: "",
-    //   left: "",
-    // },
-    // {
-    //   name: "Glass Axe",
-    //   right: "",
-    //   left: "",
-    // },
+  ]);
+
+  const [currentGlasses, setCurrentGlasses] = useState([
+    {
+      name: "Right Eye",
+      sphere: "",
+      cylinder: "",
+      axis: "",
+    },
+    {
+      name: "Left Eye",
+      sphere: "",
+      cylinder: "",
+      axis: "",
+    },
   ]);
 
   const handleInputChange = (e, name, field) => {
@@ -223,42 +220,18 @@ export default function Visit({visitId}) {
     {
       name: "SC",
       sortable: true,
-      cell: (row) => (
-        <input
-          className="form-control"
-          type="text"
-          readOnly={isVaSaved}
-          value={row.right}
-          onChange={(e) => handleInputChange(e, row.name, "right")}
-        />
-      ),
+      selector: (row) => [row.sc],
     },
     {
       name: "AC",
       sortable: true,
-      cell: (row) => (
-        <input
-          className="form-control"
-          type="text"
-          readOnly={isVaSaved}
-          value={row.left}
-          onChange={(e) => handleInputChange(e, row.name, "left")}
-        />
-      ),
+      selector: (row) => [row.ac],
     },
 
     {
       name: "PH",
       sortable: true,
-      cell: (row) => (
-        <input
-          className="form-control"
-          type="text"
-          readOnly={isVaSaved}
-          value={row.left}
-          onChange={(e) => handleInputChange(e, row.name, "left")}
-        />
-      ),
+      selector: (row) => [row.ph],
     },
   ];
 
@@ -271,42 +244,18 @@ export default function Visit({visitId}) {
     {
       name: "Sphere",
       sortable: true,
-      cell: (row) => (
-        <input
-          className="form-control"
-          type="text"
-          readOnly={isVaSaved}
-          value={row.right}
-          onChange={(e) => handleInputChange(e, row.name, "right")}
-        />
-      ),
+      selector: (row) => [row.sphere],
     },
     {
       name: "Cylinder",
       sortable: true,
-      cell: (row) => (
-        <input
-          className="form-control"
-          type="text"
-          readOnly={isVaSaved}
-          value={row.left}
-          onChange={(e) => handleInputChange(e, row.name, "left")}
-        />
-      ),
+      selector: (row) => [row.cylinder],
     },
 
     {
       name: "Axis",
       sortable: true,
-      cell: (row) => (
-        <input
-          className="form-control"
-          type="text"
-          readOnly={isVaSaved}
-          value={row.left}
-          onChange={(e) => handleInputChange(e, row.name, "left")}
-        />
-      ),
+      selector: (row) => [row.axis],
     },
   ];
 
@@ -343,80 +292,23 @@ export default function Visit({visitId}) {
     {
       name: "Sphere",
       sortable: true,
-      cell: (row) =>
-        !row.select ? (
-          <input
-            className="form-control"
-            type="text"
-            readOnly={isReSaved}
-            value={row.right}
-            onChange={(e) =>
-              handleInputChange2(e.target.value, row.name, "right")
-            }
-          />
-        ) : (
-          <div style={{ width: "100%" }}>
-            <Select
-              options={row.name === "Lens Type" ? lensType_ : dip_}
-              value={{ label: row.right, value: row.right }}
-              style={{ width: "100%" }}
-              onChange={(e) => handleInputChange2(e.value, row.name, "right")}
-              classNamePrefix="Select2"
-              className="multi-select"
-              // placeholder="Select them"
-              required
-            />
-          </div>
-        ),
+      selector: (row) => [row.right],
     },
     {
       name: "Cylinder",
       sortable: true,
-      cell: (row) =>
-        row.left !== undefined && (
-          <input
-            className="form-control"
-            type="text"
-            readOnly={isReSaved}
-            value={row.left}
-            onChange={(e) =>
-              handleInputChange2(e.target.value, row.name, "left")
-            }
-          />
-        ),
+      selector: (row) => [row.left],
     },
     {
       name: "Axis",
       sortable: true,
-      cell: (row) =>
-        row.left !== undefined && (
-          <input
-            className="form-control"
-            type="text"
-            readOnly={isReSaved}
-            value={row.left}
-            onChange={(e) =>
-              handleInputChange2(e.target.value, row.name, "left")
-            }
-          />
-        ),
+      selector: (row) => [row.left],
     },
 
     {
       name: "Addition",
       sortable: true,
-      cell: (row) =>
-        row.left !== undefined && (
-          <input
-            className="form-control"
-            type="text"
-            readOnly={isReSaved}
-            value={row.left}
-            onChange={(e) =>
-              handleInputChange2(e.target.value, row.name, "left")
-            }
-          />
-        ),
+      selector: (row) => [row.left],
     },
   ];
 
@@ -566,37 +458,35 @@ export default function Visit({visitId}) {
         setIsVaSaved(true);
         const visualAcuity_ = [
           {
-            name: "SC",
-            right: response.data.response.scRightEye,
-            left: response.data.response.scLeftEye,
+            name: "Right Eye",
+            sc: response.data.response.scRightEye,
+            ac: response.data.response.acRightEye,
+            ph: response.data.response.phRightEye,
           },
           {
-            name: "AC",
-            right: response.data.response.acRightEye,
-            left: response.data.response.acLeftEye,
-          },
-          {
-            name: "PH",
-            right: response.data.response.phRightEye,
-            left: response.data.response.phLeftEye,
-          },
-          {
-            name: "Glass Sphere",
-            right: response.data.response.glassSphereRightEye,
-            left: response.data.response.glassSphereLeftEye,
-          },
-          {
-            name: "Glass Cylindre",
-            right: response.data.response.glassCylindreRightEye,
-            left: response.data.response.glassCylindreLeftEye,
-          },
-          {
-            name: "Glass Axe",
-            right: response.data.response.glassAxeRightEye,
-            left: response.data.response.glassAxeLeftEye,
-          },
+            name: "Left Eye",
+            sc: response.data.response.scLeftEye,
+            ac: response.data.response.acLeftEye,
+            ph: response.data.response.phLeftEye,
+          }
         ];
+        const currentGlasses_ = [
+          {
+            name: "Right Eye",
+            sphere: response.data.response.glassSphereRightEye,
+            cylinder: response.data.response.glassCylindreRightEye,
+            axis: response.data.response.glassAxeRightEye,
+          },
+          {
+            name: "Left Eye",
+            sphere: response.data.response.glassSphereLeftEye,
+            cylinder: response.data.response.glassCylindreLeftEye,
+            axis: response.data.response.glassAxeLeftEye,
+          },
+          
+        ]
         setVisualAcuity(visualAcuity_);
+        setCurrentGlasses(currentGlasses_);
       } else {
         setIsVaSaved(false);
       }
@@ -994,7 +884,7 @@ export default function Visit({visitId}) {
           style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
         >
           <h1>Current Glasses</h1>
-          <DataTable columns={vaColumn} data={visualAcuity} />
+          <DataTable columns={vaColumn} data={currentGlasses} />
         </Col>
 
         <Col

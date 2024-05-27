@@ -140,34 +140,31 @@ export default function VisitDetails() {
   const [visualAcuity, setVisualAcuity] = useState([
     {
       name: "Right Eye",
-      right: "",
-      left: "",
+      sc: "",
+      ac: "",
+      ph: "",
     },
     {
       name: "Left Eye",
-      right: "",
-      left: "",
+      sc: "",
+      ac: "",
+      ph: "",
     },
-    // {
-    //   name: "PH",
-    //   right: "",
-    //   left: "",
-    // },
-    // {
-    //   name: "Glass Sphere",
-    //   right: "",
-    //   left: "",
-    // },
-    // {
-    //   name: "Glass Cylindre",
-    //   right: "",
-    //   left: "",
-    // },
-    // {
-    //   name: "Glass Axe",
-    //   right: "",
-    //   left: "",
-    // },
+  ]);
+
+  const [currentGlasses, setCurrentGlasses] = useState([
+    {
+      name: "Right Eye",
+      sphere: "",
+      cylinder: "",
+      axis: "",
+    },
+    {
+      name: "Left Eye",
+      sphere: "",
+      cylinder: "",
+      axis: "",
+    },
   ]);
 
   const [sphereRightEye, setSphereRightEye] = useState("");
@@ -227,8 +224,8 @@ export default function VisitDetails() {
           className="form-control"
           type="text"
           readOnly={isVaSaved}
-          value={row.right}
-          onChange={(e) => handleInputChange(e, row.name, "right")}
+          value={row.sc}
+          onChange={(e) => handleInputChange(e, row.name, "sc")}
         />
       ),
     },
@@ -240,8 +237,8 @@ export default function VisitDetails() {
           className="form-control"
           type="text"
           readOnly={isVaSaved}
-          value={row.left}
-          onChange={(e) => handleInputChange(e, row.name, "left")}
+          value={row.ac}
+          onChange={(e) => handleInputChange(e, row.name, "ac")}
         />
       ),
     },
@@ -254,8 +251,8 @@ export default function VisitDetails() {
           className="form-control"
           type="text"
           readOnly={isVaSaved}
-          value={row.left}
-          onChange={(e) => handleInputChange(e, row.name, "left")}
+          value={row.ph}
+          onChange={(e) => handleInputChange(e, row.name, "ph")}
         />
       ),
     },
@@ -275,8 +272,8 @@ export default function VisitDetails() {
           className="form-control"
           type="text"
           readOnly={isVaSaved}
-          value={row.right}
-          onChange={(e) => handleInputChange(e, row.name, "right")}
+          value={row.sphere}
+          onChange={(e) => handleInputChange(e, row.name, "sphere")}
         />
       ),
     },
@@ -288,8 +285,8 @@ export default function VisitDetails() {
           className="form-control"
           type="text"
           readOnly={isVaSaved}
-          value={row.left}
-          onChange={(e) => handleInputChange(e, row.name, "left")}
+          value={row.cylinder}
+          onChange={(e) => handleInputChange(e, row.name, "cylinder")}
         />
       ),
     },
@@ -302,8 +299,8 @@ export default function VisitDetails() {
           className="form-control"
           type="text"
           readOnly={isVaSaved}
-          value={row.left}
-          onChange={(e) => handleInputChange(e, row.name, "left")}
+          value={row.axis}
+          onChange={(e) => handleInputChange(e, row.name, "axis")}
         />
       ),
     },
@@ -587,37 +584,35 @@ export default function VisitDetails() {
         setIsVaSaved(true);
         const visualAcuity_ = [
           {
-            name: "SC",
-            right: response.data.response.scRightEye,
-            left: response.data.response.scLeftEye,
+            name: "Right Eye",
+            sc: response.data.response.scRightEye,
+            ac: response.data.response.acRightEye,
+            ph: response.data.response.phRightEye,
           },
           {
-            name: "AC",
-            right: response.data.response.acRightEye,
-            left: response.data.response.acLeftEye,
-          },
-          {
-            name: "PH",
-            right: response.data.response.phRightEye,
-            left: response.data.response.phLeftEye,
-          },
-          {
-            name: "Glass Sphere",
-            right: response.data.response.glassSphereRightEye,
-            left: response.data.response.glassSphereLeftEye,
-          },
-          {
-            name: "Glass Cylindre",
-            right: response.data.response.glassCylindreRightEye,
-            left: response.data.response.glassCylindreLeftEye,
-          },
-          {
-            name: "Glass Axe",
-            right: response.data.response.glassAxeRightEye,
-            left: response.data.response.glassAxeLeftEye,
-          },
+            name: "Left Eye",
+            sc: response.data.response.scLeftEye,
+            ac: response.data.response.acLeftEye,
+            ph: response.data.response.phLeftEye,
+          }
         ];
+        const currentGlasses_ = [
+          {
+            name: "Right Eye",
+            sphere: response.data.response.glassSphereRightEye,
+            cylinder: response.data.response.glassCylindreRightEye,
+            axis: response.data.response.glassAxeRightEye,
+          },
+          {
+            name: "Left Eye",
+            sphere: response.data.response.glassSphereLeftEye,
+            cylinder: response.data.response.glassCylindreLeftEye,
+            axis: response.data.response.glassAxeLeftEye,
+          },
+          
+        ]
         setVisualAcuity(visualAcuity_);
+        setCurrentGlasses(currentGlasses_);
       } else {
         setIsVaSaved(false);
       }
@@ -1273,7 +1268,7 @@ export default function VisitDetails() {
                     style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
                   >
                     <h1>Current Glasses</h1>
-                    <DataTable columns={vaColumn} data={visualAcuity} />
+                    <DataTable columns={vaColumn} data={currentGlasses} />
 
                     {roles.includes("Doctor") &&
                       location.state?.data?.visitStatus ===

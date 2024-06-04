@@ -838,12 +838,12 @@ export const groupfilter = [
 ];
 // Select2 Elements
 // Select province
-export const BasicProvince = [
-  { value: "Southern Province", label: "Southern Province" },
-  { value: "Northern Province", label: "Northern Province" },
-  { value: "Eastern Province", label: "Eastern Province" },
-  { value: "Western Province", label: "Western Province" },
-  { value: "Kigali City", label: "Kigali City" },
+export const BasicTreatments = [
+  { value: "Drink water", label: "Drink water" },
+  { value: "Eat vegetables", label: "Eat vegetables" },
+  { value: "wear Glasses", label: "wear Glasses" },
+  { value: "Take dots every 5 hours", label: "Take dots every 5 hours" },
+  { value: "Avoid contacting Lights", label: "Avoid contacting Lights" },
 ];
 
 // Select District

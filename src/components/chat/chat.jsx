@@ -77,7 +77,7 @@ export default function Chat () {
 
                 </Card>
               </Col>
-              <Col md={12} lg={7} xl={8} className="chat">
+              <Col md={12} lg={7} xl={8} className="chat" >
                 <Card className="card overflow-hidden">
 
                   <div className="action-header d-flex justify-content-between">

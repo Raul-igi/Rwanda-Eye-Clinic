@@ -1,15 +1,22 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Button, Card, Col, Dropdown, DropdownButton, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { imagesData } from '../../common/commomimages/imagedata'
 import Pageheader from '../../layouts/pageheader/pageheader'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import { ContactData } from './data/chatdata.jsx';
+import axios from 'axios'
 
 export default function Chat () {
   const breadcrumbs = [""];
+  const [loading, setLoading] = useState(false);
+  const [show, setShow] = useState(false);
+
 
 	const [allData, setAllData] = useState(ContactData);
+  const [users,setUsers] =useState([]);
+  const [users_,setUsers_] =useState("");
+  
 
 	let chatData = [];
 
@@ -28,6 +35,40 @@ export default function Chat () {
 		}
 		setAllData(chatData);
 	};
+
+
+  
+
+
+  const fetchUsers = async () => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    }; //incase you have to deal with ID or Options
+    axios
+      .get(`http://www.ubuzima.rw/rec/access/users`, config)
+      .then((res) => {
+        console.log(res.data);
+        
+        setUsers(res.data.response);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setShow(false);
+        console.log(error.message);
+      });
+  };
+
+
+
+ 
+  useEffect(() => {
+    fetchUsers();
+    
+  }, []);
 
 
   return (
@@ -52,16 +93,16 @@ export default function Chat () {
                     </Card.Header>
                     <div className="chat">
                       <ul className="contacts mb-0">
-                        {allData.map((idx) => (
+                        {users.map((idx) => (
                         <li className="active" key={Math.random()}>
                           <div className="d-flex bd-highlight">
                             <div className="img_cont me-2">
                               <img src= {idx.src}
                                 className="rounded-circle avatar avatar-lg" alt="img" />
-                              <span className="online_icon"></span>
+                             
                             </div>
                             <div className="user_info">
-                              <h6 className="mt-2 mb-0 fw-semibold">{idx.name}</h6>
+                              <h6 className="mt-2 mb-0 fw-semibold">{idx.firstName} {idx.lastName}</h6>
                               <small className="text-muted">{idx.text}</small>
                             </div>
                             <div className="ms-auto my-auto">
@@ -88,8 +129,7 @@ export default function Chat () {
                       </div>
                       <div className="mt-1">
                         <h4 className="text-white mb-0 fw-semibold">Jenna Side</h4>
-                        <span className="dot-label bg-success"></span><span
-                          className="me-3 text-white">online</span>
+                       
                       </div>
                     </div>
                     <ul className="ah-actions actions">

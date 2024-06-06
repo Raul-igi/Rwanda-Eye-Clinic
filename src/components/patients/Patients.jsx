@@ -1154,7 +1154,7 @@ function Patients() {
                           <Form.Group className="form-group">
                             <Form.Label>Ticket</Form.Label>
                             <Form.Control  
-                              type="text"
+                              type="number"
                               className="form-control"
                               name="example-text-input"
                               // placeholder="Address"

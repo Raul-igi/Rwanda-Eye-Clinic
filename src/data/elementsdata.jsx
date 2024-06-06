@@ -846,6 +846,13 @@ export const BasicTreatments = [
   { value: "Avoid contacting Lights", label: "Avoid contacting Lights" },
 ];
 
+export const Additions = [
+  { value: "ANTI_REFLECTION", label: "Anti reflection" },
+  { value: "ORGANIC", label: "Organic" },
+  { value: "ANTI_BLUE", label: "Anti blue" },
+
+];
+
 // Select District
 export const BasicDistrict = [
   { value: "Gasabo", label: "Gasabo" },
@@ -894,10 +901,14 @@ export const EVisitType = [
   { value: " CHRONIC", label: " CHRONIC" },
 ];
 // Select lens Type
-export const lensType_ = [{ value: "BIFOCAL", label: "BIFOCAL" }];
+export const lensType_ = [
+  { value: "BIFOCAL", label: "Bifocal" },
+  { value: "SINGLE_VISION", label: "Single Vision" },
+  { value: "PROGRESSIVE", label: "Progressive" },
+];
 
 // Select dip
-export const dip_ = [{ value: "DIP_ON_DISTANCE", label: "DIP_ON_DISTANCE" }];
+export const dip_ = [{ value: "DIP_ON_DISTANCE", label: "Dip on distance" }];
 
 // select2
 export const CitiesData = [

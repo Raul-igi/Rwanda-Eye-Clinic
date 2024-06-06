@@ -75,14 +75,23 @@ const columns = [
 
 import DataTable from "react-data-table-component";
 function Report() {
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
-
-
-  const [reportType, setReportType] = useState({ value: "DATE_RANGE", label: "Date range" });
+  const [reportType, setReportType] = useState({
+    value: "CASH",
+    label: "Cash",
+  });
   const [date, setDate] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(formatDate(new Date()));
+  const [endDate, setEndDate] = useState(formatDate(new Date()));
   const [reports, setReports] = useState([]);
   const [insurances, setInsurances] = useState([]);
   const [insurance, setInsurance] = useState("");
@@ -94,7 +103,6 @@ function Report() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
- 
   const handleSubmit = async (e) => {
     //handle submit is the second step
     e.preventDefault();
@@ -131,7 +139,6 @@ function Report() {
       });
   };
 
-
   const fetchAllDoctors = async () => {
     let my_token = await localStorage.getItem("token");
     const config = {
@@ -157,8 +164,6 @@ function Report() {
       console.log(response.data);
     }
   };
-
-
 
   const fetchInsurances = async () => {
     let my_token = localStorage.getItem("token");
@@ -221,113 +226,83 @@ function Report() {
   };
 
   const reset = () => {
-    setReportType({ value: "DATE_RANGE", label: "Date range" });
-    setDoctor('');
-    setInsurance('');
-    setStartDate('');
-    setEndDate('');
-    setDate('');
-  }
-
-  const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-    const day = String(date.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
+    setReportType({ value: "CASH", label: "Cash" });
+    setDoctor("");
+    setInsurance("");
+    setStartDate("");
+    setEndDate("");
+    setDate("");
+    fetchReports({ value: "CASH", label: "Cash" },null,null,true);
   };
 
-  const fetchReports = async () => {
-    let my_token = localStorage.getItem("token");
-    let url;
-    let config;
-
-    if (reportType.value === "DATE_RANGE") {
-      config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${my_token}`,
-          startDate: startDate,
-          endDate: endDate,
-        },
-      };
-      url = `http://www.ubuzima.rw/rec/report/range`;
-    }
-    if (reportType.value === "INSURANCE_RANGE") {
-      config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${my_token}`,
-          startDate: startDate,
-          endDate: endDate,
-          insuranceId: insurance.value,
-        },
-      };
-      url = `http://www.ubuzima.rw/rec/report/insurance-range`;
-    }
-    if (reportType.value === "INSURANCE_DATE") {
-      config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${my_token}`,
-          selectedDate: date,
-          insuranceId: insurance.value,
-        },
-      };
-      url = `http://www.ubuzima.rw/rec/report/insurance-date`;
-    }
-    if (reportType.value === "DOCTOR_RANGE") {
-      config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${my_token}`,
-          startDate: startDate,
-          endDate: endDate,
-          doctorId: doctor.value,
-        },
-      };
-      url = `http://www.ubuzima.rw/rec/report/doctor-range`;
-    }
-    if (reportType.value === "DOCTOR_DATE") {
-      config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${my_token}`,
-          selectedDate: date,
-          doctorId: doctor.value,
-        },
-      };
-      url = `http://www.ubuzima.rw/rec/report/doctor-date`;
-    }
-    if (reportType.value === "DATE") {
-      config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${my_token}`,
-          selectedDate: date,
-        },
-      };
-      url = `http://www.ubuzima.rw/rec/report/date`;
-    }
-
-    try {
-      const response = await axios.get(url, config);
-      const reports_ = response.data.response.map((el) => {
-        return {
-          doctorNames: `${el.doctor?.firstName} ${el.doctor?.lastName}`,
-          doctorPhone: el.doctor?.phoneNumber,
-          paymentMethod: el.paymentMethod,
-          paidAmaount: el.amount,
-          paymentDate: el.paymentDate,
-          insurance: el.insurance.name,
-          topUpAmount: el.topUpAmount || 0,
+  const fetchReports = async (rep = null, doc = null, ins = null, resetDates = false) => {
+    if ((rep || reportType)?.value === "DOCTOR" && !(doc || doctor)?.value) {
+      alert("Select doctor first!");
+    } else if (
+      (rep || reportType)?.value === "INSURANCE" &&
+      !(ins || insurance)?.value
+    ) {
+      alert("Select insurance first!");
+    } else {
+      let my_token = localStorage.getItem("token");
+      let url;
+      let config;
+      console.log((rep || reportType)?.value);
+      if ((rep || reportType)?.value === "CASH") {
+        config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${my_token}`,
+            startDate: resetDates?formatDate(new Date()) :( startDate || formatDate(new Date())),
+            endDate: resetDates?formatDate(new Date()) :( endDate || formatDate(new Date())),
+          },
         };
-      });
+        url = `http://www.ubuzima.rw/rec/report/range`;
+      }
+      if ((rep || reportType)?.value === "INSURANCE") {
+        config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${my_token}`,
+            startDate: resetDates?formatDate(new Date()) :( startDate || formatDate(new Date())),
+            endDate: resetDates?formatDate(new Date()) :( endDate || formatDate(new Date())),
+            insuranceId: (ins || insurance)?.value,
+          },
+        };
+        url = `http://www.ubuzima.rw/rec/report/insurance-range`;
+      }
+      if ((rep || reportType)?.value === "DOCTOR") {
+        config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${my_token}`,
+            startDate: resetDates?formatDate(new Date()) :( startDate || formatDate(new Date())),
+            endDate: resetDates?formatDate(new Date()) :( endDate || formatDate(new Date())),
+            doctorId: (doc || doctor)?.value,
+          },
+        };
+        url = `http://www.ubuzima.rw/rec/report/doctor-range`;
+      }
 
-      setReports(reports_);
-      console.log(response.data);
-    } catch (error) {
-      console.error("Error fetching payrolls:", error);
+      try {
+        const response = await axios.get(url, config);
+        const reports_ = response.data.response.map((el) => {
+          return {
+            doctorNames: `${el.doctor?.firstName} ${el.doctor?.lastName}`,
+            doctorPhone: el.doctor?.phoneNumber,
+            paymentMethod: el.paymentMethod,
+            paidAmaount: el.amount,
+            paymentDate: el.paymentDate,
+            insurance: el.insurance.name,
+            topUpAmount: el.topUpAmount || 0,
+          };
+        });
+
+        setReports(reports_);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching payrolls:", error);
+      }
     }
   };
 
@@ -338,7 +313,7 @@ function Report() {
   }, []);
 
   return (
-    <div style={{minHeight:'50vh'}}>
+    <div style={{ minHeight: "50vh" }}>
       <Row>
         <Col lg={12}>
           <Card>
@@ -350,17 +325,20 @@ function Report() {
                     <Select
                       className="basic-single"
                       options={[
-                        { value: "DATE_RANGE", label: "Date range" },
-                        {
-                          value: "INSURANCE_RANGE",
-                          label: "Insurance date range",
-                        },
-                        { value: "INSURANCE_DATE", label: "Insurance date" },
-                        { value: "DOCTOR_RANGE", label: "Doctor date range" },
-                        { value: "DOCTOR_DATE", label: "Doctor date" },
-                        { value: "DATE", label: "By date" },
+                        { value: "INSURANCE", label: "Insurance" },
+                        { value: "DOCTOR", label: "Doctor" },
+                        { value: "CASH", label: "Cash" },
                       ]}
-                      onChange={(e) => setReportType(e)}
+                      onChange={(e) => {
+                        setReportType(e);
+                        setEndDate("");
+                        setStartDate("");
+                        setDoctor("");
+                        setInsurance("");
+                        if (e.value === "CASH") {
+                          fetchReports(e, null, null,true);
+                        }
+                      }}
                       value={reportType}
                       classNamePrefix="Select2"
                       placeholder="Filter by"
@@ -369,14 +347,16 @@ function Report() {
                   </Form.Group>
                 </Col>
 
-                {(reportType.value === "INSURANCE_RANGE" ||
-                  reportType.value === "INSURANCE_DATE") && (
+                {reportType.value === "INSURANCE" && (
                   <Col lg={2}>
                     <Form.Group className="form-group">
                       <Select
                         className="basic-single"
                         options={insurances}
-                        onChange={(e) => setInsurance(e)}
+                        onChange={(e) => {
+                          setInsurance(e);
+                          fetchReports(null, null, e,true);
+                        }}
                         value={insurance}
                         classNamePrefix="Select2"
                         placeholder="Select insurance"
@@ -386,14 +366,16 @@ function Report() {
                   </Col>
                 )}
 
-                {(reportType.value === "DOCTOR_RANGE" ||
-                  reportType.value === "DOCTOR_DATE") && (
+                {reportType.value === "DOCTOR" && (
                   <Col lg={2}>
                     <Form.Group className="form-group">
                       <Select
                         className="basic-single"
                         options={doctors}
-                        onChange={(e) => setDoctor(e)}
+                        onChange={(e) => {
+                          setDoctor(e);
+                          fetchReports(null,e,null,true);
+                        }}
                         value={doctor}
                         classNamePrefix="Select2"
                         placeholder="Select doctor"
@@ -403,59 +385,43 @@ function Report() {
                   </Col>
                 )}
 
-                {(reportType.value === "DATE_RANGE" ||
-                  reportType.value === "INSURANCE_RANGE" ||
-                  reportType.value === "DOCTOR_RANGE") && (
-                  <>
-                    <Col lg={2}>
-                      <Form.Group>
-                        <Form.Control
-                          type="date"
-                          className="form-control"
-                          name="example-text-input"
-                          placeholder="Start Date"
-                          value={startDate}
-                          onChange={(e) => setStartDate(e.target.value)}
-                          required
-                        />
-                      </Form.Group>
-                    </Col>
+                <Col lg={2}>
+                  <Form.Group>
+                    <Form.Control
+                      type="date"
+                      className="form-control"
+                      name="example-text-input"
+                      placeholder="Start Date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
 
-                    <Col lg={2}>
-                      <Form.Group>
-                        <Form.Control
-                          type="date"
-                          className="form-control"
-                          name="example-text-input"
-                          placeholder="End Date"
-                          value={endDate}
-                          onChange={(e) => setEndDate(e.target.value)}
-                          required
-                        />
-                      </Form.Group>
-                    </Col>
-                  </>
-                )}
+                <Col lg={2}>
+                  <Form.Group>
+                    <Form.Control
+                      type="date"
+                      className="form-control"
+                      name="example-text-input"
+                      placeholder="End Date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
 
-                {(reportType.value === "INSURANCE_DATE" ||
-                  reportType.value === "DOCTOR_DATE" ||
-                  reportType.value === "DATE") && (
-                  <Col lg={2}>
-                    <Form.Group className="form-group">
-                      <Form.Control
-                        type="date"
-                        className="form-control"
-                        name="example-text-input"
-                        placeholder="Select date"
-                        onChange={(e) => setDate(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                )}
+                
 
                 <Col>
-                  <Button variant="primary" onClick={fetchReports}>
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      fetchReports(null, null, null,false);
+                    }}
+                  >
                     Filter
                   </Button>
                 </Col>

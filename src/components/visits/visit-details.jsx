@@ -14,7 +14,7 @@ import Select from "react-select";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import { debounce } from "lodash";
-import { lensType_, dip_,BasicTreatments } from "../../data/elementsdata";
+import { lensType_, dip_, BasicTreatments, Additions } from "../../data/elementsdata";
 import Visit from "./visit";
 
 export default function VisitDetails() {
@@ -31,8 +31,9 @@ export default function VisitDetails() {
   const [isReSaved, setIsReSaved] = useState(true);
 
   const [acts, setActs] = useState([]);
+  const [additions, setAdditions] = useState([]);
+  const [additions2, setAdditions2] = useState([]);
   const [roles, setRoles] = useState([]);
-  const [act, setAct] = useState("");
   const [invoice, setInvoice] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("INSURANCE");
   const [paymentMode, setPaymentMode] = useState(null);
@@ -50,8 +51,7 @@ export default function VisitDetails() {
   const [visitId, setVisitId] = useState("");
   const [totalRows, setTotalRows] = useState("");
   const [billingDetails, setBillingDetails] = useState("");
-  const [billingDetails_, setBillingDetails_] = useState("");
-  const [insuranceId,setInsuranceId]= useState("");
+  const [insuranceId, setInsuranceId] = useState("");
 
   const [tab, setTab] = useState("tab1");
   const [toggle, setToggle] = useState(1);
@@ -60,23 +60,23 @@ export default function VisitDetails() {
     setToggle(id);
   }
 
-  const billingDetailsColumn =[
+  const billingDetailsColumn = [
     {
-      name:"Act",
-      selector:(row)=>[row.act],
-      sortable:true,
+      name: "Act",
+      selector: (row) => [row.act],
+      sortable: true,
     },
     {
-      name:"Unit Price",
-      selector:(row) =>[row.unitPrice],
-      sortable:true,
+      name: "Unit Price",
+      selector: (row) => [row.unitPrice],
+      sortable: true,
     },
     {
-      name:"Insurer Amount",
-      selector:(row) =>[row.insurerAmount],
-      sortable:true,
-    }
-  ]
+      name: "Insurer Amount",
+      selector: (row) => [row.insurerAmount],
+      sortable: true,
+    },
+  ];
 
   const columns2 = [
     {
@@ -124,7 +124,7 @@ export default function VisitDetails() {
 
   const [Comments, setSetComments] = useState([
     {
-      name: "RIght Eye",
+      name: "Right Eye",
       right: "",
       left: "",
     },
@@ -132,28 +132,20 @@ export default function VisitDetails() {
 
   const [refraction, setRefraction] = useState([
     {
-      name: "RIght Eye",
-      right: "",
-      left: "",
+      name: "Right Eye",
+      sphere: "",
+      cylinder: "",
+      axis: "",
+      addition: "",
     },
 
     {
       name: "Left Eye",
-      right: "",
-      left: "",
+      sphere: "",
+      cylinder: "",
+      axis: "",
+      addition: "",
     },
-
-    // {
-    //   name: "Lens Type",
-    //   select: true,
-    //   right: "",
-    // },
-
-    // {
-    //   name: "DIP",
-    //   select: true,
-    //   right: "",
-    // },
   ]);
 
   const [savedRefraction, setSavedRefraction] = useState("");
@@ -180,12 +172,14 @@ export default function VisitDetails() {
       sphere: "",
       cylinder: "",
       axis: "",
+      addition: "",
     },
     {
       name: "Left Eye",
       sphere: "",
       cylinder: "",
       axis: "",
+      addition: "",
     },
   ]);
 
@@ -280,7 +274,7 @@ export default function VisitDetails() {
     },
   ];
 
-  const vaColumn = [
+  const currentGlassesColumns = [
     {
       name: "",
       selector: (row) => [row.name],
@@ -326,6 +320,20 @@ export default function VisitDetails() {
         />
       ),
     },
+
+    // {
+    //   name: "Addition",
+    //   sortable: true,
+    //   cell: (row) => (
+    //     <input
+    //       className="form-control"
+    //       type="text"
+    //       readOnly={isVaSaved}
+    //       value={row.addition}
+    //       onChange={(e) => handleInputChange(e, row.name, "addition")}
+    //     />
+    //   ),
+    // },
   ];
 
   const maColumns = [
@@ -367,18 +375,18 @@ export default function VisitDetails() {
             className="form-control"
             type="text"
             readOnly={isReSaved}
-            value={row.right}
+            value={row.sphere}
             onChange={(e) =>
-              handleInputChange2(e.target.value, row.name, "right")
+              handleInputChange2(e.target.value, row.name, "sphere")
             }
           />
         ) : (
           <div style={{ width: "100%" }}>
             <Select
               options={row.name === "Lens Type" ? lensType_ : dip_}
-              value={{ label: row.right, value: row.right }}
+              value={{ label: row.sphere, value: row.sphere }}
               style={{ width: "100%" }}
-              onChange={(e) => handleInputChange2(e.value, row.name, "right")}
+              onChange={(e) => handleInputChange2(e.value, row.name, "sphere")}
               classNamePrefix="Select2"
               className="multi-select"
               // placeholder="Select them"
@@ -391,14 +399,14 @@ export default function VisitDetails() {
       name: "Cylinder",
       sortable: true,
       cell: (row) =>
-        row.left !== undefined && (
+        row.cylinder !== undefined && (
           <input
             className="form-control"
             type="text"
             readOnly={isReSaved}
-            value={row.left}
+            value={row.cylinder}
             onChange={(e) =>
-              handleInputChange2(e.target.value, row.name, "left")
+              handleInputChange2(e.target.value, row.name, "cylinder")
             }
           />
         ),
@@ -407,14 +415,14 @@ export default function VisitDetails() {
       name: "Axis",
       sortable: true,
       cell: (row) =>
-        row.left !== undefined && (
+        row.axis !== undefined && (
           <input
             className="form-control"
             type="text"
             readOnly={isReSaved}
-            value={row.left}
+            value={row.axis}
             onChange={(e) =>
-              handleInputChange2(e.target.value, row.name, "left")
+              handleInputChange2(e.target.value, row.name, "axis")
             }
           />
         ),
@@ -424,14 +432,14 @@ export default function VisitDetails() {
       name: "Addition",
       sortable: true,
       cell: (row) =>
-        row.left !== undefined && (
+        row.addition !== undefined && (
           <input
             className="form-control"
             type="text"
             readOnly={isReSaved}
-            value={row.left}
+            value={row.addition}
             onChange={(e) =>
-              handleInputChange2(e.target.value, row.name, "left")
+              handleInputChange2(e.target.value, row.name, "addition")
             }
           />
         ),
@@ -444,7 +452,7 @@ export default function VisitDetails() {
       sortable: true,
       cell: (row) =>
         row.left !== undefined && (
-          <textarea className="form-control"></textarea>
+          <textarea rows={9} className="form-control"></textarea>
         ),
     },
   ];
@@ -593,7 +601,6 @@ export default function VisitDetails() {
     }
   };
 
-
   const fetchBillingDetails = async (invoiceNumber) => {
     let my_token = localStorage.getItem("token");
     const config = {
@@ -609,25 +616,29 @@ export default function VisitDetails() {
         `http://www.ubuzima.rw/rec/invoice/patient-acts`,
         config
       );
-      console.log(response.data)
+      console.log(response.data);
 
-      const totalAmount = response.data.response.reduce((sum, item) => sum + parseInt(item.unitPrice), 0);
+      const totalAmount = response.data.response.reduce(
+        (sum, item) => sum + parseInt(item.unitPrice),
+        0
+      );
 
-      const totalInsurerAmount = response.data.response.reduce((sum, item) => sum + parseInt(item.insurerAmount), 0);
+      const totalInsurerAmount = response.data.response.reduce(
+        (sum, item) => sum + parseInt(item.insurerAmount),
+        0
+      );
 
-      const totalObj={
-        act:"Total",
-        unitPrice:totalAmount,
-        insurerAmount:totalInsurerAmount,
-      }
+      const totalObj = {
+        act: "Total",
+        unitPrice: totalAmount,
+        insurerAmount: totalInsurerAmount,
+      };
 
-      setBillingDetails([...response.data.response,totalObj]);
+      setBillingDetails([...response.data.response, totalObj]);
     } catch (error) {
       console.error(error);
     }
   };
-
-
 
   const fetchVisualAcuity = async () => {
     let my_token = localStorage.getItem("token");
@@ -666,12 +677,14 @@ export default function VisitDetails() {
             sphere: response.data.response.glassSphereRightEye,
             cylinder: response.data.response.glassCylindreRightEye,
             axis: response.data.response.glassAxeRightEye,
+            // addition: response.data.response.glassAdditionRightEye,
           },
           {
             name: "Left Eye",
             sphere: response.data.response.glassSphereLeftEye,
             cylinder: response.data.response.glassCylindreLeftEye,
             axis: response.data.response.glassAxeLeftEye,
+            // addition: response.data.response.glassAdditionLeftEye,
           },
         ];
         setVisualAcuity(visualAcuity_);
@@ -687,21 +700,25 @@ export default function VisitDetails() {
   const addVisualAcuity = async () => {
     if (
       !(
-        visualAcuity[0].right &&
-        visualAcuity[0].left &&
-        visualAcuity[1].right &&
-        visualAcuity[1].left &&
-        visualAcuity[2].right &&
-        visualAcuity[2].left &&
-        visualAcuity[3].right &&
-        visualAcuity[3].left &&
-        visualAcuity[4].right &&
-        visualAcuity[4].left &&
-        visualAcuity[5].right &&
-        visualAcuity[5].left
+        (
+          visualAcuity[0].sc &&
+          visualAcuity[0].ac &&
+          visualAcuity[0].ph &&
+          visualAcuity[1].sc &&
+          visualAcuity[1].ac &&
+          visualAcuity[1].ph &&
+          currentGlasses[0].sphere &&
+          currentGlasses[0].cylinder &&
+          currentGlasses[0].axis &&
+          // currentGlasses[0].addition &&
+          currentGlasses[1].sphere &&
+          currentGlasses[1].cylinder &&
+          currentGlasses[1].axis
+        )
+        // currentGlasses[1].addition
       )
     ) {
-      alert("Fill all the visual acuity fields");
+      alert("Fill all the visual acuity and current glasses fields!");
     } else {
       let my_token = localStorage.getItem("token");
       const config = {
@@ -712,18 +729,20 @@ export default function VisitDetails() {
       };
       const postObj = JSON.stringify({
         patientVisitId: location.state?.data?.visitId,
-        scRightEye: visualAcuity[0].right,
-        scLeftEye: visualAcuity[0].left,
-        acRightEye: visualAcuity[1].right,
-        acLeftEye: visualAcuity[1].left,
-        phRightEye: visualAcuity[2].right,
-        phLeftEye: visualAcuity[2].left,
-        glassSphereRightEye: visualAcuity[3].left,
-        glassSphereLeftEye: visualAcuity[3].left,
-        glassCylindreRightEye: visualAcuity[4].right,
-        glassCylindreLeftEye: visualAcuity[4].left,
-        glassAxeRightEye: visualAcuity[5].right,
-        glassAxeLeftEye: visualAcuity[5].left,
+        scRightEye: visualAcuity[0].sc,
+        scLeftEye: visualAcuity[1].sc,
+        acRightEye: visualAcuity[0].sc,
+        acLeftEye: visualAcuity[1].ac,
+        phRightEye: visualAcuity[0].ph,
+        phLeftEye: visualAcuity[1].ph,
+        glassSphereRightEye: currentGlasses[0].sphere,
+        glassSphereLeftEye: currentGlasses[1].sphere,
+        glassCylindreRightEye: currentGlasses[0].cylinder,
+        glassCylindreLeftEye: currentGlasses[1].cylinder,
+        glassAxeRightEye: currentGlasses[0].axis,
+        glassAxeLeftEye: currentGlasses[1].axis,
+        glassAdditionRightEye: "",
+        glassAdditionLeftEye: "",
       });
       console.log(postObj);
       try {
@@ -782,6 +801,28 @@ export default function VisitDetails() {
   const handleCheckboxChange = (event) => {
     const { value, checked } = event.target;
     setMedicalActs((prev) => {
+      if (checked) {
+        return [...prev, value];
+      } else {
+        return prev.filter((act) => act !== value);
+      }
+    });
+  };
+
+  const handleCheckboxChange2 = (event) => {
+    const { value, checked } = event.target;
+    setAdditions((prev) => {
+      if (checked) {
+        return [...prev, value];
+      } else {
+        return prev.filter((act) => act !== value);
+      }
+    });
+  };
+
+  const handleCheckboxChange3 = (event) => {
+    const { value, checked } = event.target;
+    setAdditions2((prev) => {
       if (checked) {
         return [...prev, value];
       } else {
@@ -1019,33 +1060,28 @@ export default function VisitDetails() {
         setIsReSaved(true);
         const refraction_ = [
           {
-            name: "Sphere Right Eye",
-            right: response.data.response.sphereRightEye,
-            left: response.data.response.sphereLeftEye,
+            name: "Right Eye",
+            sphere: response.data.response.sphereRightEye || "",
+            cylinder: response.data.response.cylindreRightEye || "",
+            axis: response.data.response.axeRightEye || "",
+            addition: response.data.response.additionRightEye || "",
           },
-
           {
-            name: "Cylindre Right Eye",
-            right: response.data.response.cylindreRightEye,
-            left: response.data.response.cylindreLeftEye,
+            name: "Left Eye",
+            sphere: response.data.response.sphereLeftEye || "",
+            cylinder: response.data.response.cylindreLeftEye || "",
+            axis: response.data.response.axeLeftEye || "",
+            addition: response.data.response.additionLeftEye || "",
           },
-
-          {
-            name: "Axe Right Eye",
-            right: response.data.response.axeRightEye,
-            left: response.data.response.axeLeftEye,
-          },
-
           {
             name: "Lens Type",
             select: true,
-            right: response.data.response.lensType,
+            sphere: response.data.response.lensType,
           },
-
           {
             name: "DIP",
             select: true,
-            right: response.data.response.dip,
+            sphere: response.data.response.dip,
           },
         ];
         setRefraction(refraction_);
@@ -1147,7 +1183,7 @@ export default function VisitDetails() {
           </Button>
         )}
       <Row>
-        {invoice && (
+        {invoice && roles.includes("Receptionist") && (
           <Col md={4} xl={4} style={{ marginTop: 20 }}>
             <Card style={{ minHeight: 250 }}>
               <Card.Header className=" d-flex justify-content-between align-items-center">
@@ -1193,19 +1229,23 @@ export default function VisitDetails() {
           </Col>
         )}
 
-        <Col lg={8} style={{ marginTop: 20 }}>
+        {invoice && roles.includes("Receptionist") && (
+          <Col lg={12} style={{ marginTop: 20 }}>
             <Card>
               <Card.Header className="d-flex justify-content-between align-items-center">
                 <Card.Title>Billing Details</Card.Title>
               </Card.Header>
               <Card.Body>
                 <Card.Body>
-                  <DataTable columns={billingDetailsColumn} data={billingDetails} />
+                  <DataTable
+                    columns={billingDetailsColumn}
+                    data={billingDetails}
+                  />
                 </Card.Body>
               </Card.Body>
             </Card>
           </Col>
-
+        )}
         <Row>
           <Col md={4} xl={4} style={{ marginTop: 20 }}>
             <Card style={{ minHeight: 250 }}>
@@ -1249,91 +1289,85 @@ export default function VisitDetails() {
               </Card.Body>
             </Card>
           </Col>
-
-          
         </Row>
 
-        {roles.includes("Nurse") && (
-          <div class="tabs" style={{ display: "flex" }}>
-            <div
-              class="tab"
-              onClick={() => {
-                setTab("tab1");
-              }}
-              style={{
-                padding: "10px 20px",
-                cursor: "pointer",
-                border: "1px solid #ccc",
-                borderBottom:
-                  tab === "tab1" ? "3px solid #467FCF" : "1px solid #ccc",
-                backgroundColor: tab === "tab1" ? "white" : "#f1f1f1",
-                fontWeight: tab === "tab1" ? "bold" : "normal",
-              }}
-              id="tab1"
-            >
-              Visual Acuity
-            </div>
-
-            <div
-              class="tab"
-              onClick={() => {
-                setTab("tab2");
-              }}
-              style={{
-                padding: "10px 20px",
-                cursor: "pointer",
-                border: "1px solid #ccc",
-                borderBottom:
-                  tab === "tab2" ? "3px solid #467FCF" : "1px solid #ccc",
-                backgroundColor: tab === "tab2" ? "white" : "#f1f1f1",
-                fontWeight: tab === "tab2" ? "bold" : "normal",
-              }}
-              id="tab2"
-            >
-              Medical Act
-            </div>
-
-            <div
-              class="tab"
-              onClick={() => {
-                setTab("tab3");
-              }}
-              style={{
-                padding: "10px 20px",
-                cursor: "pointer",
-                border: "1px solid #ccc",
-                borderBottom:
-                  tab === "tab3" ? "3px solid #467FCF" : "1px solid #ccc",
-                backgroundColor: tab === "tab3" ? "white" : "#f1f1f1",
-                fontWeight: tab === "tab3" ? "bold" : "normal",
-              }}
-              id="tab3"
-            >
-              Doctor's Refraction
-            </div>
-
-            <div
-              class="tab"
-              onClick={() => {
-                setTab("tab4");
-              }}
-              style={{
-                padding: "10px 20px",
-                cursor: "pointer",
-                border: "1px solid #ccc",
-                borderBottom:
-                  tab === "tab4" ? "3px solid #467FCF" : "1px solid #ccc",
-                backgroundColor: tab === "tab4" ? "white" : "#f1f1f1",
-                fontWeight: tab === "tab49" ? "bold" : "normal",
-              }}
-              id="tab3"
-            >
-              treatments
-            </div>
-
-
+        <div class="tabs" style={{ display: "flex" }}>
+          <div
+            class="tab"
+            onClick={() => {
+              setTab("tab1");
+            }}
+            style={{
+              padding: "10px 20px",
+              cursor: "pointer",
+              border: "1px solid #ccc",
+              borderBottom:
+                tab === "tab1" ? "3px solid #467FCF" : "1px solid #ccc",
+              backgroundColor: tab === "tab1" ? "white" : "#f1f1f1",
+              fontWeight: tab === "tab1" ? "bold" : "normal",
+            }}
+            id="tab1"
+          >
+            Visual Acuity
           </div>
-        )}
+
+          <div
+            class="tab"
+            onClick={() => {
+              setTab("tab2");
+            }}
+            style={{
+              padding: "10px 20px",
+              cursor: "pointer",
+              border: "1px solid #ccc",
+              borderBottom:
+                tab === "tab2" ? "3px solid #467FCF" : "1px solid #ccc",
+              backgroundColor: tab === "tab2" ? "white" : "#f1f1f1",
+              fontWeight: tab === "tab2" ? "bold" : "normal",
+            }}
+            id="tab2"
+          >
+            Medical Act
+          </div>
+
+          <div
+            class="tab"
+            onClick={() => {
+              setTab("tab3");
+            }}
+            style={{
+              padding: "10px 20px",
+              cursor: "pointer",
+              border: "1px solid #ccc",
+              borderBottom:
+                tab === "tab3" ? "3px solid #467FCF" : "1px solid #ccc",
+              backgroundColor: tab === "tab3" ? "white" : "#f1f1f1",
+              fontWeight: tab === "tab3" ? "bold" : "normal",
+            }}
+            id="tab3"
+          >
+            Doctor's Refraction
+          </div>
+
+          <div
+            class="tab"
+            onClick={() => {
+              setTab("tab4");
+            }}
+            style={{
+              padding: "10px 20px",
+              cursor: "pointer",
+              border: "1px solid #ccc",
+              borderBottom:
+                tab === "tab4" ? "3px solid #467FCF" : "1px solid #ccc",
+              backgroundColor: tab === "tab4" ? "white" : "#f1f1f1",
+              fontWeight: tab === "tab49" ? "bold" : "normal",
+            }}
+            id="tab3"
+          >
+            treatments
+          </div>
+        </div>
 
         {!roles.includes("Receptionist") && (
           <>
@@ -1367,21 +1401,10 @@ export default function VisitDetails() {
                     style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
                   >
                     <h1>Current Glasses</h1>
-                    <DataTable columns={vaColumn} data={currentGlasses} />
-
-                    {/* {roles.includes("Doctor") &&
-                      location.state?.data?.visitStatus ===
-                        "TRANSFER_TO_DOCTOR" &&
-                      !isReSaved && (
-                        <>
-                          <Button
-                            onClick={() => addRefraction()}
-                            style={{ marginTop: 20 }}
-                          >
-                            Save
-                          </Button>
-                        </>
-                      )} */}
+                    <DataTable
+                      columns={currentGlassesColumns}
+                      data={currentGlasses}
+                    />
                   </Col>
                 )}
 
@@ -1403,6 +1426,7 @@ export default function VisitDetails() {
 
               {(roles.includes("Doctor") || roles.includes("Nurse")) &&
                 tab === "tab3" && (
+                  <>
                   <Col
                     md={6}
                     xl={6}
@@ -1424,67 +1448,84 @@ export default function VisitDetails() {
                         </>
                       )}
                   </Col>
+                  <Col md={6} xl={6} style={{ marginTop: 20 }}>
+                  <h1>Additions</h1>
+                    {Additions.map((act) => (
+                      <Fragment key={act.id}>
+                        <input
+                          type="checkbox"
+                          style={{ marginBottom: 15 }}
+                          value={act.value}
+                          checked={additions2.includes(act.value)}
+                          onChange={handleCheckboxChange3}
+                        />{" "}
+                        {act.label}
+                        <br />
+                      </Fragment>
+                    ))}
+                  
+                </Col>
+                </>
                 )}
-
-
-
-
-
-
-
-
-
-
-
-                {(roles.includes("Doctor") || roles.includes("Nurse")) &&
-                tab === "tab4" && (
-                  <Col lg={6} style={{marginBottom:"200px",marginTop:"40px"}}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Select Treatment</Form.Label>
-                          <Select
-                            isMulti
-                            className="basic-single"
-                            options={BasicTreatments}
-                            onChange={(e) => setInsuranceId(e)}
-                            classNamePrefix="Select2"
-                            placeholder="Select..."
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
-
-                )}
-
-
-
-
-
-
-
-
-
-
-
-
 
               {(roles.includes("Doctor") || roles.includes("Nurse")) &&
-                tab === "tab1" && (
+                tab === "tab4" && (
                   <Col
-                    md={6}
-                    xl={6}
-                    style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
+                    lg={6}
+                    style={{ marginBottom: "200px", marginTop: "40px" }}
                   >
-                    <h1>Comments</h1>
-                    <DataTable columns={CommentsColumn} data={Comments} />
-                    {roles.includes("Doctor") &&
-                      location.state?.data?.visitStatus ===
-                        "TRANSFER_TO_DOCTOR" &&
-                      !isReSaved && <></>}
+                    <Form.Group className="form-group">
+                      <Form.Label>Select Treatment</Form.Label>
+                      <Select
+                        isMulti
+                        className="basic-single"
+                        options={BasicTreatments}
+                        onChange={(e) => setInsuranceId(e)}
+                        classNamePrefix="Select2"
+                        placeholder="Select..."
+                        required
+                      />
+                    </Form.Group>
                   </Col>
                 )}
 
-              {/* 
-          {!roles.includes("Receptionist") && (
+              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
+                tab === "tab1" && (
+                  <>
+                    <Col
+                      md={3}
+                      xl={3}
+                      style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
+                    >
+                      <h1>Comments</h1>
+                      <DataTable columns={CommentsColumn} data={Comments} />
+                      {roles.includes("Doctor") &&
+                        location.state?.data?.visitStatus ===
+                          "TRANSFER_TO_DOCTOR" &&
+                        !isReSaved && <></>}
+                    </Col>
+
+                    <Col md={3} xl={3} style={{ marginTop: 20 }}>
+                      <h1>Additions</h1>
+                        {Additions.map((act) => (
+                          <Fragment key={act.id}>
+                            <input
+                              type="checkbox"
+                              style={{ marginBottom: 15 }}
+                              value={act.value}
+                              checked={additions.includes(act.value)}
+                              onChange={handleCheckboxChange2}
+                            />{" "}
+                            {act.label}
+                            <br />
+                          </Fragment>
+                        ))}
+                      
+                    </Col>
+                  </>
+                )}
+
+              {/* {!roles.includes("Receptionist") && (
           <>
             <Col md={4} xl={4} style={{ marginTop: 20 }}>
               <Card style={{ minHeight: 250 }}>

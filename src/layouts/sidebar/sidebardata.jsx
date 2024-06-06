@@ -112,7 +112,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}chat`,
-    roles: ['Doctor'],
+    roles: ['Doctor','Receptionist','Nurse','Optometrist'],
     condition: false,
   },
 ]

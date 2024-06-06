@@ -123,7 +123,7 @@ export default function Chat () {
                   <div className="action-header d-flex justify-content-between">
                     <div className="hidden-xs d-flex align-items-center ms-2">
                       <div className="img_cont me-3">
-                        <img src={imagesData('female23')}
+                        <img src={imagesData('profilepicture')}
                           className="rounded-circle avatar avatar-lg" alt="img" />
                       </div>
                       <div className="mt-1">
@@ -165,7 +165,7 @@ export default function Chat () {
                       </div>
                       <div className="d-flex justify-content-start">
                         <div className="img_cont_msg">
-                          <img src={imagesData('male28')}
+                          <img src={imagesData('profilepicture')}
                             className="rounded-circle avatar avatar-md" alt="img" />
                         </div>
                         <div className="msg_cotainer br-7">
@@ -179,13 +179,13 @@ export default function Chat () {
                           <span className="msg_time_send">8:55 AM, Today</span>
                         </div>
                         <div className="img_cont_msg">
-                          <img src={imagesData('female23')}
+                          <img src={imagesData('profilepicture')}
                             className="rounded-circle avatar avatar-md" alt="img" />
                         </div>
                       </div>
                       <div className="d-flex justify-content-start ">
                         <div className="img_cont_msg">
-                          <img src={imagesData('male28')}
+                          <img src={imagesData('profilepicture')}
                             className="rounded-circle avatar avatar-md" alt="img" />
                         </div>
                         <div className="msg_cotainer br-7">
@@ -199,13 +199,13 @@ export default function Chat () {
                           <span className="msg_time_send">9:05 AM, Today</span>
                         </div>
                         <div className="img_cont_msg">
-                          <img src={imagesData('female23')}
+                          <img src={imagesData('profilepicture')}
                             className="rounded-circle avatar avatar-md" alt="img" />
                         </div>
                       </div>
                       <div className="d-flex justify-content-start ">
                         <div className="img_cont_msg">
-                          <img src={imagesData('male28')}
+                          <img src={imagesData('profilepicture')}
                             className="rounded-circle avatar avatar-md" alt="img" />
                         </div>
                         <div className="msg_cotainer br-7">
@@ -219,13 +219,13 @@ export default function Chat () {
                           <span className="msg_time_send">9:10 AM, Today</span>
                         </div>
                         <div className="img_cont_msg">
-                          <img src={imagesData('female23')}
+                          <img src={imagesData('profilepicture')}
                             className="rounded-circle avatar avatar-md" alt="img" />
                         </div>
                       </div>
                       <div className="d-flex justify-content-start ">
                         <div className="img_cont_msg">
-                          <img src={imagesData('male28')}
+                          <img src={imagesData('profilepicture')}
                             className="rounded-circle avatar avatar-md" alt="img" />
                         </div>
                         <div className="msg_cotainer br-7">
@@ -239,13 +239,13 @@ export default function Chat () {
                           <span className="msg_time_send">9:10 AM, Today</span>
                         </div>
                         <div className="img_cont_msg">
-                          <img src={imagesData('female23')}
+                          <img src={imagesData('profilepicture')}
                             className="rounded-circle avatar avatar-md" alt="img" />
                         </div>
                       </div>
                       <div className="d-flex justify-content-start ">
                         <div className="img_cont_msg">
-                          <img src={imagesData('male28')}
+                          <img src={imagesData('profilepicture')}
                             className="rounded-circle avatar avatar-md" alt="img" />
                         </div>
                         <div className="msg_cotainer br-7">
@@ -259,13 +259,13 @@ export default function Chat () {
                           <span className="msg_time_send">9:10 AM, Today</span>
                         </div>
                         <div className="img_cont_msg">
-                          <img src={imagesData('female23')}
+                          <img src={imagesData('profilepicture')}
                             className="rounded-circle avatar avatar-md" alt="img" />
                         </div>
                       </div>
                       <div className="d-flex justify-content-start">
                         <div className="img_cont_msg">
-                          <img src={imagesData('male28')}
+                          <img src={imagesData('profilepicture')}
                             className="rounded-circle avatar avatar-md" alt="img" />
                         </div>
                         <div className="msg_cotainer br-7">

@@ -14,12 +14,14 @@ import Schedules from '../components/schedules/schedules'
 import Appointments from '../components/appointments/appointments'
 import Report from '../components/report/report'
 import Chat from '../components/chat/chat'
+import Ordonance from '../components/ordonance/ordonance'
 
 export const Routingdata=[
 
 {path:`${import.meta.env.BASE_URL}appointments` ,element:<Appointments />, roles:['Nurse','Doctor','Optometrist']},
 {path:`${import.meta.env.BASE_URL}report` ,element:<Report />, roles:['Nurse','Doctor','Optometrist']},
 {path:`${import.meta.env.BASE_URL}chat` ,element:<Chat />, roles:['Nurse','Doctor','Receptionist','Optometrist']},
+{path:`${import.meta.env.BASE_URL}ordonance` ,element:<Ordonance />, roles:['Nurse','Doctor','Receptionist','Optometrist']},
 
 {path:`${import.meta.env.BASE_URL}insurance` ,element:<Insurance />, roles:['Nurse','Doctor','Optometrist']},
 {path:`${import.meta.env.BASE_URL}access-control` ,element:<AccessControl />, roles:['Nurse','Doctor','Optometrist']},

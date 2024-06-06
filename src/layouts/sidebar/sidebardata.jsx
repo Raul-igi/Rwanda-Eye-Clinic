@@ -115,5 +115,19 @@ const MenuItems = [
     roles: ['Doctor'],
     condition: false,
   },
+  {
+    icon: <i class="side-menu__icon fa fa-wpforms"></i>,
+    type: "sub",
+    Name: "",
+    active: false,
+    selected: false,
+    title: "Ordonance",
+    class: "",
+    color: "",
+    badgetxt: "",
+    path: `${import.meta.env.BASE_URL}ordonance`,
+    roles: ['Doctor'],
+    condition: false,
+  },
 ]
 export default MenuItems;

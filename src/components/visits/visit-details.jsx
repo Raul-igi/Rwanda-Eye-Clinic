@@ -14,7 +14,7 @@ import Select from "react-select";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import { debounce } from "lodash";
-import { lensType_, dip_,BasicTreatments } from "../../data/elementsdata";
+import { lensType_, dip_, BasicTreatments } from "../../data/elementsdata";
 import Visit from "./visit";
 
 export default function VisitDetails() {
@@ -51,7 +51,7 @@ export default function VisitDetails() {
   const [totalRows, setTotalRows] = useState("");
   const [billingDetails, setBillingDetails] = useState("");
   const [billingDetails_, setBillingDetails_] = useState("");
-  const [insuranceId,setInsuranceId]= useState("");
+  const [insuranceId, setInsuranceId] = useState("");
 
   const [tab, setTab] = useState("tab1");
   const [toggle, setToggle] = useState(1);
@@ -60,23 +60,23 @@ export default function VisitDetails() {
     setToggle(id);
   }
 
-  const billingDetailsColumn =[
+  const billingDetailsColumn = [
     {
-      name:"Act",
-      selector:(row)=>[row.act],
-      sortable:true,
+      name: "Act",
+      selector: (row) => [row.act],
+      sortable: true,
     },
     {
-      name:"Unit Price",
-      selector:(row) =>[row.unitPrice],
-      sortable:true,
+      name: "Unit Price",
+      selector: (row) => [row.unitPrice],
+      sortable: true,
     },
     {
-      name:"Insurer Amount",
-      selector:(row) =>[row.insurerAmount],
-      sortable:true,
-    }
-  ]
+      name: "Insurer Amount",
+      selector: (row) => [row.insurerAmount],
+      sortable: true,
+    },
+  ];
 
   const columns2 = [
     {
@@ -593,7 +593,6 @@ export default function VisitDetails() {
     }
   };
 
-
   const fetchBillingDetails = async (invoiceNumber) => {
     let my_token = localStorage.getItem("token");
     const config = {
@@ -609,25 +608,29 @@ export default function VisitDetails() {
         `http://www.ubuzima.rw/rec/invoice/patient-acts`,
         config
       );
-      console.log(response.data)
+      console.log(response.data);
 
-      const totalAmount = response.data.response.reduce((sum, item) => sum + parseInt(item.unitPrice), 0);
+      const totalAmount = response.data.response.reduce(
+        (sum, item) => sum + parseInt(item.unitPrice),
+        0
+      );
 
-      const totalInsurerAmount = response.data.response.reduce((sum, item) => sum + parseInt(item.insurerAmount), 0);
+      const totalInsurerAmount = response.data.response.reduce(
+        (sum, item) => sum + parseInt(item.insurerAmount),
+        0
+      );
 
-      const totalObj={
-        act:"Total",
-        unitPrice:totalAmount,
-        insurerAmount:totalInsurerAmount,
-      }
+      const totalObj = {
+        act: "Total",
+        unitPrice: totalAmount,
+        insurerAmount: totalInsurerAmount,
+      };
 
-      setBillingDetails([...response.data.response,totalObj]);
+      setBillingDetails([...response.data.response, totalObj]);
     } catch (error) {
       console.error(error);
     }
   };
-
-
 
   const fetchVisualAcuity = async () => {
     let my_token = localStorage.getItem("token");
@@ -1194,17 +1197,20 @@ export default function VisitDetails() {
         )}
 
         <Col lg={8} style={{ marginTop: 20 }}>
-            <Card>
-              <Card.Header className="d-flex justify-content-between align-items-center">
-                <Card.Title>Billing Details</Card.Title>
-              </Card.Header>
+          <Card>
+            <Card.Header className="d-flex justify-content-between align-items-center">
+              <Card.Title>Billing Details</Card.Title>
+            </Card.Header>
+            <Card.Body>
               <Card.Body>
-                <Card.Body>
-                  <DataTable columns={billingDetailsColumn} data={billingDetails} />
-                </Card.Body>
+                <DataTable
+                  columns={billingDetailsColumn}
+                  data={billingDetails}
+                />
               </Card.Body>
-            </Card>
-          </Col>
+            </Card.Body>
+          </Card>
+        </Col>
 
         <Row>
           <Col md={4} xl={4} style={{ marginTop: 20 }}>
@@ -1249,8 +1255,6 @@ export default function VisitDetails() {
               </Card.Body>
             </Card>
           </Col>
-
-          
         </Row>
 
         {roles.includes("Nurse") && (
@@ -1324,14 +1328,31 @@ export default function VisitDetails() {
                 borderBottom:
                   tab === "tab4" ? "3px solid #467FCF" : "1px solid #ccc",
                 backgroundColor: tab === "tab4" ? "white" : "#f1f1f1",
-                fontWeight: tab === "tab49" ? "bold" : "normal",
+                fontWeight: tab === "tab4" ? "bold" : "normal",
               }}
-              id="tab3"
+              id="tab4"
             >
-              treatments
+              Treatments
             </div>
 
-
+            <div
+              class="tab"
+              onClick={() => {
+                setTab("tab5");
+              }}
+              style={{
+                padding: "10px 20px",
+                cursor: "pointer",
+                border: "1px solid #ccc",
+                borderBottom:
+                  tab === "tab5" ? "3px solid #467FCF" : "1px solid #ccc",
+                backgroundColor: tab === "tab4" ? "white" : "#f1f1f1",
+                fontWeight: tab === "tab5" ? "bold" : "normal",
+              }}
+              id="tab5"
+            >
+              Diagnostic
+            </div>
           </div>
         )}
 
@@ -1426,46 +1447,26 @@ export default function VisitDetails() {
                   </Col>
                 )}
 
-
-
-
-
-
-
-
-
-
-
-                {(roles.includes("Doctor") || roles.includes("Nurse")) &&
+              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
                 tab === "tab4" && (
-                  <Col lg={6} style={{marginBottom:"200px",marginTop:"40px"}}>
-                        <Form.Group className="form-group">
-                          <Form.Label>Select Treatment</Form.Label>
-                          <Select
-                            isMulti
-                            className="basic-single"
-                            options={BasicTreatments}
-                            onChange={(e) => setInsuranceId(e)}
-                            classNamePrefix="Select2"
-                            placeholder="Select..."
-                            required
-                          />
-                        </Form.Group>
-                      </Col>
-
+                  <Col
+                    lg={6}
+                    style={{ marginBottom: "200px", marginTop: "40px" }}
+                  >
+                    <Form.Group className="form-group">
+                      <Form.Label>Select Treatment</Form.Label>
+                      <Select
+                        isMulti
+                        className="basic-single"
+                        options={BasicTreatments}
+                        onChange={(e) => setInsuranceId(e)}
+                        classNamePrefix="Select2"
+                        placeholder="Select..."
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
                 )}
-
-
-
-
-
-
-
-
-
-
-
-
 
               {(roles.includes("Doctor") || roles.includes("Nurse")) &&
                 tab === "tab1" && (
@@ -1483,10 +1484,10 @@ export default function VisitDetails() {
                   </Col>
                 )}
 
-              {/* 
-          {!roles.includes("Receptionist") && (
-          <>
-            <Col md={4} xl={4} style={{ marginTop: 20 }}>
+              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
+                tab === "tab5" && (
+                  <>
+                    {/* <Col md={4} xl={4} style={{ marginTop: 20 }}>
               <Card style={{ minHeight: 250 }}>
                 <Card.Header className=" d-flex justify-content-between align-items-center">
                   <div className="">
@@ -1501,26 +1502,26 @@ export default function VisitDetails() {
                   </Card.Title>
                 </Card.Body>
               </Card>
-            </Col>
+            </Col> */}
 
-            <Col md={4} xl={4} style={{ marginTop: 20 }}>
-              <Card style={{ minHeight: 250 }}>
-                <Card.Header className=" d-flex justify-content-between align-items-center">
-                  <div className="">
-                    <Card.Title>Diagnostic</Card.Title>
-                  </div>
-                </Card.Header>
-                <Card.Body>
-                  <Card.Title>
-                    {savedDiagnostic
-                      ? `Diagnostic: ${savedDiagnostic}`
-                      : "No Diagnostic yet..."}
-                  </Card.Title>
-                </Card.Body>
-              </Card>
-            </Col>
-          </>
-        )} */}
+                    <Col md={4} xl={4} style={{ marginTop: 20 }}>
+                      <Card style={{ minHeight: 250 }}>
+                        <Card.Header className=" d-flex justify-content-between align-items-center">
+                          <div className="">
+                            <Card.Title>Diagnostic</Card.Title>
+                          </div>
+                        </Card.Header>
+                        <Card.Body>
+                          <Card.Title>
+                            {savedDiagnostic
+                              ? `Diagnostic: ${savedDiagnostic}`
+                              : "No Diagnostic yet..."}
+                          </Card.Title>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </>
+                )}
             </Row>
 
             {/* {toggle ===1? "tab2" :"tab1"} */}

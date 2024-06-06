@@ -96,11 +96,10 @@ export default function Chat () {
                         {users.map((idx) => (
                         <li className="active" key={Math.random()}>
                           <div className="d-flex bd-highlight">
-                            <div className="img_cont me-2">
-                              <img src= {idx.src}
-                                className="rounded-circle avatar avatar-lg" alt="img" />
-                             
-                            </div>
+                          <div className="img_cont me-3">
+                        <img src={imagesData('profilepicture')}
+                          className="rounded-circle avatar avatar-lg" alt="img" />
+                      </div>
                             <div className="user_info">
                               <h6 className="mt-2 mb-0 fw-semibold">{idx.firstName} {idx.lastName}</h6>
                               <small className="text-muted">{idx.text}</small>

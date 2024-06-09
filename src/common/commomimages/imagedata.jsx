@@ -184,6 +184,10 @@ import female25 from '../../assets/images/users/female/25.jpg'
 import female26 from '../../assets/images/users/female/26.jpg'
 import female27 from '../../assets/images/users/female/27.jpg'
 
+
+import profilepicture from '../../assets/images/users/female/profilepicture.jpg'
+
+
 import male1 from '../../assets/images/users/male/1.jpg'
 import male2 from '../../assets/images/users/male/2.jpg'
 import male3 from '../../assets/images/users/male/3.jpg'
@@ -428,6 +432,7 @@ export const imagesData = (idx) => {
     male31,
     male32,
     male33,
+    profilepicture,
     firebase,
     react
   }

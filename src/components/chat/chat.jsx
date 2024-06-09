@@ -149,8 +149,7 @@ export default function Chat() {
         .post(`http://www.ubuzima.rw/rec/message/send`, postObj, config)
         .then((res) => {
           if (res.data.status) {
-            alert("message sent!");
-            getMessages();
+            getMessages(selectedChat);
             setMessage("");
           } else {
             alert("Message couldn't be sent! Something went wrong");
@@ -284,13 +283,10 @@ export default function Chat() {
                           key={idx.id}
                         >
                           <div className="d-flex bd-highlight">
-                            <div className="img_cont me-2">
-                              <img
-                                src={idx.src}
-                                className="rounded-circle avatar avatar-lg"
-                                alt="img"
-                              />
-                            </div>
+                          <div className="img_cont me-3">
+                        <img src={imagesData('profilepicture')}
+                          className="rounded-circle avatar avatar-lg" alt="img" />
+                      </div>
                             <div className="user_info">
                               <h6 className="mt-2 mb-0 fw-semibold">
                                 {idx.names}

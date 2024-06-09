@@ -12,7 +12,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}patients`,
-    roles: ['Nurse','Doctor','Receptionist'],
+    roles: ['Nurse','Doctor','Receptionist','Optometrist'],
     condition: false,
   },  
   {
@@ -26,7 +26,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}visits`,
-    roles: ['Nurse','Doctor','Receptionist'],
+    roles: ['Nurse','Doctor','Receptionist','Optometrist'],
     condition: false,
   },
   {
@@ -113,6 +113,20 @@ const MenuItems = [
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}chat`,
     roles: ['Doctor','Receptionist','Nurse','Optometrist'],
+    condition: false,
+  },
+  {
+    icon: <i class="side-menu__icon fa fa-wpforms"></i>,
+    type: "sub",
+    Name: "",
+    active: false,
+    selected: false,
+    title: "Ordonance",
+    class: "",
+    color: "",
+    badgetxt: "",
+    path: `${import.meta.env.BASE_URL}ordonance`,
+    roles: ['Doctor'],
     condition: false,
   },
 ]

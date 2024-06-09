@@ -14,7 +14,12 @@ import Select from "react-select";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import { debounce } from "lodash";
-import { lensType_, dip_, BasicTreatments, Additions } from "../../data/elementsdata";
+import {
+  lensType_,
+  dip_,
+  BasicTreatments,
+  Additions,
+} from "../../data/elementsdata";
 import Visit from "./visit";
 
 export default function VisitDetails() {
@@ -29,6 +34,7 @@ export default function VisitDetails() {
 
   const [isVaSaved, setIsVaSaved] = useState(true);
   const [isReSaved, setIsReSaved] = useState(true);
+  const [isOptReSaved, setIsOptReSaved] = useState(true);
 
   const [acts, setActs] = useState([]);
   const [additions, setAdditions] = useState([]);
@@ -67,8 +73,13 @@ export default function VisitDetails() {
       sortable: true,
     },
     {
-      name: "Unit Price",
+      name: "Total Amount",
       selector: (row) => [row.unitPrice],
+      sortable: true,
+    },
+    {
+      name: "Copay",
+      selector: (row) => [row.patientAmount],
       sortable: true,
     },
     {
@@ -122,11 +133,10 @@ export default function VisitDetails() {
     },
   ];
 
-  const [Comments, setSetComments] = useState([
+  const [comment, setComment] = useState([
     {
-      name: "Right Eye",
-      right: "",
-      left: "",
+      name: "",
+      comment: "",
     },
   ]);
 
@@ -136,7 +146,7 @@ export default function VisitDetails() {
       sphere: "",
       cylinder: "",
       axis: "",
-      addition: "",
+      addition: ""
     },
 
     {
@@ -144,8 +154,50 @@ export default function VisitDetails() {
       sphere: "",
       cylinder: "",
       axis: "",
-      addition: "",
+      addition: ""
     },
+
+    {
+      name: "Lens Type",
+      select: true,
+      sphere: ""
+    },
+
+    {
+      name: "DIP",
+      select: true,
+      sphere: ""
+    }
+  ]);
+
+  const [optRefraction, setOptRefraction] = useState([
+    {
+      name: "Right Eye",
+      sphere: "",
+      cylinder: "",
+      axis: "",
+      addition: ""
+    },
+
+    {
+      name: "Left Eye",
+      sphere: "",
+      cylinder: "",
+      axis: "",
+      addition: ""
+    },
+
+    {
+      name: "Lens Type",
+      select: true,
+      sphere: ""
+    },
+
+    {
+      name: "DIP",
+      select: true,
+      sphere: ""
+    }
   ]);
 
   const [savedRefraction, setSavedRefraction] = useState("");
@@ -183,14 +235,7 @@ export default function VisitDetails() {
     },
   ]);
 
-  const [sphereRightEye, setSphereRightEye] = useState("");
-  const [sphereLeftEye, setSphereLeftEye] = useState("");
-  const [cylindreRightEye, setCylindreRightEye] = useState("");
-  const [cylindreLeftEye, setCylindreLeftEye] = useState("");
-  const [axeRightEye, setAxeRightEye] = useState("");
-  const [axeLeftEye, setAxeLeftEye] = useState("");
-  const [lensType, setLensType] = useState("");
-  const [dip, setDip] = useState("");
+
 
   const [showModal, setShowModal] = useState(false);
   const handleClose8 = () => setShowModal(false);
@@ -218,6 +263,28 @@ export default function VisitDetails() {
       return item;
     });
     setRefraction(newData);
+  };
+
+  const handleInputChange3 = (e, name, field) => {
+    // Update the corresponding data item with the new value
+    const newData = optRefraction.map((item) => {
+      if (item.name === name) {
+        return { ...item, [field]: e };
+      }
+      return item;
+    });
+    setOptRefraction(newData);
+  };
+
+  const handleInputChange4 = (e, name, field) => {
+    // Update the corresponding data item with the new value
+    const newData = currentGlasses.map((item) => {
+      if (item.name === name) {
+        return { ...item, [field]: e.target.value };
+      }
+      return item;
+    });
+    setCurrentGlasses(newData);
   };
 
   const paymentMethods = [
@@ -289,7 +356,7 @@ export default function VisitDetails() {
           type="text"
           readOnly={isVaSaved}
           value={row.sphere}
-          onChange={(e) => handleInputChange(e, row.name, "sphere")}
+          onChange={(e) => handleInputChange4(e, row.name, "sphere")}
         />
       ),
     },
@@ -302,7 +369,7 @@ export default function VisitDetails() {
           type="text"
           readOnly={isVaSaved}
           value={row.cylinder}
-          onChange={(e) => handleInputChange(e, row.name, "cylinder")}
+          onChange={(e) => handleInputChange4(e, row.name, "cylinder")}
         />
       ),
     },
@@ -316,24 +383,24 @@ export default function VisitDetails() {
           type="text"
           readOnly={isVaSaved}
           value={row.axis}
-          onChange={(e) => handleInputChange(e, row.name, "axis")}
+          onChange={(e) => handleInputChange4(e, row.name, "axis")}
         />
       ),
     },
 
-    // {
-    //   name: "Addition",
-    //   sortable: true,
-    //   cell: (row) => (
-    //     <input
-    //       className="form-control"
-    //       type="text"
-    //       readOnly={isVaSaved}
-    //       value={row.addition}
-    //       onChange={(e) => handleInputChange(e, row.name, "addition")}
-    //     />
-    //   ),
-    // },
+    {
+      name: "Addition",
+      sortable: true,
+      cell: (row) => (
+        <input
+          className="form-control"
+          type="text"
+          readOnly={isVaSaved}
+          value={row.addition}
+          onChange={(e) => handleInputChange4(e, row.name, "addition")}
+        />
+      ),
+    },
   ];
 
   const maColumns = [
@@ -446,13 +513,99 @@ export default function VisitDetails() {
     },
   ];
 
+  const optReColumns = [
+    {
+      name: "",
+      selector: (row) => [row.name],
+      sortable: true,
+    },
+    {
+      name: "Sphere",
+      sortable: true,
+      cell: (row) =>
+        !row.select ? (
+          <input
+            className="form-control"
+            type="text"
+            readOnly={isOptReSaved}
+            value={row.sphere}
+            onChange={(e) =>
+              handleInputChange3(e.target.value, row.name, "sphere")
+            }
+          />
+        ) : (
+          <div style={{ width: "100%" }}>
+            <Select
+              options={row.name === "Lens Type" ? lensType_ : dip_}
+              value={{ label: row.sphere, value: row.sphere }}
+              style={{ width: "100%" }}
+              onChange={(e) => handleInputChange3(e.value, row.name, "sphere")}
+              classNamePrefix="Select2"
+              className="multi-select"
+              // placeholder="Select them"
+              required
+            />
+          </div>
+        ),
+    },
+    {
+      name: "Cylinder",
+      sortable: true,
+      cell: (row) =>
+        row.cylinder !== undefined && (
+          <input
+            className="form-control"
+            type="text"
+            readOnly={isOptReSaved}
+            value={row.cylinder}
+            onChange={(e) =>
+              handleInputChange3(e.target.value, row.name, "cylinder")
+            }
+          />
+        ),
+    },
+    {
+      name: "Axis",
+      sortable: true,
+      cell: (row) =>
+        row.axis !== undefined && (
+          <input
+            className="form-control"
+            type="text"
+            readOnly={isOptReSaved}
+            value={row.axis}
+            onChange={(e) =>
+              handleInputChange3(e.target.value, row.name, "axis")
+            }
+          />
+        ),
+    },
+
+    {
+      name: "Addition",
+      sortable: true,
+      cell: (row) =>
+        row.addition !== undefined && (
+          <input
+            className="form-control"
+            type="text"
+            readOnly={isReSaved}
+            value={row.addition}
+            onChange={(e) =>
+              handleInputChange2(e.target.value, row.name, "addition")
+            }
+          />
+        ),
+    },
+  ];
+
   const CommentsColumn = [
     {
       name: "",
       sortable: true,
       cell: (row) =>
-        row.left !== undefined && (
-          <textarea rows={9} className="form-control"></textarea>
+        (
+          <textarea readOnly={isOptReSaved} rows={9} onChange={e=>setComment([{name:"",comment:e.target.value}])} className="form-control">{row.comment}</textarea>
         ),
     },
   ];
@@ -991,14 +1144,14 @@ export default function VisitDetails() {
   const addRefraction = async () => {
     if (
       !(
-        refraction[0].right &&
-        refraction[0].left &&
-        refraction[1].right &&
-        refraction[1].left &&
-        refraction[2].right &&
-        refraction[2].left &&
-        refraction[3].right &&
-        refraction[4].right
+        refraction[0].sphere &&
+        refraction[0].cylinder &&
+        refraction[0].axis &&
+        refraction[1].sphere &&
+        refraction[1].cylinder &&
+        refraction[1].axis &&
+        refraction[2].sphere &&
+        refraction[3].sphere
       )
     ) {
       alert("Fill all the refraction fields");
@@ -1012,14 +1165,18 @@ export default function VisitDetails() {
       };
       const postObj = JSON.stringify({
         patientVisitId: location.state?.data?.visitId,
-        sphereRightEye: refraction[0].right,
-        sphereLeftEye: refraction[0].left,
-        cylindreRightEye: refraction[1].right,
-        cylindreLeftEye: refraction[1].left,
-        axeRightEye: refraction[2].right,
-        axeLeftEye: refraction[2].left,
-        lensType: refraction[3].right,
-        dip: refraction[4].right,
+        sphereRightEye: refraction[0].sphere,
+        sphereLeftEye: refraction[1].sphere,
+        cylindreRightEye: refraction[0].cylinder,
+        cylindreLeftEye: refraction[1].cylinder,
+        axeRightEye: refraction[0].axis,
+        axeLeftEye: refraction[1].axis,
+        lensType: refraction[2].sphere,
+        dip: refraction[3].sphere,
+        lensAttribute: "ORGANIC",
+        additionRightEye: "",
+        additionLeftEye: "",
+        comments:""
       });
 
       try {
@@ -1032,6 +1189,63 @@ export default function VisitDetails() {
         if (response.data.status) {
           alert("Refraction added successfully!");
           fetchRefraction();
+        }
+      } catch (error) {
+        setShow5(false);
+        console.error(error);
+        console.log(res.data);
+      }
+    }
+  };
+
+  const addOptRefraction = async () => {
+    if (
+      !(
+        optRefraction[0].sphere &&
+        optRefraction[0].cylinder &&
+        optRefraction[0].axis &&
+        optRefraction[1].sphere &&
+        optRefraction[1].cylinder &&
+        optRefraction[1].axis &&
+        optRefraction[2].sphere &&
+        optRefraction[3].sphere
+      )
+    ) {
+      alert("Fill all the refraction fields");
+    } else {
+      let my_token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${my_token}`,
+        },
+      };
+      const postObj = JSON.stringify({
+        patientVisitId: location.state?.data?.visitId,
+        sphereRightEye: optRefraction[0].sphere,
+        sphereLeftEye: optRefraction[1].sphere,
+        cylindreRightEye: optRefraction[0].cylinder,
+        cylindreLeftEye: optRefraction[1].cylinder,
+        axeRightEye: optRefraction[0].axis,
+        axeLeftEye: optRefraction[1].axis,
+        lensType: optRefraction[2].sphere,
+        dip: optRefraction[3].sphere,
+        lensAttribute: "ORGANIC",
+        additionRightEye: "",
+        additionLeftEye: "",
+        comments:comment[0].comment
+      });
+
+      try {
+        const response = await axios.post(
+          `http://www.ubuzima.rw/rec/visit/optometrist/refraction`,
+          postObj,
+          config
+        );
+        setShow5(false);
+        if (response.data.status) {
+          alert("Refraction added successfully!");
+          fetchOptRefraction();
         }
       } catch (error) {
         setShow5(false);
@@ -1056,37 +1270,91 @@ export default function VisitDetails() {
         `http://www.ubuzima.rw/rec/visit/doctor/refraction/visit-id`,
         config
       );
-      if (response.data.status && response.data.response) {
+      if (response.data.status && response.data.response?.length>0) {
         setIsReSaved(true);
         const refraction_ = [
           {
             name: "Right Eye",
-            sphere: response.data.response.sphereRightEye || "",
-            cylinder: response.data.response.cylindreRightEye || "",
-            axis: response.data.response.axeRightEye || "",
+            sphere: response.data.response[0].sphereRightEye || "",
+            cylinder: response.data.response[0].cylindreRightEye || "",
+            axis: response.data.response[0].axeRightEye || "",
             addition: response.data.response.additionRightEye || "",
           },
           {
             name: "Left Eye",
-            sphere: response.data.response.sphereLeftEye || "",
-            cylinder: response.data.response.cylindreLeftEye || "",
-            axis: response.data.response.axeLeftEye || "",
+            sphere: response.data.response[0].sphereLeftEye || "",
+            cylinder: response.data.response[0].cylindreLeftEye || "",
+            axis: response.data.response[0].axeLeftEye || "",
             addition: response.data.response.additionLeftEye || "",
           },
           {
             name: "Lens Type",
             select: true,
-            sphere: response.data.response.lensType,
+            sphere: response.data.response[0].lensType,
           },
           {
             name: "DIP",
             select: true,
-            sphere: response.data.response.dip,
+            sphere: response.data.response[0].dip,
           },
         ];
         setRefraction(refraction_);
       } else {
         setIsReSaved(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchOptRefraction = async () => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+        patientVisitId: location.state?.data?.visitId,
+      },
+    };
+
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/visit/optometrist/refraction/visit-id`,
+        config
+      );
+      if (response.data.status && response.data.response?.length>0) {
+        setIsOptReSaved(true);
+        const refraction_ = [
+          {
+            name: "Right Eye",
+            sphere: response.data.response[0].sphereRightEye || "",
+            cylinder: response.data.response[0].cylindreRightEye || "",
+            axis: response.data.response[0].axeRightEye || "",
+            addition: response.data.response.additionRightEye || "",
+          },
+          {
+            name: "Left Eye",
+            sphere: response.data.response[0].sphereLeftEye || "",
+            cylinder: response.data.response[0].cylindreLeftEye || "",
+            axis: response.data.response[0].axeLeftEye || "",
+            addition: response.data.response.additionLeftEye || "",
+          },
+          {
+            name: "Lens Type",
+            select: true,
+            sphere: response.data.response[0].lensType,
+          },
+          {
+            name: "DIP",
+            select: true,
+            sphere: response.data.response[0].dip,
+          },
+        ];
+        const comment_ = response.data.response[0].comments
+        setComment([{name:"",comment:comment_}])
+        setOptRefraction(refraction_);
+      } else {
+        setIsOptReSaved(false);
       }
     } catch (error) {
       console.error(error);
@@ -1123,17 +1391,22 @@ export default function VisitDetails() {
   };
 
   useEffect(() => {
-    fetchActs();
+    const roles_ = localStorage.getItem("role");
+    const userRoles = JSON.parse(roles_);
+    setRoles(userRoles)
+    if(userRoles.includes('Receptionist')){
+      fetchInvoice();
+    }
+    else{
+      fetchActs();
     fetchVisualAcuity();
     fetchMedicalActs();
     fetchDiagnostic();
     fetchRefraction();
+    fetchOptRefraction();
     fetchTreatment();
-    fetchInvoice();
     fetchPreviousVisits();
-    const roles_ = localStorage.getItem("role");
-    const userRoles = JSON.parse(roles_);
-    setRoles(userRoles);
+    }
   }, []);
 
   return (
@@ -1146,11 +1419,6 @@ export default function VisitDetails() {
             </Button>
           </>
         )}
-      {roles.includes("Nurse") && savedTreatment && !savedDiagnostic && (
-        <Button onClick={() => setShow4(true)} style={{ marginRight: 10 }}>
-          Add diagnostic
-        </Button>
-      )}
 
       {visualAcuity.length > 0 &&
         // medicalActs.length > 0 &&
@@ -1184,6 +1452,25 @@ export default function VisitDetails() {
         )}
       <Row>
         {invoice && roles.includes("Receptionist") && (
+          <Col lg={12} style={{ marginTop: 20 }}>
+            <Card>
+              <Card.Header className="d-flex justify-content-between align-items-center">
+                <Card.Title>Billing Details</Card.Title>
+              </Card.Header>
+              <Card.Body>
+                <Card.Body>
+                  <DataTable
+                    columns={billingDetailsColumn}
+                    data={billingDetails}
+                  />
+                </Card.Body>
+              </Card.Body>
+            </Card>
+          </Col>
+        )}
+
+{invoice && roles.includes("Receptionist") && (
+          <>
           <Col md={4} xl={4} style={{ marginTop: 20 }}>
             <Card style={{ minHeight: 250 }}>
               <Card.Header className=" d-flex justify-content-between align-items-center">
@@ -1227,26 +1514,41 @@ export default function VisitDetails() {
               </Card.Body>
             </Card>
           </Col>
+          <Col md={4} xl={4} style={{ marginTop: 20 }}>
+          <Card style={{ minHeight: 250 }}>
+            <Card.Header className=" d-flex justify-content-between align-items-center">
+              <div className="">
+                <Card.Title>
+                  {location.state?.data?.createdAt?.slice(0, 10)}
+                </Card.Title>
+                {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
+              </div>
+            </Card.Header>
+            <Card.Body>
+              <Card.Title>
+                Names: {location.state?.data?.patient?.names}
+              </Card.Title>
+
+              <Card.Title>
+                Sex: {location.state?.data?.patient?.gender}
+              </Card.Title>
+
+              <Card.Title>
+                DOB: {location.state?.data?.patient?.dob}
+              </Card.Title>
+
+              <Card.Title style={{ fontSize: "15px" }}>
+                Doctor: Dr {location.state?.data?.doctor}
+              </Card.Title>
+            </Card.Body>
+          </Card>
+        </Col>
+        </>
         )}
 
-        {invoice && roles.includes("Receptionist") && (
-          <Col lg={12} style={{ marginTop: 20 }}>
-            <Card>
-              <Card.Header className="d-flex justify-content-between align-items-center">
-                <Card.Title>Billing Details</Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <Card.Body>
-                  <DataTable
-                    columns={billingDetailsColumn}
-                    data={billingDetails}
-                  />
-                </Card.Body>
-              </Card.Body>
-            </Card>
-          </Col>
-        )}
-        <Row>
+        {!roles.includes('Receptionist')&&(
+          <>
+            <Row>
           <Col md={4} xl={4} style={{ marginTop: 20 }}>
             <Card style={{ minHeight: 250 }}>
               <Card.Header className=" d-flex justify-content-between align-items-center">
@@ -1367,12 +1669,34 @@ export default function VisitDetails() {
           >
             treatments
           </div>
+
+          <div
+            class="tab"
+            onClick={() => {
+              setTab("tab5");
+            }}
+            style={{
+              padding: "10px 20px",
+              cursor: "pointer",
+              border: "1px solid #ccc",
+              borderBottom:
+                tab === "tab5" ? "3px solid #467FCF" : "1px solid #ccc",
+              backgroundColor: tab === "tab5" ? "white" : "#f1f1f1",
+              fontWeight: tab === "tab5" ? "bold" : "normal",
+            }}
+            id="tab5"
+          >
+            Diagnostic
+          </div>
         </div>
+          </>
+        )}
+        
 
         {!roles.includes("Receptionist") && (
           <>
             <Row>
-              {tab === "tab1" && (
+              {tab === "tab1" && (roles.includes("Nurse") || roles.includes("Doctor")) && (
                 <Col md={6} xl={6} style={{ marginTop: 20, paddingRight: 0 }}>
                   <h1>Visual Acuity</h1>
 
@@ -1408,7 +1732,7 @@ export default function VisitDetails() {
                   </Col>
                 )}
 
-              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
+              {(roles.includes("Doctor") || roles.includes("Nurse") || roles.includes("Optometrist")) &&
                 tab === "tab1" && (
                   <Col
                     md={6}
@@ -1416,31 +1740,15 @@ export default function VisitDetails() {
                     style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
                   >
                     <h1>Optometrist Refraction</h1>
-                    <DataTable columns={reColumns} data={refraction} />
-                    {roles.includes("Doctor") &&
-                      location.state?.data?.visitStatus ===
-                        "TRANSFER_TO_DOCTOR" &&
-                      !isReSaved && <></>}
-                  </Col>
-                )}
-
-              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
-                tab === "tab3" && (
-                  <>
-                  <Col
-                    md={6}
-                    xl={6}
-                    style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
-                  >
-                    <h1>Doctor's Refraction</h1>
-                    <DataTable columns={reColumns} data={refraction} />
-                    {roles.includes("Doctor") &&
+                    <DataTable columns={optReColumns} data={optRefraction} />
+                    {(roles.includes("Nurse") ||
+                      roles.includes("Optometrist")) &&
                       location.state?.data?.visitStatus ===
                         "TRANSFER_TO_NURSE" &&
-                      !isReSaved && (
+                      !isOptReSaved && (
                         <>
                           <Button
-                            onClick={() => addVisualAcuity()}
+                            onClick={() => addOptRefraction()}
                             style={{ marginTop: 20 }}
                           >
                             Save
@@ -1448,24 +1756,49 @@ export default function VisitDetails() {
                         </>
                       )}
                   </Col>
-                  <Col md={6} xl={6} style={{ marginTop: 20 }}>
-                  <h1>Additions</h1>
-                    {Additions.map((act) => (
-                      <Fragment key={act.id}>
-                        <input
-                          type="checkbox"
-                          style={{ marginBottom: 15 }}
-                          value={act.value}
-                          checked={additions2.includes(act.value)}
-                          onChange={handleCheckboxChange3}
-                        />{" "}
-                        {act.label}
-                        <br />
-                      </Fragment>
-                    ))}
-                  
-                </Col>
-                </>
+                )}
+
+              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
+                tab === "tab3" && (
+                  <>
+                    <Col
+                      md={6}
+                      xl={6}
+                      style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
+                    >
+                      <h1>Doctor's Refraction</h1>
+                      <DataTable columns={reColumns} data={refraction} />
+                      {roles.includes("Doctor") &&
+                        location.state?.data?.visitStatus ===
+                          "TRANSFER_TO_DOCTOR" &&
+                        !isReSaved && (
+                          <>
+                            <Button
+                              onClick={() => addRefraction()}
+                              style={{ marginTop: 20 }}
+                            >
+                              Save
+                            </Button>
+                          </>
+                        )}
+                    </Col>
+                    <Col md={6} xl={6} style={{ marginTop: 20 }}>
+                      <h1>Additions</h1>
+                      {Additions.map((act) => (
+                        <Fragment key={act.id}>
+                          <input
+                            type="checkbox"
+                            style={{ marginBottom: 15 }}
+                            value={act.value}
+                            checked={additions2.includes(act.value)}
+                            onChange={handleCheckboxChange3}
+                          />{" "}
+                          {act.label}
+                          <br />
+                        </Fragment>
+                      ))}
+                    </Col>
+                  </>
                 )}
 
               {(roles.includes("Doctor") || roles.includes("Nurse")) &&
@@ -1489,7 +1822,7 @@ export default function VisitDetails() {
                   </Col>
                 )}
 
-              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
+              {(roles.includes("Doctor") || roles.includes("Nurse") || roles.includes("Optometrist")) &&
                 tab === "tab1" && (
                   <>
                     <Col
@@ -1498,7 +1831,7 @@ export default function VisitDetails() {
                       style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
                     >
                       <h1>Comments</h1>
-                      <DataTable columns={CommentsColumn} data={Comments} />
+                      <DataTable columns={CommentsColumn} data={comment} />
                       {roles.includes("Doctor") &&
                         location.state?.data?.visitStatus ===
                           "TRANSFER_TO_DOCTOR" &&
@@ -1507,27 +1840,27 @@ export default function VisitDetails() {
 
                     <Col md={3} xl={3} style={{ marginTop: 20 }}>
                       <h1>Additions</h1>
-                        {Additions.map((act) => (
-                          <Fragment key={act.id}>
-                            <input
-                              type="checkbox"
-                              style={{ marginBottom: 15 }}
-                              value={act.value}
-                              checked={additions.includes(act.value)}
-                              onChange={handleCheckboxChange2}
-                            />{" "}
-                            {act.label}
-                            <br />
-                          </Fragment>
-                        ))}
-                      
+                      {Additions.map((act) => (
+                        <Fragment key={act.id}>
+                          <input
+                            type="checkbox"
+                            style={{ marginBottom: 15 }}
+                            value={act.value}
+                            checked={additions.includes(act.value)}
+                            onChange={handleCheckboxChange2}
+                          />{" "}
+                          {act.label}
+                          <br />
+                        </Fragment>
+                      ))}
                     </Col>
                   </>
                 )}
 
-              {/* {!roles.includes("Receptionist") && (
-          <>
-            <Col md={4} xl={4} style={{ marginTop: 20 }}>
+              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
+                tab === "tab5" && (
+                  <>
+                    {/* <Col md={4} xl={4} style={{ marginTop: 20 }}>
               <Card style={{ minHeight: 250 }}>
                 <Card.Header className=" d-flex justify-content-between align-items-center">
                   <div className="">
@@ -1542,26 +1875,38 @@ export default function VisitDetails() {
                   </Card.Title>
                 </Card.Body>
               </Card>
-            </Col>
+            </Col> */}
+                    <Row>
+                      <Col style={{ marginTop: 10 }}>
+                        {roles.includes("Nurse") && !savedDiagnostic && (
+                          <Button
+                            onClick={() => setShow4(true)}
+                            style={{ marginRight: 10 }}
+                          >
+                            Add diagnostic
+                          </Button>
+                        )}
+                      </Col>
+                    </Row>
 
-            <Col md={4} xl={4} style={{ marginTop: 20 }}>
-              <Card style={{ minHeight: 250 }}>
-                <Card.Header className=" d-flex justify-content-between align-items-center">
-                  <div className="">
-                    <Card.Title>Diagnostic</Card.Title>
-                  </div>
-                </Card.Header>
-                <Card.Body>
-                  <Card.Title>
-                    {savedDiagnostic
-                      ? `Diagnostic: ${savedDiagnostic}`
-                      : "No Diagnostic yet..."}
-                  </Card.Title>
-                </Card.Body>
-              </Card>
-            </Col>
-          </>
-        )} */}
+                    <Col md={4} xl={4} style={{ marginTop: 20 }}>
+                      <Card style={{ minHeight: 250 }}>
+                        <Card.Header className=" d-flex justify-content-between align-items-center">
+                          <div className="">
+                            <Card.Title>Diagnostic</Card.Title>
+                          </div>
+                        </Card.Header>
+                        <Card.Body>
+                          <Card.Title>
+                            {savedDiagnostic
+                              ? `Diagnostic: ${savedDiagnostic}`
+                              : "No Diagnostic yet..."}
+                          </Card.Title>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </>
+                )}
             </Row>
 
             {/* {toggle ===1? "tab2" :"tab1"} */}

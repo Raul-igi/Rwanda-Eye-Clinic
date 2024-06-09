@@ -190,7 +190,7 @@ function Visits() {
     }; //incase you have to deal with ID or Options
     axios
       .get(
-        userRoles.includes("Nurse")
+        userRoles.includes("Nurse")||userRoles.includes("Optometrist")
           ? `http://www.ubuzima.rw/rec/visit/nurse`
           : userRoles.includes("Doctor")
           ? `http://www.ubuzima.rw/rec/visit/doctor`

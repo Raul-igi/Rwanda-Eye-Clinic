@@ -847,9 +847,26 @@ export const BasicTreatments = [
 ];
 
 export const Additions = [
-  { value: "ANTI_REFLECTION", label: "Anti reflection" },
+  { value: "Bifocal", label: "Bifocal" },
+  { value: "Single Vision", label: "Single Vision" },
+  { value: "Progressive", label: "Progressive" },
+
+];
+
+export const AdditionsTwo = [
+  { value: "PHOTOCHROMIC", label: "Photochromic" },
+  { value: "CLEAR", label: "clear" },
+  { value: "ANTI_REFLECTION", label: "Anti Reflection" },
   { value: "ORGANIC", label: "Organic" },
-  { value: "ANTI_BLUE", label: "Anti blue" },
+  { value: "ANTI_BLUE", label: "Anti Blue" },
+
+
+];
+
+export const AdditionsThree = [
+  { value: "Generate Prescription", label: "Generate Prescription" },
+
+
 
 ];
 

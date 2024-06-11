@@ -141,7 +141,7 @@ export default function VisitDetails() {
     {
       name: "",
       comment: "",
-    },ds
+    },
   ]);
 
   const [refraction, setRefraction] = useState([

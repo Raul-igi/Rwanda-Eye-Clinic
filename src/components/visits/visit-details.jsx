@@ -20,7 +20,7 @@ import {
   BasicTreatments,
   Additions,
   AdditionsTwo,
-  AdditionsThree,
+  prescriptionCheckBox,
 } from "../../data/elementsdata";
 import Visit from "./visit";
 
@@ -39,7 +39,8 @@ export default function VisitDetails() {
   const [isOptReSaved, setIsOptReSaved] = useState(true);
 
   const [acts, setActs] = useState([]);
-  const [additions, setAdditions] = useState([]);
+  const [lensType, setLensType] = useState("");
+  const [lensAttribute, setLensAttribute] = useState([]);
   const [additions2, setAdditions2] = useState([]);
   const [roles, setRoles] = useState([]);
   const [invoice, setInvoice] = useState("");
@@ -140,8 +141,8 @@ export default function VisitDetails() {
   const [comment, setComment] = useState([
     {
       name: "",
-      comment: "",
-    },ds
+      comment: ""
+    },
   ]);
 
   const [refraction, setRefraction] = useState([
@@ -159,18 +160,6 @@ export default function VisitDetails() {
       cylinder: "",
       axis: "",
       addition: "",
-    },
-
-    {
-      name: "Lens Type",
-      select: true,
-      sphere: "",
-    },
-
-    {
-      name: "DIP",
-      select: true,
-      sphere: "",
     },
   ]);
 
@@ -190,18 +179,6 @@ export default function VisitDetails() {
       axis: "",
       addition: "",
     },
-
-    // {
-    //   name: "Lens Type",
-    //   select: true,
-    //   sphere: ""
-    // },
-
-    // {
-    //   name: "DIP",
-    //   select: true,
-    //   sphere: ""
-    // }
   ]);
 
   const [savedRefraction, setSavedRefraction] = useState("");
@@ -521,35 +498,22 @@ export default function VisitDetails() {
       selector: (row) => [row.name],
       sortable: true,
     },
-    // {
-    //   name: "Sphere",
-    //   sortable: true,
-    //   cell: (row) =>
-    //     !row.select ? (
-    //       <input
-    //         className="form-control"
-    //         type="text"
-    //         readOnly={isOptReSaved}
-    //         value={row.sphere}
-    //         onChange={(e) =>
-    //           handleInputChange3(e.target.value, row.name, "sphere")
-    //         }
-    //       />
-    //     ) : (
-    //       <div style={{ width: "100%" }}>
-    //         <Select
-    //           options={row.name === "Lens Type " ? lensType_ : dip_}
-    //           value={{ label: row.sphere , value: row.sphere }}
-    //           style={{ width: "100%" }}
-    //           onChange={(e) => handleInputChange3(e.value, row.name, "sphere")}
-    //           classNamePrefix="Select2"
-    //           className="multi-select"
-    //           // placeholder="Select them"
-    //           required
-    //         />
-    //       </div>
-    //     ),
-    // },
+    {
+      name: "Sphere",
+      sortable: true,
+      cell: (row) =>
+        (
+          <input
+            className="form-control"
+            type="text"
+            readOnly={isOptReSaved}
+            value={row.sphere}
+            onChange={(e) =>
+              handleInputChange3(e.target.value, row.name, "sphere")
+            }
+          />
+        ) 
+    },
     {
       name: "Cylinder",
       sortable: true,
@@ -594,7 +558,7 @@ export default function VisitDetails() {
             readOnly={isReSaved}
             value={row.addition}
             onChange={(e) =>
-              handleInputChange2(e.target.value, row.name, "addition")
+              handleInputChange3(e.target.value, row.name, "addition")
             }
           />
         ),
@@ -972,7 +936,7 @@ export default function VisitDetails() {
 
   const handleCheckboxChange2 = (event) => {
     const { value, checked } = event.target;
-    setAdditions((prev) => {
+    setLensAttribute((prev) => {
       if (checked) {
         return [...prev, value];
       } else {
@@ -1070,8 +1034,9 @@ export default function VisitDetails() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state?.data?.visitId,
+        "Authorization": `Bearer ${my_token}`,
+        "patientVisitId": location.state?.data?.visitId,
+        "isPrescriptionAdded": generatePrescription
       },
     };
     try {
@@ -1155,11 +1120,11 @@ export default function VisitDetails() {
         refraction[0].sphere &&
         refraction[0].cylinder &&
         refraction[0].axis &&
+        refraction[0].addition &&
         refraction[1].sphere &&
         refraction[1].cylinder &&
         refraction[1].axis &&
-        refraction[2].sphere &&
-        refraction[3].sphere
+        refraction[1].addition 
       )
     ) {
       alert("Fill all the refraction fields");
@@ -1179,11 +1144,11 @@ export default function VisitDetails() {
         cylindreLeftEye: refraction[1].cylinder,
         axeRightEye: refraction[0].axis,
         axeLeftEye: refraction[1].axis,
-        lensType: refraction[2].sphere,
-        dip: refraction[3].sphere,
-        lensAttribute: "ORGANIC",
-        additionRightEye: "",
-        additionLeftEye: "",
+        lensType: lensType,
+        dip: "DIP_ON_DISTANCE",
+        lensAttribute: lensAttribute,
+        additionRightEye: refraction[0].addition,
+        additionLeftEye:refraction[1].addition,
         comments: "",
       });
 
@@ -1212,11 +1177,11 @@ export default function VisitDetails() {
         optRefraction[0].sphere &&
         optRefraction[0].cylinder &&
         optRefraction[0].axis &&
+        optRefraction[0].addition &&
         optRefraction[1].sphere &&
         optRefraction[1].cylinder &&
         optRefraction[1].axis &&
-        optRefraction[2].sphere &&
-        optRefraction[3].sphere
+        optRefraction[1].addition
       )
     ) {
       alert("Fill all the refraction fields");
@@ -1236,11 +1201,11 @@ export default function VisitDetails() {
         cylindreLeftEye: optRefraction[1].cylinder,
         axeRightEye: optRefraction[0].axis,
         axeLeftEye: optRefraction[1].axis,
-        lensType: optRefraction[2].sphere,
-        dip: optRefraction[3].sphere,
-        lensAttribute: "ORGANIC",
-        additionRightEye: "",
-        additionLeftEye: "",
+        lensType: "BIFOCAL",
+        dip: "DIP_ON_DISTANCE",
+        lensAttribute: [],
+        additionRightEye: optRefraction[0].addition,
+        additionLeftEye: optRefraction[1].addition,
         comments: comment[0].comment,
       });
 
@@ -1295,16 +1260,6 @@ export default function VisitDetails() {
             axis: response.data.response[0].axeLeftEye || "",
             addition: response.data.response.additionLeftEye || "",
           },
-          {
-            name: "Lens Type",
-            select: true,
-            sphere: response.data.response[0].lensType,
-          },
-          {
-            name: "DIP",
-            select: true,
-            sphere: response.data.response[0].dip,
-          },
         ];
         setRefraction(refraction_);
       } else {
@@ -1338,28 +1293,18 @@ export default function VisitDetails() {
             sphere: response.data.response[0].sphereRightEye || "",
             cylinder: response.data.response[0].cylindreRightEye || "",
             axis: response.data.response[0].axeRightEye || "",
-            addition: response.data.response.additionRightEye || "",
+            addition: response.data.response[0].additionRightEye || "",
           },
           {
             name: "Left Eye",
             sphere: response.data.response[0].sphereLeftEye || "",
             cylinder: response.data.response[0].cylindreLeftEye || "",
             axis: response.data.response[0].axeLeftEye || "",
-            addition: response.data.response.additionLeftEye || "",
-          },
-          {
-            name: "Lens Type",
-            select: true,
-            sphere: response.data.response[0].lensType,
-          },
-          {
-            name: "DIP",
-            select: true,
-            sphere: response.data.response[0].dip,
+            addition: response.data.response[0].additionLeftEye || "",
           },
         ];
         const comment_ = response.data.response[0].comments;
-        setComment([{ name: "", comment: comment_ }]);
+        setComment([{name:"",comment:comment_}]);
         setOptRefraction(refraction_);
       } else {
         setIsOptReSaved(false);
@@ -1781,15 +1726,53 @@ export default function VisitDetails() {
                         )}
                     </Col>
                     <Col md={6} xl={6} style={{ marginTop: 20 }}>
-                      <h1>Additions</h1>
-                      {Additions.map((act) => (
+                    <Row>
+                    <Col md={6} xl={6} style={{ marginTop: 20, height: 20 }}>
+                      <h1>Lens Type</h1>
+                      {lensType_.map((act) => (
                         <Fragment key={act.id}>
                           <input
                             type="checkbox"
                             style={{ marginBottom: 15 }}
                             value={act.value}
-                            checked={additions2.includes(act.value)}
-                            onChange={handleCheckboxChange3}
+                            checked={lensType===act.value}
+                            onChange={(e)=>setLensType(e.target.value)}
+                            
+                          />{" "}
+                          {act.label}
+                          <br />
+                        </Fragment>
+                      ))}
+                    </Col>
+                    <Col md={6} xl={6} style={{ marginTop: 20 }}>
+                      <h1>Lens Attribute</h1>
+                      {AdditionsTwo.map((act) => (
+                        <Fragment key={act.id}>
+                          <input
+                            type="checkbox"
+                            style={{ marginBottom: 15 }}
+                            value={act.value}
+                            checked={lensAttribute.includes(act.value)}
+                            onChange={handleCheckboxChange2}
+                          />{" "}
+                          {act.label}
+                          <br />
+                        </Fragment>
+                      ))}
+                    </Col>
+                    </Row>
+                    </Col>
+
+                    <Col md={3} xl={3} style={{ marginTop: 20 }}>
+                      <h1></h1>
+                      {prescriptionCheckBox.map((act) => (
+                        <Fragment key={act.id}>
+                          <input
+                            type="checkbox"
+                            style={{ marginBottom: 15 }}
+                            value={act.value}
+                            checked={generatePrescription}
+                            onChange={(()=>{setGeneratePrescription(!generatePrescription)})}
                           />{" "}
                           {act.label}
                           <br />
@@ -1825,6 +1808,7 @@ export default function VisitDetails() {
                 roles.includes("Optometrist")) &&
                 tab === "tab1" && (
                   <>
+                  <>
                     <Col md={3} xl={6} style={{ marginTop: 20 }}>
                       <h1>Comments</h1>
                       <DataTable columns={CommentsColumn} data={comment} />
@@ -1833,59 +1817,9 @@ export default function VisitDetails() {
                           "TRANSFER_TO_DOCTOR" &&
                         !isReSaved && <></>}
                     </Col>
-
-                    <Col md={3} xl={3} style={{ marginTop: 20 }}>
-                      <h1>Lens Attribute</h1>
-                      {AdditionsTwo.map((act) => (
-                        <Fragment key={act.id}>
-                          <input
-                            type="checkbox"
-                            style={{ marginBottom: 15 }}
-                            value={act.value}
-                            checked={additions.includes(act.value)}
-                            onChange={handleCheckboxChange2}
-                          />{" "}
-                          {act.label}
-                          <br />
-                        </Fragment>
-                      ))}
-                    </Col>
-
-                    <Col md={3} xl={3} style={{ marginTop: 20, height: 20 }}>
-                      <h1>Lens Type</h1>
-                      {Additions.map((act) => (
-                        <Fragment key={act.id}>
-                          <input
-                            type="checkbox"
-                            style={{ marginBottom: 15 }}
-                            value={act.value}
-                            checked={additions.includes(act.value)}
-                            onChange={handleCheckboxChange2}
-                            
-                          />{" "}
-                          {act.label}
-                          <br />
-                        </Fragment>
-                      ))}
-                    </Col>
-
-                    <Col md={3} xl={3} style={{ marginTop: 20 }}>
-                      <h1></h1>
-                      {AdditionsThree.map((act) => (
-                        <Fragment key={act.id}>
-                          <input
-                            type="checkbox"
-                            style={{ marginBottom: 15 }}
-                            value={act.value}
-                            checked={additions.includes(act.value)}
-                            onChange={(()=>{setGeneratePrescription(!generatePrescription)})}
-                          />{" "}
-                          {act.label}
-                          <br />
-                        </Fragment>
-                      ))}
-                    </Col>
-
+                  </>
+                    
+                    
                     <Col xl={4}>
                       {(roles.includes("Nurse") ||
                         roles.includes("Optometrist")) &&

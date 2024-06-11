@@ -863,7 +863,7 @@ export const AdditionsTwo = [
 
 ];
 
-export const AdditionsThree = [
+export const prescriptionCheckBox = [
   { value: "Generate Prescription", label: "Generate Prescription" },
 
 

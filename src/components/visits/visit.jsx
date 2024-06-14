@@ -789,32 +789,32 @@ export default function Visit({visitId}) {
         const refraction_ = [
           {
             name: "Sphere Right Eye",
-            right: response.data.response.sphereRightEye,
-            left: response.data.response.sphereLeftEye,
+            right: response.data.response[0].sphereRightEye,
+            left: response.data.response[0].sphereLeftEye,
           },
 
           {
             name: "Cylindre Right Eye",
-            right: response.data.response.cylindreRightEye,
-            left: response.data.response.cylindreLeftEye,
+            right: response.data.response[0].cylindreRightEye,
+            left: response.data.response[0].cylindreLeftEye,
           },
 
           {
             name: "Axe Right Eye",
-            right: response.data.response.axeRightEye,
-            left: response.data.response.axeLeftEye,
+            right: response.data.response[0].axeRightEye,
+            left: response.data.response[0].axeLeftEye,
           },
 
           {
             name: "Lens Type",
             select: true,
-            right: response.data.response.lensType,
+            right: response.data.response[0].lensType,
           },
 
           {
             name: "DIP",
             select: true,
-            right: response.data.response.dip,
+            right: response.data.response[0].dip,
           },
         ];
         setRefraction(refraction_);

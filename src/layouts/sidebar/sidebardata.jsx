@@ -12,7 +12,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}patients`,
-    roles: ['Nurse','Doctor','Receptionist','Optometrist'],
+    roles: ['Nurse','Doctor','Receptionist','Optometrist','Optic'],
     condition: false,
   },  
   {
@@ -121,12 +121,12 @@ const MenuItems = [
     Name: "",
     active: false,
     selected: false,
-    title: "Ordonance",
+    title: "Ordonances",
     class: "",
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}ordonance`,
-    roles: ['Doctor'],
+    roles: ['Optic'],
     condition: false,
   },
 ]

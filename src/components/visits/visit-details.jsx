@@ -1409,7 +1409,8 @@ export default function VisitDetails() {
       {visualAcuity.length > 0 &&
         medicalActs.length > 0 &&
         roles.includes("Nurse") &&
-        !savedTreatment && (
+        location.state?.data?.visitStatus ===
+                        "TRANSFER_TO_NURSE"  && (
           <Button
             onClick={() => {
               if (window.confirm("Are you sure you want to save?")) {
@@ -1609,7 +1610,7 @@ export default function VisitDetails() {
                   Medical Act
                 </div>
               )}
-              {(roles.includes("Nurse") || roles.includes("Doctor")) && (
+              {(roles.includes("Doctor")) && (
                 <div
                   class="tab"
                   onClick={() => {
@@ -1629,7 +1630,7 @@ export default function VisitDetails() {
                   Doctor's Refraction
                 </div>
               )}
-              {(roles.includes("Nurse") || roles.includes("Doctor")) && (
+              {(roles.includes("Doctor")) && (
                 <div
                   class="tab"
                   onClick={() => {

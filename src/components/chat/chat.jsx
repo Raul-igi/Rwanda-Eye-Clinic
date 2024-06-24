@@ -78,7 +78,7 @@ export default function Chat() {
       });
   };
 
-  const fetchMyChats = async () => {
+  const fetchMyChats = async (reinitialize = true) => {
     let my_token = await localStorage.getItem("token");
     let user_ = await localStorage.getItem("user");
     let userObj = JSON.parse(user_)
@@ -98,13 +98,15 @@ export default function Chat() {
             return {
               names:el.sender,
               id:el.senderId,
-              text:el.content
+              text:el.content,
+              unreadIds:el.unreadIds
             }
           }else{
             return {
               names:el.receiver,
               id:el.receiverId,
-              text:el.content
+              text:el.content,
+              unreadIds:el.unreadIds
             }
           }
         })
@@ -112,8 +114,11 @@ export default function Chat() {
           setMyChats(myChats_);
           setMyChats_(myChats_);
           setChats(myChats_);
-          setSelectedChat(myChats_[0]);
-          getMessages(myChats_[0]);
+          if(reinitialize){
+             setSelectedChat(myChats_[0]);
+             getMessages(myChats_[0]);
+          }
+         
         }
         else{
           setMyChats([]);
@@ -206,6 +211,29 @@ export default function Chat() {
       });
   };
 
+  const markAsRead = async (chat) => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+      },
+    };
+
+    const postObj = JSON.stringify(chat.unreadIds)
+
+    axios
+      .post(`http://www.ubuzima.rw/rec/message/read`, postObj, config)
+      .then((res) => {
+        if (res.data.status) {
+          fetchMyChats(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+
   useEffect(() => {
     fetchMyChats();
     // fetchUsers();
@@ -278,6 +306,7 @@ export default function Chat() {
                           onClick={() => {
                             setSelectedChat(idx);
                             getMessages(idx);
+                            markAsRead(idx);
                           }}
                           className="active"
                           key={idx.id}
@@ -293,9 +322,11 @@ export default function Chat() {
                               </h6>
                               <small className="text-muted">{idx.text}</small>
                             </div>
-                            <div className="ms-auto my-auto">
-                              <small>{idx.date}</small>
+                            {idx?.unreadIds?.length>0&&(
+                              <div className="ms-auto my-auto" style={{backgroundColor:'green',height:20,width:20,display:'flex',justifyContent:'center',alignItems:'center',borderRadius:10}}>
+                              <small style={{color:'white'}}>{idx?.unreadIds?.length}</small>
                             </div>
+                            )}
                           </div>
                         </li>
                       ))

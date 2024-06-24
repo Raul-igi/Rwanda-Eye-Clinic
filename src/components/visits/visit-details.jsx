@@ -1006,7 +1006,7 @@ export default function VisitDetails() {
       const config = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${my_token}`,
+          "Authorization": `Bearer ${my_token}`,
         },
       };
       const postObj = JSON.stringify({
@@ -1036,8 +1036,8 @@ export default function VisitDetails() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state?.data?.visitId,
+        "Authorization": `Bearer ${my_token}`,
+        "patientVisitId": location.state?.data?.visitId,
       },
     };
     try {
@@ -1060,9 +1060,9 @@ export default function VisitDetails() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
-        patientVisitId: location.state?.data?.visitId,
-        isPrescriptionAdded: generatePrescription,
+        "Authorization": `Bearer ${my_token}`,
+        "patientVisitId": location.state?.data?.visitId,
+        "isPrescriptionAdded": `${generatePrescription}`,
       },
     };
     try {
@@ -1812,7 +1812,7 @@ export default function VisitDetails() {
                             ))}
                           </Col>
                     </Row>
-                    {roles.includes("Doctor") && (
+                    {roles.includes("Doctor") && !isReSaved && (
                           <Button
                             onClick={() => addRefraction()}
                             style={{ marginTop: 20, width: 100 }}
@@ -2060,24 +2060,26 @@ export default function VisitDetails() {
                       />
                     </Form.Group>
                   </Col>
-                  <Col xl={12}>
-                    <Form.Group className="form-group">
-                      <Form.Label>Select payment mode</Form.Label>
-                      <Select
-                        options={[
-                          { label: "Cash", value: "CASH" },
-                          { label: "MoMo", value: "MOMO" },
-                          { label: "POS", value: "POS" },
-                        ]}
-                        onChange={(e) => setPaymentMode(e.value)}
-                        classNamePrefix="Select2"
-                        className="multi-select"
-                        // placeholder="Select them"
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
                 </>
+              )}
+              {(paymentMethod==="INSURANCE_AND_TOP_UP"||paymentMethod==="CASH")&&(
+                <Col xl={12}>
+                <Form.Group className="form-group">
+                  <Form.Label>Select payment mode</Form.Label>
+                  <Select
+                    options={[
+                      { label: "Cash", value: "CASH" },
+                      { label: "MoMo", value: "MOMO" },
+                      { label: "POS", value: "POS" },
+                    ]}
+                    onChange={(e) => setPaymentMode(e.value)}
+                    classNamePrefix="Select2"
+                    className="multi-select"
+                    // placeholder="Select them"
+                    required
+                  />
+                </Form.Group>
+              </Col>
               )}
             </>
           ) : (

@@ -76,6 +76,8 @@ function Patients() {
   const [allDoctors, setAllDoctors] = useState([]);
   const [scheduleDayId,setscheduleDayId] =useState("");
 
+  const [action,setAction] =useState("");
+
 
 
 
@@ -151,7 +153,7 @@ function Patients() {
     },
 
     {
-      name: "Actions",
+      name: "Add visit",
       cell: (row) => (
         <div
           onClick={() => {
@@ -168,7 +170,7 @@ function Patients() {
     },
 
     {
-      name: "Actions",
+      name: "Previous visits",
       cell: (row) => (
         <div
           onClick={() => {
@@ -179,6 +181,23 @@ function Patients() {
           style={{ color: "#2D6CC5", cursor: "pointer" }}
         >
           Previous Visits
+        </div>
+      ),
+    },
+
+    {
+      name: "Update",
+      cell: (row) => (
+        <div
+          onClick={() => {
+            setShow(true);
+            setAction("update");
+            fetchPatientsInsuranceID(row.id,true);
+            setPatientId(row.id);
+          }}
+          style={{ color: "#2D6CC5", cursor: "pointer" }}
+        >
+          Update
         </div>
       ),
     },
@@ -244,7 +263,7 @@ function Patients() {
     },
   ];
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {setShow(false);setAction("")};
   const handleShow = () => setShow(true);
 
 
@@ -320,6 +339,59 @@ function Patients() {
         console.log(error.message);
       });
   };
+
+  const updatePatient = async (e) => {
+    //handle submit is the second step
+    e.preventDefault();
+    setLoading(true);
+    const postObj = JSON.stringify({
+      //postObj
+      id: patientId,
+      names: names, // modify body properties
+      email: email,
+      phoneNumber: phoneNumber,
+      gender: gender,
+      dob: dob,
+      contactPerson: contactPerson,
+      contactPersonPhoneNumber: contactPersonPhoneNumber,
+      status: "INDIGENT",
+      patientInsuranceDto: insuranceId?.label?.toLowerCase()==='private'?null:
+      {
+        insuranceId: insuranceId?.value,
+        membershipType: membershipType?.value,
+        principalNames: principalNames,
+        cardNumber: cardNumber,
+        employer: employer,
+        expiryDate: expiryDate,
+        ticket: ticket,
+      },
+    });
+    console.log(postObj);
+    let my_token = await localStorage.getItem("token");
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${my_token}`,
+    };
+    axios
+      .post(`http://www.ubuzima.rw/rec/patient/update`, postObj) //declare api Path
+      .then((res) => {
+        setAction("")
+        setShow(false)
+        if (res.data.status === true) {
+          alert('Patient successfully updated')
+          fetchPatients();
+        } else {
+          alert("something went wrong");
+        }
+      })
+      .catch((error) => {
+        setAction("")
+        setShow(false)
+        setLoading(false);
+        console.log(error.message);
+      });
+  };
+
 
   const fetchPatients = async () => {
     let my_token = localStorage.getItem("token");
@@ -616,7 +688,7 @@ function Patients() {
       });
   };
 
-  const fetchPatientsInsuranceID = async (id) => {
+  const fetchPatientsInsuranceID = async (id,prepopulate=false) => {
     let my_token = await localStorage.getItem("token");
     const config = {
       headers: {
@@ -628,8 +700,27 @@ function Patients() {
     axios
       .get(`http://www.ubuzima.rw/rec/patient/id`, config)
       .then((res) => {
-        console.log(res.data);
-        const patientsInsurances = res.data.response.patientInsurances.map(
+        if(prepopulate){
+          setEmail(res.data.response.email);
+          setNames(res.data.response.names);
+          setPhoneNumber(res.data.response.phoneNumber);
+          setcontactPerson(res.data.response.contactPerson);
+          setcontactPersonPhoneNumber(res.data.response.contactPersonPhoneNumber);
+          setDob(res.data.response.dob);
+          setGender(res.data.response.gender);
+          if(res.data.response?.patientInsurances?.length>0){
+          var insurance_ = {value:res.data.response.patientInsurances[0].id,label:res.data.response.patientInsurances[0].insuranceName}
+          setInsuranceId(insurance_)
+          setTicket(res.data.response.patientInsurances[0].ticket)
+          setexpiryDate(res.data.response.patientInsurances[0].expiryDate)
+          setemployer(res.data.response.patientInsurances[0].employer)
+          setcardNumber(res.data.response.patientInsurances[0].cardNumber)
+          setprincipalNames(res.data.response.patientInsurances[0].principalNames)
+          var type = res.data.response.patientInsurances[0].membershipType
+          setmembershipType({label:type,value:type})
+          }
+        }
+        const patientsInsurances = res.data.response.patientInsurances?.map(
           (el) => {
             return {
               label: `${el.insuranceName} - ${el.cardNumber}`,
@@ -792,7 +883,7 @@ function Patients() {
         <Col lg={12}>
           <Card>
             <Card.Header className="d-flex justify-content-between align-items-center">
-              <Card.Title>Patients</Card.Title>
+              <Card.Title>Patients {action}</Card.Title>
               <Row>
                 <Col>
                   <input
@@ -818,13 +909,13 @@ function Patients() {
         </Col>
       </Row>
       <Modal show={show} onHide={handleClose}>
-        <Form onSubmit={handleSubmit}>
+        <Form>
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>
             <Col lg={12} className="col-md-">
               <Card className="custom-card">
                 <Card.Header>
-                  <Card.Title>Create New Patient</Card.Title>
+                  <Card.Title>{action==='update'?"Update":"Create new"} patient</Card.Title>
                 </Card.Header>
                 <Card.Body>
                   <div className="d-flex flex-column">
@@ -836,6 +927,7 @@ function Patients() {
                             type="text"
                             className="form-control"
                             name="example-text-input"
+                            value={names}
                             // placeholder="names"
                             onChange={(e) => setNames(e.target.value)}
                             required
@@ -849,6 +941,7 @@ function Patients() {
                           <Select
                             className="basic-single"
                             options={insurances}
+                            value={insuranceId}
                             onChange={(e) => setInsuranceId(e)}
                             classNamePrefix="Select2"
                             placeholder="Select them"
@@ -864,6 +957,7 @@ function Patients() {
                             type="email"
                             className="form-control"
                             name="example-text-input"
+                            value={email}
                             // placeholder="email"
                             onChange={(e) => setEmail(e.target.value)}
                             required
@@ -878,6 +972,7 @@ function Patients() {
                             type="tel"
                             className="form-control"
                             name="example-text-input"
+                            value={phoneNumber}
                             // placeholder="phone number"
 
                             onChange={(e) => setPhoneNumber(e.target.value)}
@@ -940,6 +1035,7 @@ function Patients() {
                             type="email"
                             className="form-control"
                             name="example-text-input"
+                            value={contactPerson}
                             // placeholder="Contact Person"
                             onChange={(e) => setcontactPerson(e.target.value)}
                             required
@@ -953,6 +1049,7 @@ function Patients() {
                           <Form.Control
                             type="tel"
                             className="form-control"
+                            value={contactPersonPhoneNumber}
                             name="example-text-input"
                             // placeholder="phone number"
 
@@ -964,7 +1061,8 @@ function Patients() {
                         </Form.Group>
                       </Col>
 
-                      <Col xl={6}>
+                      {action!=="update"&&(
+                        <Col xl={6}>
                         <Form.Group className="form-group">
                           <Form.Label>Province</Form.Label>
                           <Select
@@ -982,6 +1080,7 @@ function Patients() {
                           />
                         </Form.Group>
                       </Col>
+                      )}
 
                       {selectedProvince && (
                         <Col xl={6}>
@@ -1073,6 +1172,7 @@ function Patients() {
                               options={membershipTypes}
                               onChange={(e) => setmembershipType(e)}
                               classNamePrefix="Select2"
+                              value={membershipType}
                               className="multi-select"
                               // placeholder="Select them"
                               required
@@ -1088,6 +1188,7 @@ function Patients() {
                             <Form.Control
                               type="Text"
                               className="form-control"
+                              value={principalNames}
                               name="example-text-input"
                               // placeholder="Address"
                               onChange={(e) =>
@@ -1105,6 +1206,7 @@ function Patients() {
                             <Form.Label>Card Number</Form.Label>
                             <Form.Control
                               type="text"
+                              value={cardNumber}
                               className="form-control"
                               name="example-text-input"
                               // placeholder="Address"
@@ -1118,11 +1220,12 @@ function Patients() {
                       {insuranceId?.label?.toLowerCase() !==  "private" && (
                         <Col xl={6}>
                           <Form.Group className="form-group">
-                            <Form.Label>Employee</Form.Label>
+                            <Form.Label>Employer</Form.Label>
                             <Form.Control
                               type="text"
                               className="form-control"
                               name="example-text-input"
+                              value={employer}
                               // placeholder="Address"
                               onChange={(e) => setemployer(e.target.value)}
                               required
@@ -1139,6 +1242,7 @@ function Patients() {
                               type="Date"
                               className="form-control"
                               name="example-text-input"
+                              value={expiryDate}
                               // placeholder="Address"
                               onChange={(e) => setexpiryDate(e.target.value)}
                               required
@@ -1157,6 +1261,7 @@ function Patients() {
                               type="number"
                               className="form-control"
                               name="example-text-input"
+                              value={ticket}
                               // placeholder="Address"
                               onChange={(e) => setTicket(e.target.value)}
                               required
@@ -1174,7 +1279,13 @@ function Patients() {
                       className="btn ripple btn-primary my-3"
                       style={{ width: "40%", marginLeft: "320px" }}
                       variant="primary"
-                      onClick={handleSubmit}
+                      onClick={(e)=>{
+                        if(action==="update"){
+                          updatePatient(e)
+                        }else{
+                          handleSubmit(e)
+                        }
+                      }}
                     >
                       Submit
                     </Button>

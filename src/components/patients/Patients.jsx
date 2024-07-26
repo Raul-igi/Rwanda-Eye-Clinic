@@ -61,6 +61,7 @@ function Patients() {
   const [show3, setShow3] = useState(false);
   const [show4, setShow4] = useState(false);
   const [show5, setShow5] = useState(false);
+  const [show6,setShow6]  =useState(false);
   const [selectedAssignees, setSelectedAssignees] = useState([]);
 
   const [totalRows, setTotalRows] = useState(0);
@@ -204,6 +205,24 @@ function Patients() {
       ),
     },
 
+    {
+      name: " Add Insurance",
+      cell: (row) => (
+        <div
+          onClick={() => {
+            setShow6(true);
+            setAction("addInsurance")
+            // fetchPatientsInsuranceID(row.id,true);
+            setPatientId(row.id);
+            
+          }}
+          style={{ color: "#2D6CC5", cursor: "pointer" }}
+        >
+          Add Insurance
+        </div>
+      ),
+    },
+
   ];
 
 
@@ -267,6 +286,8 @@ function Patients() {
 
   const handleClose = () => {setShow(false);setAction("")};
   const handleShow = () => setShow(true);
+
+  
 
 
   const searchPatients = (value) => {
@@ -393,6 +414,82 @@ function Patients() {
         console.log(error.message);
       });
   };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  const addInsurance = async (e) => {
+    //handle submit is the second step
+    e.preventDefault();
+    setLoading(true);
+    const postObj = JSON.stringify({
+      //postObj
+      patientId: patientId,
+      insuranceId: insuranceId?.value,
+      membershipType: membershipType?.value,
+      cardNumber: cardNumber,
+      employer: employer,
+      expiryDate: expiryDate,
+      ticket: ticket, 
+      
+     
+    });
+    console.log(postObj);
+    let my_token = await localStorage.getItem("token");
+    axios.defaults.headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${my_token}`,
+    };
+    axios
+      .post(`http://www.ubuzima.rw/rec/patient/patient-insurance`, postObj) //declare api Path
+      .then((res) => {
+        setAction("")
+        setShow6(false)
+        if (res.data.status === true) {
+          alert('Patient successfully updated')
+          fetchInsurances();
+        } else {
+          alert("something went wrong");
+        }
+      })
+      .catch((error) => {
+        setAction("")
+        setShow6(false)
+        setLoading(false);
+        console.log(error.message);
+      });
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   const fetchPatients = async () => {
@@ -876,6 +973,7 @@ function Patients() {
     fetchProvinces();
     fetchDepartments();
     fetchAllDoctors();
+    
   }, []);
 
 
@@ -910,6 +1008,8 @@ function Patients() {
           </Card>
         </Col>
       </Row>
+
+
       <Modal show={show} onHide={handleClose}>
         <Form>
           <Modal.Header closeButton></Modal.Header>
@@ -1560,6 +1660,158 @@ function Patients() {
               Close
             </Button>
           </Modal.Footer>
+        </Form>
+      </Modal>
+
+
+
+
+
+
+      <Modal show={show6} onHide={handleClose}>
+        <Form>
+          <Modal.Header closeButton></Modal.Header>
+          <Modal.Body>
+            <Col lg={12} className="col-md-">
+              <Card className="custom-card">
+                <Card.Header>
+                <Card.Title>{action==='addInsurance'?"Add":"Create new"} Insurance</Card.Title>
+
+                </Card.Header>
+                <Card.Body>
+                  <div className="d-flex flex-column">
+                    <Row>
+                     
+                      <Col lg={6}>
+                        <Form.Group className="form-group">
+                          <Form.Label>Insurance</Form.Label>
+                          <Select
+                            className="basic-single"
+                            options={insurances}
+                            value={insuranceId}
+                            onChange={(e) => setInsuranceId(e)}
+                            classNamePrefix="Select2"
+                            placeholder="Select them"
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
+
+                   
+
+                      {insuranceId?.label?.toLowerCase() !==  "private" && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Membership Type</Form.Label>
+                            <Select
+                              options={membershipTypes}
+                              onChange={(e) => setmembershipType(e)}
+                              classNamePrefix="Select2"
+                              value={membershipType}
+                              className="multi-select"
+                              // placeholder="Select them"
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
+
+                     
+
+                      {insuranceId?.label?.toLowerCase() !==  "private" && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Card Number</Form.Label>
+                            <Form.Control
+                              type="text"
+                              value={cardNumber}
+                              className="form-control"
+                              name="example-text-input"
+                              // placeholder="Address"
+                              onChange={(e) => setcardNumber(e.target.value)}
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
+
+                      {insuranceId?.label?.toLowerCase() !==  "private" && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Employer</Form.Label>
+                            <Form.Control
+                              type="text"
+                              className="form-control"
+                              name="example-text-input"
+                              value={employer}
+                              // placeholder="Address"
+                              onChange={(e) => setemployer(e.target.value)}
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
+
+                      {insuranceId?.label?.toLowerCase() !== "private" && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Expiry Date</Form.Label>
+                            <Form.Control
+                              type="Date"
+                              className="form-control"
+                              name="example-text-input"
+                              value={expiryDate}
+                              // placeholder="Address"
+                              onChange={(e) => setexpiryDate(e.target.value)}
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
+
+
+                      
+                      {insuranceId?.label?.toLowerCase() !== "private" && (
+                        <Col xl={6}>
+                          <Form.Group className="form-group">
+                            <Form.Label>Ticket</Form.Label>
+                            <Form.Control  
+                              type="number"
+                              className="form-control"
+                              name="example-text-input"
+                              value={ticket}
+                              // placeholder="Address"
+                              onChange={(e) => setTicket(e.target.value)}
+                              required
+                            />
+                          </Form.Group>
+                        </Col>
+                      )}
+
+                    </Row>
+
+
+
+                    <Button
+                      type="submit"
+                      className="btn ripple btn-primary my-3"
+                      style={{ width: "40%", marginLeft: "320px" }}
+                      variant="primary"
+                      onClick={(e)=>{
+                        if(action==="addInsurance"){
+                          addInsurance(e)
+                        }else{
+                          handleSubmit(e)
+                        }
+                      }}
+                    >
+                      Submit
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Modal.Body>
         </Form>
       </Modal>
 

@@ -1071,6 +1071,7 @@ export default function VisitDetails() {
         {},
         config
       );
+      setShow5(false)
       if (response.data.status) {
         alert("Successfully saved!");
         navigate("/visits");
@@ -1396,15 +1397,17 @@ export default function VisitDetails() {
         roles.includes("Doctor") && (
           <Button
             onClick={() => {
-              if (window.confirm("Are you sure you want to save?")) {
-                doctorSave();
-              }
+              setShow5(true);
+              // if (window.confirm("Are you sure you want to save?")) {
+              //   doctorSave();
+              // }
             }}
             style={{ marginRight: 10 }}
           >
             save and send
           </Button>
         )}
+        
 
       {visualAcuity.length > 0 &&
         medicalActs.length > 0 &&
@@ -1647,7 +1650,7 @@ export default function VisitDetails() {
                   }}
                   id="tab3"
                 >
-                  treatments
+                  Dr treatments / Note
                 </div>
               )}
               {roles.includes("Nurse") && (
@@ -2126,6 +2129,132 @@ export default function VisitDetails() {
                       Submit
                     </Button>
                   </div>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Modal.Body>
+        </Form>
+      </Modal>
+
+
+
+
+
+      <Modal show={show5} onHide={() => setShow5(false)}>
+        <Form onSubmit={addDiagnostic}>
+          <Modal.Header closeButton></Modal.Header>
+          <Modal.Body>
+            <Col lg={12} className="col-md-">
+              <Card className="custom-card">
+                <Card.Header>
+                  <Card.Title>Add diagnostic</Card.Title>
+                </Card.Header>
+                <Card.Body>
+                  
+
+
+
+
+
+                  <>
+                    <Row>
+                      <Col
+                        md={6}
+                        xl={6}
+                        style={{
+                          marginTop: 20,
+                          paddingRight: 0,
+                          paddingLeft: 0,
+                        }}
+                      >
+                        <h1>Doctor's Refraction</h1>
+                        <DataTable columns={reColumns} data={refraction} />
+                      </Col>
+                      <Col md={6} xl={6} style={{ marginTop: 20 }}>
+                        <Row>
+                          <Col
+                            md={6}
+                            xl={6}
+                            style={{ marginTop: 20, height: 20 }}
+                          >
+                            <h1>Lens Type</h1>
+                            {lensType_.map((act) => (
+                              <Fragment key={act.id}>
+                                <input
+                                  type="checkbox"
+                                  style={{ marginBottom: 15 }}
+                                  value={act.value}
+                                  checked={lensType === act.value}
+                                  onChange={(e) => setLensType(e.target.value)}
+                                />{" "}
+                                {act.label}
+                                <br />
+                              </Fragment>
+                            ))}
+                          </Col>
+                          <Col md={6} xl={6} style={{ marginTop: 20 }}>
+                            <h1>Lens Attribute</h1>
+                            {AdditionsTwo.map((act) => (
+                              <Fragment key={act.id}>
+                                <input
+                                  type="checkbox"
+                                  style={{ marginBottom: 15 }}
+                                  value={act.value}
+                                  checked={lensAttribute.includes(act.value)}
+                                  onChange={handleCheckboxChange2}
+                                />{" "}
+                                {act.label}
+                                <br />
+                              </Fragment>
+                            ))}
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
+                    <Row>
+
+                    <Col md={3} xl={3} style={{ marginTop: 20 }}>
+                            <h1></h1>
+                            {prescriptionCheckBox.map((act) => (
+                              <Fragment key={act.id}>
+                                <input
+                                  type="checkbox"
+                                  style={{ marginBottom: 15 }}
+                                  value={act.value}
+                                  readOnly={!roles.includes("Doctor")}
+                                  checked={generatePrescription}
+                                  onChange={() => {
+                                      if(roles.includes("Doctor")){
+                                        setGeneratePrescription(
+                                          !generatePrescription
+                                        );
+                                      }
+                                  }}
+                                />{" "}
+                                {act.label}
+                                <br />
+                              </Fragment>
+                            ))}
+                          </Col>
+                    </Row>
+                    <Button
+                      type="submit"
+                      className="btn ripple btn-primary my-3"
+                      style={{ width: "40%", marginLeft: "320px" }}
+                      variant="primary"
+                      onClick={()=>{doctorSave()}}
+                      
+                    >
+                      Submit
+                    </Button>
+                  </>
+               
+
+
+
+
+
+
                 </Card.Body>
               </Card>
             </Col>

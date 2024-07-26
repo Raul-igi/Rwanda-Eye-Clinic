@@ -20,21 +20,32 @@ function Patients() {
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
   const [names, setNames] = useState("");
+  const [gender, setGender] = useState("");
+  const [dob, setDob] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [contactPerson, setcontactPerson] = useState();
+  const [contactPersonPhoneNumber, setcontactPersonPhoneNumber] = useState();
+  const [patientId, setPatientId] = useState(false);
+  const [insuranceId, setInsuranceId] = useState("");
+  const [membershipType, setmembershipType] = useState("");
+  const [principalNames, setprincipalNames] = useState("");
+  const [cardNumber, setcardNumber] = useState("");
+  const [employer, setemployer] = useState("");
+  const [expiryDate, setexpiryDate] = useState("");
+
+  
   const [patients_, setPatients_] = useState([]);
   const [patients, setPatients] = useState([]);
   const [appPatients, setAppPatients] = useState([]);
+  const [locationId, setlocationId] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [sectors, setSectors] = useState([]);
   const [cells, setCells] = useState([]);
   const [villages, setVillages] = useState([]);
   const [schedulesDayId, setSchedulesDayId] = useState([]);
-  const [insuranceId, setInsuranceId] = useState("");
   const [insurances, setInsurances] = useState();
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [gender, setGender] = useState("");
-  const [dob, setDob] = useState("");
   const [startingTime, setStartingTime] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -44,15 +55,6 @@ function Patients() {
   const [selectedCell, setSelectedCell] = useState("");
   const [selectedVillage, setSelectedVillage] = useState(null);
 
-  const [contactPerson, setcontactPerson] = useState();
-  const [contactPersonPhoneNumber, setcontactPersonPhoneNumber] = useState();
-  const [locationId, setlocationId] = useState([]);
-  const [patientId, setPatientId] = useState(false);
-  const [membershipType, setmembershipType] = useState("");
-  const [principalNames, setprincipalNames] = useState("");
-  const [cardNumber, setcardNumber] = useState("");
-  const [employer, setemployer] = useState("");
-  const [expiryDate, setexpiryDate] = useState("");
   const [ticket,setTicket] = useState(0);
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);

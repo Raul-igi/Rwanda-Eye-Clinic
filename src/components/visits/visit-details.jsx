@@ -2000,7 +2000,7 @@ export default function VisitDetails() {
       <Modal show={showModal} onHide={handleClose8}>
         <Modal.Header closeButton>
           <Modal.Title>
-            Pay Invoice | Amount to pay: {invoice?.patientAmount} Rwf
+            Pay Invoice
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -2028,7 +2028,7 @@ export default function VisitDetails() {
                 <>
                   <Col xl={12}>
                     <Form.Group className="form-group">
-                      <Form.Label>Insurance Percentage %</Form.Label>
+                      <Form.Label>Insurance Amount</Form.Label>
                       <Form.Control
                         type="number"
                         value={insuranceAmount}
@@ -2038,12 +2038,11 @@ export default function VisitDetails() {
                         onChange={(e) => {
                           let newValue = parseInt(e.target.value, 10);
                           // Ensure the value is between 0 and 20
-                          newValue = Math.min(Math.max(newValue, 0), 100);
+                          newValue = Math.min(Math.max(newValue, 0), invoice.insurerAmount);
 
                           setInsuranceAmount(newValue);
                           setTopUpAmount(
-                            invoice?.patientAmount -
-                              (invoice?.patientAmount * newValue) / 100
+                            invoice?.insurerAmount - newValue + invoice.patientAmount
                           );
                         }}
                         required

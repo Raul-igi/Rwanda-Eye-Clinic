@@ -22,6 +22,7 @@ const Outhover = () => {
 
 export default function Sidebar() {
   const [menuItems, setMenuItems] = useState([]);
+  const [newMessages, setNewMessages] = useState(0);
 
   // every chnage this effect calls
   let menuIcontype;
@@ -53,8 +54,35 @@ export default function Sidebar() {
     setMenuItems(menus)
   }
 
+  const fetchUnreadMessages = async () => {
+    let my_token = await localStorage.getItem("token");
+    let user_ = await localStorage.getItem("user");
+    let userObj = JSON.parse(user_)
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+        "userId": userObj.id
+      },
+    }; //incase you have to deal with ID or Options
+    axios
+      .get(`http://www.ubuzima.rw/rec/message/chats`, config)
+      .then((res) => {
+        console.log(res.data);
+        if(res.data.response.length>0){
+          const unreadIdsLengths = res.data.response.reduce((sum, message) => sum + message.unreadIds.length, 0);
+          setNewMessages(unreadIdsLengths)
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error.message);
+      });
+  };
+
   useEffect(()=>{
     initializeMenus();
+    fetchUnreadMessages();
   },[])
 
   function checkHoriMenu() {
@@ -139,14 +167,14 @@ export default function Sidebar() {
                         <span className="side-menu__label">
                           {secondlayer.title}
                         </span>
-                        {secondlayer.badgetxt ? (
+                        {secondlayer.title === "Chat" && newMessages>0 ? (
                           <Badge
-                            bg={secondlayer.color}
-                            className={secondlayer.class}
+                            bg={'danger'}
+                            className={'side-badge'}
                           >
-                            {secondlayer.badgetxt}
+                            {newMessages}
                           </Badge>
-                        ) : (
+                         ) : (
                           ""
                         )}
                       </Link>

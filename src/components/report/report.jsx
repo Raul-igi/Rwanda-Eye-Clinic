@@ -16,6 +16,20 @@ import {
 } from "@react-pdf/renderer";
 import "./report.css";
 
+
+const columns2 = [
+  {
+    name: "Payment method",
+    selector: (row) => [row.name],
+    sortable: true,
+  },
+  {
+    name: "Total amount",
+    selector: (row) => [row.total],
+    sortable: true,
+  }
+]
+
 const columns = [
   {
     name: "Doctor names",
@@ -95,8 +109,11 @@ function Report() {
   const [reports, setReports] = useState([]);
   const [insurances, setInsurances] = useState([]);
   const [insurance, setInsurance] = useState("");
+  const [paymentTotals, setPaymentTotals] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [doctor, setDoctor] = useState("");
+  const [totalPaidAmount, setTotalPaidAmount] = useState(0);
+  const [totalTopUpAmount, setTotalTopUpAmount] = useState(0);
 
   const [show, setShow] = useState(false);
 
@@ -286,7 +303,35 @@ function Report() {
 
       try {
         const response = await axios.get(url, config);
+        const paymentTotals = {
+          Cash: 0,
+          MOMO: 0,
+          POS: 0,
+        };
+
+        let totalPaidAmount = 0;
+        let totalTopUpAmount = 0;
+        
         const reports_ = response.data.response.map((el) => {
+
+          const paidAmount_ = parseFloat(el.amount) || 0;
+          const topUpAmount_ = parseFloat(el.topUpAmount) || 0;
+
+          totalPaidAmount += paidAmount_;
+          totalTopUpAmount += topUpAmount_;
+          
+          setTotalPaidAmount(totalPaidAmount)
+          setTotalTopUpAmount(totalTopUpAmount)
+
+          const paymentMethod = el.paymentMode || 'Cash'; // Assuming 'Cash' as the default if paymentMethod is null
+          const topUpAmount = el.topUpAmount || 0;
+          const totalAmount = topUpAmount;
+
+          if (paymentTotals[paymentMethod] !== undefined) {
+            paymentTotals[paymentMethod] += totalAmount;
+          } else {
+            paymentTotals[paymentMethod] = totalAmount;
+          }
           return {
             doctorNames: `${el.doctor?.firstName} ${el.doctor?.lastName}`,
             doctorPhone: el.doctor?.phoneNumber,
@@ -299,7 +344,15 @@ function Report() {
         });
 
         setReports(reports_);
-        console.log(response.data);
+        
+        const paymentTotalsArray = Object.entries(paymentTotals).map(([name, total]) => ({
+          name,
+          total,
+        }));
+
+        console.log(paymentTotalsArray)
+
+        setPaymentTotals(paymentTotalsArray)
       } catch (error) {
         console.error("Error fetching payrolls:", error);
       }
@@ -455,8 +508,29 @@ function Report() {
               </Row>
             </Card.Header>
             <Card.Body>
+              {reports.length>0&&(
+                <div>
+                  <p style={{fontWeight:'bold'}}>
+                    Total Amount: {totalPaidAmount} Rwf
+                  </p>
+
+                  <p style={{fontWeight:'bold'}}>
+                    Total insurance amount: {totalPaidAmount-totalTopUpAmount} Rwf
+                  </p>
+
+                  <p style={{fontWeight:'bold'}}>
+                    Total top-up amount: {totalTopUpAmount} Rwf
+                  </p>
+                </div>
+              )}
               <DataTable columns={columns} data={reports} pagination />
             </Card.Body>
+
+            {reports.length>0&&(
+              <Card.Body>
+              <DataTable columns={columns2} data={paymentTotals} />
+            </Card.Body>
+            )}
           </Card>
         </Col>
       </Row>

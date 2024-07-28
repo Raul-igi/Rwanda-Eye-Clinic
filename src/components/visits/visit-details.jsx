@@ -1055,7 +1055,8 @@ export default function VisitDetails() {
     }
   };
 
-  const doctorSave = async () => {
+  const doctorSave = async (e) => {
+    e.preventDefault()
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -1076,7 +1077,11 @@ export default function VisitDetails() {
         alert("Successfully saved!");
         navigate("/visits");
       }
+      else{
+        alert(response.data.message)
+      }
     } catch (error) {
+      setShow5(false)
       console.error(error);
     }
   };
@@ -2140,13 +2145,13 @@ export default function VisitDetails() {
 
 
       <Modal show={show5} onHide={() => setShow5(false)}>
-        <Form onSubmit={addDiagnostic}>
+        <Form>
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>
             <Col lg={12} className="col-md-">
               <Card className="custom-card">
                 <Card.Header>
-                  <Card.Title>Add diagnostic</Card.Title>
+                  <Card.Title>Submit refraction</Card.Title>
                 </Card.Header>
                 <Card.Body>
                   
@@ -2241,7 +2246,7 @@ export default function VisitDetails() {
                       className="btn ripple btn-primary my-3"
                       style={{ width: "40%", marginLeft: "320px" }}
                       variant="primary"
-                      onClick={()=>{doctorSave()}}
+                      onClick={(e)=>{doctorSave(e)}}
                       
                     >
                       Submit

@@ -35,7 +35,7 @@ export default function VisitDetails() {
   const [additions2, setAdditions2] = useState([]);
   const [roles, setRoles] = useState([]);
   const [invoice, setInvoice] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("INSURANCE");
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [paymentMode, setPaymentMode] = useState(null);
 
   const [insuranceAmount, setInsuranceAmount] = useState(0);
@@ -924,29 +924,29 @@ export default function VisitDetails() {
     };
     var paymentDto = {
       invoiceNumber: invoice.invoiceNumber,
-      paymentMethod,
-      amount: invoice?.patientAmount,
+      paymentMethod: paymentMethod? paymentMethod:"INSURANCE",
+      amount: parseFloat(invoice?.patientAmount)+parseFloat(topUpAmount),
       paymentMode: paymentMode,
     };
     if (topUpAmount > 0) {
       paymentDto.topUpAmount = topUpAmount;
     }
     console.log(paymentDto);
-    try {
-      const response = await axios.post(
-        `http://www.ubuzima.rw/rec/invoice/pay`,
-        JSON.stringify(paymentDto),
-        config
-      );
-      setShowModal(false);
-      if (response.data.status) {
-        alert("Paid successfully!");
-        fetchInvoice();
-      }
-    } catch (error) {
-      setShowModal(false);
-      console.error(error);
-    }
+    // try {
+    //   const response = await axios.post(
+    //     `http://www.ubuzima.rw/rec/invoice/pay`,
+    //     JSON.stringify(paymentDto),
+    //     config
+    //   );
+    //   setShowModal(false);
+    //   if (response.data.status) {
+    //     alert("Paid successfully!");
+    //     fetchInvoice();
+    //   }
+    // } catch (error) {
+    //   setShowModal(false);
+    //   console.error(error);
+    // }
   };
 
   const handleCheckboxChange = (event) => {
@@ -2029,27 +2029,42 @@ export default function VisitDetails() {
                 </Form>
               </Col>
 
-              {paymentMethod === "INSURANCE_AND_TOP_UP" && (
+              {(paymentMethod === "INSURANCE_AND_TOP_UP" || paymentMethod === "INSURANCE") && (
                 <>
                   <Col xl={12}>
                     <Form.Group className="form-group">
                       <Form.Label>Insurance Amount</Form.Label>
                       <Form.Control
                         type="number"
-                        value={insuranceAmount}
+                        value={paymentMethod === "INSURANCE"?invoice?.insurerAmount:insuranceAmount}
                         className="form-control"
                         name="example-text-input"
                         // placeholder="names"
                         onChange={(e) => {
-                          let newValue = parseInt(e.target.value, 10);
+                          if(paymentMethod === "INSURANCE_AND_TOP_UP"){
+                            let newValue = parseFloat(e.target.value, 10);
                           // Ensure the value is between 0 and 20
                           newValue = Math.min(Math.max(newValue, 0), invoice.insurerAmount);
 
                           setInsuranceAmount(newValue);
                           setTopUpAmount(
-                            invoice?.insurerAmount - newValue + invoice.patientAmount
+                            (invoice?.insurerAmount - newValue).toFixed(1)
                           );
+                          }
                         }}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col xl={12}>
+                    <Form.Group className="form-group">
+                      <Form.Label>Copay</Form.Label>
+                      <Form.Control
+                        type="number"
+                        value={invoice?.patientAmount}
+                        className="form-control"
+                        name="example-text-input"
+                        // placeholder="names"
                         required
                       />
                     </Form.Group>
@@ -2067,9 +2082,22 @@ export default function VisitDetails() {
                       />
                     </Form.Group>
                   </Col>
+                  <Col xl={12}>
+                    <Form.Group className="form-group">
+                      <Form.Label>Amount to pay</Form.Label>
+                      <Form.Control
+                        type="number"
+                        value={parseFloat(invoice?.patientAmount) + parseFloat(topUpAmount)}
+                        className="form-control"
+                        name="example-text-input"
+                        // placeholder="names"
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
                 </>
               )}
-              {(paymentMethod==="INSURANCE_AND_TOP_UP"||paymentMethod==="CASH")&&(
+              {invoice?.patientAmount > 0 &&(
                 <Col xl={12}>
                 <Form.Group className="form-group">
                   <Form.Label>Select payment mode</Form.Label>

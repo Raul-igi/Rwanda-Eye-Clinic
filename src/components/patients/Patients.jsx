@@ -48,6 +48,7 @@ function Patients() {
   const [insurances, setInsurances] = useState();
   const [startingTime, setStartingTime] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage2, setCurrentPage2] = useState(1);
 
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
@@ -80,6 +81,24 @@ function Patients() {
   const [scheduleDayId,setscheduleDayId] =useState("");
 
   const [action,setAction] =useState("");
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedTerm, setDebouncedTerm] = useState('');
+
+  useEffect(() => {
+    // Set up a timer to update the debounced term after 7 seconds
+    const timer = setTimeout(() => {
+      setDebouncedTerm(searchTerm);
+    }, 3000); // 7 seconds
+
+    // Clean up the timer if the component unmounts or if searchTerm changes
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  useEffect(() => {
+      fetchPatients();
+  }, [debouncedTerm]);
+
 
 
 
@@ -498,20 +517,23 @@ function Patients() {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${my_token}`,
+        "query":searchTerm,
+        "page": currentPage2,
+        "size":10
       },
     };
 
     try {
       const response = await axios.get(
-        `http://www.ubuzima.rw/rec/patient`,
+        `http://www.ubuzima.rw/rec/patient/search`,
         config
       );
-      const p_ = response.data.response.map((el) => {
+      const p_ = response.data.response.patients.map((el) => {
         return { label: el.names, value: el.code };
       });
       setAppPatients(p_)
-      setPatients_(response.data.response);
-      setPatients(response.data.response);
+      setPatients_(response.data.response.patients);
+      setPatients(response.data.response.patients);
       if(response.data.response.totalElements){
         setTotalRows(response.data.response.totalElements)
       }
@@ -968,13 +990,16 @@ function Patients() {
 
   
   useEffect(() => {
-    fetchPatients();
     fetchInsurances();
     fetchProvinces();
     fetchDepartments();
     fetchAllDoctors();
     
   }, []);
+
+  useEffect(() => {
+    fetchPatients();
+  }, [currentPage2]); 
 
 
   return (
@@ -990,7 +1015,8 @@ function Patients() {
                     type="text"
                     placeholder="Search..."
                     className="form-control"
-                    onChange={(e) => searchPatients(e.target.value)}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </Col>
                 <Col>
@@ -1002,7 +1028,7 @@ function Patients() {
             </Card.Header>
             <Card.Body>
               <Card.Body>
-                <DataTable columns={columns} data={patients}  pagination/>
+                <DataTable columns={columns} data={patients} paginationTotalRows={totalRows?totalRows:patients.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]}  onChangePage={page=>setCurrentPage2(page)} pagination paginationServer/>
               </Card.Body>
             </Card.Body>
           </Card>

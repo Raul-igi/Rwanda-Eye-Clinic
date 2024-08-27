@@ -86,6 +86,29 @@ function Visits() {
   const [roles, setRoles] = useState([]);
   const [visits_, setVisits_] = useState([]);
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedTerm, setDebouncedTerm] = useState('');
+  const [isMounted, setIsMounted] = useState(false); // Track if component has mounted
+
+  useEffect(() => {
+    // Set up a timer to update the debounced term after 7 seconds
+    const timer = setTimeout(() => {
+      setDebouncedTerm(searchTerm);
+    }, 7000); // 7 seconds
+
+    // Clean up the timer if the component unmounts or if searchTerm changes
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    // Perform the search only if the component has mounted and the debounced term is not empty
+    if (isMounted && debouncedTerm && tab == 'tab2') {
+      fetchVisitsDiagnostics();
+    } else {
+      setIsMounted(true); // Set the flag after the first mount
+    }
+  }, [debouncedTerm, isMounted]);
+
   const [show, setShow] = useState(false);
 
   const searchVisits = (value) => {
@@ -295,11 +318,14 @@ function Visits() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
+        "Authorization": `Bearer ${my_token}`,
+        "query": searchTerm,
+        "page": currentPage,
+        "size": 10,
       },
     }; //incase you have to deal with ID or Options
     axios
-      .get(`http://www.ubuzima.rw/rec/visit/nurse/diagnostics`, config)
+      .get(`http://www.ubuzima.rw/rec/visit/nurse/diagnostics/search`, config)
       .then((res) => {
         console.log(res.data);
         setVisits(res.data.response.patientVisits);
@@ -315,7 +341,11 @@ function Visits() {
   };
 
   useEffect(() => {
-    fetchVisits();
+    if(tab === 'tab1'){
+      fetchVisits();
+    }else{
+      fetchVisitsDiagnostics();
+    }
   }, [currentPage]);
 
   useEffect(() => {
@@ -392,7 +422,7 @@ function Visits() {
                     type="text"
                     placeholder="Search..."
                     className="form-control"
-                    onChange={(e) => searchVisits(e.target.value)}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </Col>
                 <Col>

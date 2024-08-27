@@ -1,0 +1,1 @@
+import{j as r,r as a}from"./index-ad66e30d.js";const e="/assets/loader-62feba96.svg";function o(){return r.jsx(a.Fragment,{children:r.jsx("div",{id:"global-loader",children:r.jsx("img",{src:e,alt:"loader"})})})}export{o as default};

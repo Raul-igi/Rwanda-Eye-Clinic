@@ -1783,7 +1783,7 @@ export default function VisitDetails() {
                                   type="checkbox"
                                   style={{ marginBottom: 15 }}
                                   value={act.value}
-                                  checked={lensAttribute.includes(act.value)}
+                                  checked={lensAttribute?.includes(act.value)}
                                   onChange={handleCheckboxChange2}
                                 />{" "}
                                 {act.label}
@@ -2232,7 +2232,7 @@ export default function VisitDetails() {
                                   type="checkbox"
                                   style={{ marginBottom: 15 }}
                                   value={act.value}
-                                  checked={lensAttribute.includes(act.value)}
+                                  checked={lensAttribute?.includes(act.value)}
                                   onChange={handleCheckboxChange2}
                                 />{" "}
                                 {act.label}

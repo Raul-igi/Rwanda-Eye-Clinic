@@ -925,7 +925,7 @@ export default function VisitDetails() {
     var paymentDto = {
       invoiceNumber: invoice.invoiceNumber,
       paymentMethod: paymentMethod? paymentMethod:"INSURANCE",
-      amount: parseFloat(invoice?.patientAmount)+parseFloat(topUpAmount),
+      amount: parseFloat(invoice?.totalAmount) - parseFloat(insuranceAmount) + parseFloat(insuranceAmount*10/100),
       paymentMode: paymentMode,
     };
     if (topUpAmount > 0) {

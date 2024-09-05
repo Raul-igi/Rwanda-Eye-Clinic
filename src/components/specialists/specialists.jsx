@@ -16,56 +16,59 @@ import axios from "axios";
 
 import DataTable from "react-data-table-component";
 
-const columns = [
-  {
-    name: "Names",
-    selector: (row) => [`${row.doctor?.firstName} ${row.doctor?.lastName}`],
-    sortable: true,
-  },
 
-  {
-    name: " Email",
-    selector: (row) => [row.doctor?.email],
-    sortable: true,
-  },
-  {
-    name: "Phone Number",
-    selector: (row) => [row.doctor?.phoneNumber],
-    sortable: true,
-  },
-  {
-    name: "Actions",
-    cell: (row) => (
-       <div>
-        <Link
-        to="/schedules"
-        state={{
-          data:{doctor:row.doctor}
-        }}
-      >
-        Schedules
-      </Link>
-
-        <Link
-        to="/appointments"
-        style={{marginLeft:15}}
-        state={{
-          data:{page:'doctor',doctorId:row.doctor?.id,doctorNames:`${row.doctor?.firstName} ${row.doctor?.lastName}`}
-        }}
-      >
-        Appointments
-      </Link>
-      </div>
-      
-    ),
-  },
-
-];
 
 
 function Specialists() {
   //useState must be declared between the function and  return   //creating useState is the first step
   const location = useLocation();
+
+  const columns = [
+    {
+      name: "Names",
+      selector: (row) => [`${location.state?.data ? row.doctor?.firstName:row.firstName} ${location.state?.data ?row.doctor?.lastName:row.lastName}`],
+      sortable: true,
+    },
+  
+    {
+      name: " Email",
+      selector: (row) => [location.state?.data ? row.doctor?.email:row.email],
+      sortable: true,
+    },
+    {
+      name: "Phone Number",
+      selector: (row) => [location.state?.data ? row.doctor?.phoneNumber:row.phoneNumber],
+      sortable: true,
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+         <div>
+          <Link
+          to="/schedules"
+          state={{
+            data:{doctor:location.state?.data ? row.doctor:row}
+          }}
+        >
+          Schedules
+        </Link>
+          {location.state?.data&&(
+          <Link
+          to="/appointments"
+          style={{marginLeft:15}}
+          state={{
+            data:{page:'doctor',doctorId:location.state?.data ? row.doctor?.id:row.id,doctorNames:`${location.state?.data ? row.doctor?.firstName:row.firstName} ${location.state?.data ?row.doctor?.lastName:row.lastName}`}
+          }}
+        >
+          Appointments
+        </Link>
+          )}
+        </div>
+        
+      ),
+    },
+  
+  ];
 
   const [loading, setLoading] = useState(false);
   const [doctors, setDoctors] = useState([]);
@@ -86,7 +89,7 @@ function Specialists() {
     axios.defaults.headers = {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${my_token}`,
-      "departmentId": location.state.data.id,
+      "departmentId": location.state?.data?.id,
       "doctorId": doctorId
     };
     axios
@@ -116,7 +119,6 @@ function Specialists() {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${my_token}`,
-        "departmentId": location.state.data.id,
       },
     };
     
@@ -140,13 +142,13 @@ function Specialists() {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${my_token}`,
-        "departmentId": location.state.data.id,
+        "departmentId": location.state?.data?.id,
       },
     };
 
     try {
       const response = await axios.get(
-        `http://www.ubuzima.rw/rec/medical/doctors/department-id`,
+        location.state?.data ? `http://www.ubuzima.rw/rec/medical/doctors/department-id`:`http://www.ubuzima.rw/rec/medical/doctors`,
         config
       );
       console.log(response.data)
@@ -167,7 +169,7 @@ function Specialists() {
         <Col lg={12}>
           <Card>
             <Card.Header className="d-flex justify-content-between align-items-center">
-              <Card.Title>Doctors in {location.state.data.department}</Card.Title>
+              <Card.Title>Doctors {location.state?.data && `in ${location.state?.data?.department}`}</Card.Title>
               <Row>
                 <Col>
                   <input
@@ -177,11 +179,13 @@ function Specialists() {
                     onChange={(e) => searchUser(e.target.value)}
                   />
                 </Col>
-                <Col>
-                  <Button variant="primary" onClick={handleShow}>
-                    Add New Doctor
-                  </Button>
-                </Col>
+                {location.state?.data&&(
+                  <Col>
+                    <Button variant="primary" onClick={handleShow}>
+                      Add New Doctor
+                    </Button>
+                  </Col>
+                )}
               </Row>
             </Card.Header>
             <Card.Body>

@@ -468,14 +468,6 @@ function Schedules() {
               <Card.Title>{location.state?.data?.doctor?.firstName}'s Schedules</Card.Title>
               <Row>
                 <Col>
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="form-control"
-                    onChange={(e) => searchUser(e.target.value)}
-                  />
-                </Col>
-                <Col>
                   <Button variant="primary" onClick={handleShow}>
                     Add new Schedule
                   </Button>

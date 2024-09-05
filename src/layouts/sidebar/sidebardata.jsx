@@ -87,6 +87,21 @@ const MenuItems = [
   },
 
   {
+    icon: <i class="side-menu__icon fa fa-clock-o"></i>,
+    type: "sub",
+    Name: "",
+    active: false,
+    selected: false,
+    title: "Manage schedules",
+    class: "",
+    color: "",
+    badgetxt: "",
+    path: `${import.meta.env.BASE_URL}specialists`,
+    roles: ['Doctor','Receptionist'],
+    condition: false,
+  },
+
+  {
     icon: <i class="side-menu__icon fa fa-file"></i>,
     type: "sub",
     Name: "",

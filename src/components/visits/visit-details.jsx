@@ -931,22 +931,22 @@ export default function VisitDetails() {
     if (topUpAmount > 0) {
       paymentDto.topUpAmount = topUpAmount;
     }
-    console.log(paymentDto);
-    // try {
-    //   const response = await axios.post(
-    //     `http://www.ubuzima.rw/rec/invoice/pay`,
-    //     JSON.stringify(paymentDto),
-    //     config
-    //   );
-    //   setShowModal(false);
-    //   if (response.data.status) {
-    //     alert("Paid successfully!");
-    //     fetchInvoice();
-    //   }
-    // } catch (error) {
-    //   setShowModal(false);
-    //   console.error(error);
-    // }
+    // console.log(paymentDto);
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/invoice/pay`,
+        JSON.stringify(paymentDto),
+        config
+      );
+      setShowModal(false);
+      if (response.data.status) {
+        alert("Paid successfully!");
+        fetchInvoice();
+      }
+    } catch (error) {
+      setShowModal(false);
+      console.error(error);
+    }
   };
 
   const handleCheckboxChange = (event) => {
@@ -2023,7 +2023,19 @@ export default function VisitDetails() {
                       options={paymentMethods}
                       placeholder="Select method"
                       classNamePrefix="Select2"
-                      onChange={(e) => setPaymentMethod(e.value)}
+                      onChange={(e) => {
+                        setPaymentMethod(e.value)
+                        if(e.value === "INSURANCE_AND_TOP_UP"){
+                          let newValue = parseFloat(0, 10);
+                        // Ensure the value is between 0 and 20
+                        newValue = Math.min(Math.max(newValue, 0), invoice.insurerAmount);
+
+                        setInsuranceAmount(newValue);
+                        setTopUpAmount(
+                          (invoice?.insurerAmount - newValue).toFixed(1)
+                        );
+                        }
+                      }}
                     />
                   </Form.Group>
                 </Form>
@@ -2048,7 +2060,7 @@ export default function VisitDetails() {
 
                           setInsuranceAmount(newValue);
                           setTopUpAmount(
-                            (invoice?.insurerAmount - newValue).toFixed(1)
+                            (invoice?.totalAmount - newValue).toFixed(1)
                           );
                           }
                         }}
@@ -2061,7 +2073,7 @@ export default function VisitDetails() {
                       <Form.Label>Copay</Form.Label>
                       <Form.Control
                         type="number"
-                        value={invoice?.patientAmount}
+                        value={insuranceAmount*10/100}
                         className="form-control"
                         name="example-text-input"
                         // placeholder="names"
@@ -2087,7 +2099,7 @@ export default function VisitDetails() {
                       <Form.Label>Amount to pay</Form.Label>
                       <Form.Control
                         type="number"
-                        value={parseFloat(invoice?.patientAmount) + parseFloat(topUpAmount)}
+                        value={parseFloat(invoice?.totalAmount) - parseFloat(insuranceAmount) + parseFloat(insuranceAmount*10/100) }
                         className="form-control"
                         name="example-text-input"
                         // placeholder="names"

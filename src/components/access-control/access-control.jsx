@@ -285,7 +285,7 @@ function AccessControl() {
             </Row>
           </Modal.Body>
           <Modal.Footer>
-            <Button type="submit" variant="primary" onClick={handleSubmit}>
+            <Button type="submit" variant="primary">
               Submit
             </Button>
             <Button variant="secondary" onClick={handleClose}>

@@ -147,16 +147,6 @@ function Patients() {
       selector: (row) => [row.names],
       sortable: true,
     },
-    // {
-    //   name: "Insurance",
-    //   selector: (row) => [row.insuranceId],
-    //   sortable: true,
-    // },
-    {
-      name: " Email",
-      selector: (row) => [row.email],
-      sortable: true,
-    },
     {
       name: "Phone Number",
       selector: (row) => [row.phoneNumber],
@@ -224,24 +214,6 @@ function Patients() {
       ),
     },
 
-    {
-      name: " Add Insurance",
-      cell: (row) => (
-        <div
-          onClick={() => {
-            setShow6(true);
-            setAction("addInsurance")
-            // fetchPatientsInsuranceID(row.id,true);
-            setPatientId(row.id);
-            
-          }}
-          style={{ color: "#2D6CC5", cursor: "pointer" }}
-        >
-          Add Insurance
-        </div>
-      ),
-    },
-
   ];
 
 
@@ -250,11 +222,6 @@ function Patients() {
     {
       name: "Patient's names",
       selector: (row) => [row.patient?.names],
-      sortable: true,
-    },
-    {
-      name: "Patient's phone ",
-      selector: (row) => [row.patient?.phoneNumber],
       sortable: true,
     },
     {
@@ -270,6 +237,11 @@ function Patients() {
     {
       name: "Insurance",
       selector: (row) => [row.patientInsurance?.insuranceName || '-'],
+      sortable: true,
+    },
+    {
+      name: "Date",
+      selector: (row) => [row.createdAt?.slice(0,10) || '-'],
       sortable: true,
     },
     {
@@ -1037,13 +1009,36 @@ function Patients() {
 
 
       <Modal show={show} onHide={handleClose}>
-        <Form>
+        <Form 
+        onSubmit={(e)=>{
+          if(action==="update"){
+            updatePatient(e)
+          }else{
+            handleSubmit(e)
+          }
+        }}
+        >
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>
             <Col lg={12} className="col-md-">
               <Card className="custom-card">
-                <Card.Header>
+                <Card.Header style={{justifyContent:'space-between'}}>
                   <Card.Title>{action==='update'?"Update":"Create new"} patient</Card.Title>
+                  {action==='update'&&(
+                    <Card.Title>
+                    <p 
+                      style={{cursor:'pointer',color:'#219ebc'}}
+                      onClick={()=>{
+                        setShow6(true);
+                        setShow(false);
+                        setAction("addInsurance")
+                        // fetchPatientsInsuranceID(row.id,true);
+                      }}
+                    >
+                      Add Insurance
+                    </p>
+                  </Card.Title>
+                  )}
                 </Card.Header>
                 <Card.Body>
                   <div className="d-flex flex-column">
@@ -1407,13 +1402,6 @@ function Patients() {
                       className="btn ripple btn-primary my-3"
                       style={{ width: "40%", marginLeft: "320px" }}
                       variant="primary"
-                      onClick={(e)=>{
-                        if(action==="update"){
-                          updatePatient(e)
-                        }else{
-                          handleSubmit(e)
-                        }
-                      }}
                     >
                       Submit
                     </Button>
@@ -1694,7 +1682,7 @@ function Patients() {
 
 
 
-      <Modal show={show6} onHide={handleClose}>
+      <Modal show={show6} onHide={()=>setShow6(false)}>
         <Form>
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>

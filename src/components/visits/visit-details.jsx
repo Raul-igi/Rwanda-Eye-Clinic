@@ -92,11 +92,6 @@ export default function VisitDetails() {
       sortable: true,
     },
     {
-      name: "Patient's phone ",
-      selector: (row) => [row.patient?.phoneNumber],
-      sortable: true,
-    },
-    {
       name: "Doctor's names",
       selector: (row) => [`${row.doctor?.firstName} ${row.doctor?.lastName}`],
       sortable: true,
@@ -106,7 +101,11 @@ export default function VisitDetails() {
       selector: (row) => [row.doctor?.phoneNumber],
       sortable: true,
     },
-
+    {
+      name: "Date",
+      selector: (row) => [row.createdAt?.slice(0,10) || '-'],
+      sortable: true,
+    },
     {
       name: "Visit Type",
       selector: (row) => [row.visitType],
@@ -715,7 +714,7 @@ export default function VisitDetails() {
         `http://www.ubuzima.rw/rec/visit/id`,
         config
       );
-      setMedicalActs(response.data.response.medicalAct.map((el) => el.id));
+      setMedicalActs(response.data.response.medicalAct.map((el) => ({value:el.id,label:el.name})));
     } catch (error) {
       console.error(error);
     }
@@ -853,19 +852,19 @@ export default function VisitDetails() {
   const addVisualAcuity = async () => {
     if (
       !(
-        visualAcuity[0].sc &&
-        visualAcuity[0].ac &&
-        visualAcuity[0].ph &&
-        visualAcuity[1].sc &&
-        visualAcuity[1].ac &&
-        visualAcuity[1].ph &&
-        currentGlasses[0].sphere &&
-        currentGlasses[0].cylinder &&
-        currentGlasses[0].axis &&
-        currentGlasses[0].addition &&
-        currentGlasses[1].sphere &&
-        currentGlasses[1].cylinder &&
-        currentGlasses[1].axis &&
+        visualAcuity[0].sc ||
+        visualAcuity[0].ac ||
+        visualAcuity[0].ph ||
+        visualAcuity[1].sc ||
+        visualAcuity[1].ac ||
+        visualAcuity[1].ph ||
+        currentGlasses[0].sphere ||
+        currentGlasses[0].cylinder ||
+        currentGlasses[0].axis ||
+        currentGlasses[0].addition ||
+        currentGlasses[1].sphere ||
+        currentGlasses[1].cylinder ||
+        currentGlasses[1].axis ||
         currentGlasses[1].addition
       )
     ) {
@@ -882,7 +881,7 @@ export default function VisitDetails() {
         patientVisitId: location.state?.data?.visitId,
         scRightEye: visualAcuity[0].sc,
         scLeftEye: visualAcuity[1].sc,
-        acRightEye: visualAcuity[0].sc,
+        acRightEye: visualAcuity[0].ac,
         acLeftEye: visualAcuity[1].ac,
         phRightEye: visualAcuity[0].ph,
         phLeftEye: visualAcuity[1].ph,
@@ -925,8 +924,9 @@ export default function VisitDetails() {
     var paymentDto = {
       invoiceNumber: invoice.invoiceNumber,
       paymentMethod: paymentMethod? paymentMethod:"INSURANCE",
-      amount: parseFloat(invoice?.totalAmount) - parseFloat(insuranceAmount) + parseFloat(insuranceAmount*10/100),
+      amount: parseFloat(invoice?.totalAmount) - parseFloat(insuranceAmount) + parseFloat(insuranceAmount*parseInt(invoice?.ticket)/100),
       paymentMode: paymentMode,
+      insuranceAmount: insuranceAmount
     };
     if (topUpAmount > 0) {
       paymentDto.topUpAmount = topUpAmount;
@@ -989,7 +989,7 @@ export default function VisitDetails() {
 
   // Effect to handle changes to medicalActs state
   useEffect(() => {
-    debouncedFunction(medicalActs);
+    debouncedFunction(medicalActs.map(act=>act.value));
 
     // Cleanup the debounce on unmount
     return () => debouncedFunction.cancel();
@@ -999,8 +999,9 @@ export default function VisitDetails() {
     const roles_ = localStorage.getItem("role");
     const userRoles = JSON.parse(roles_);
     if (
-      userRoles.includes("Nurse") &&
-      location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+      (userRoles.includes("Nurse") &&
+      location.state?.data?.visitStatus === "TRANSFER_TO_NURSE") ||
+      (userRoles.includes("Doctor") &&  location.state?.data?.visitStatus === "TRANSFER_TO_DOCTOR")
     ) {
       let my_token = localStorage.getItem("token");
       const config = {
@@ -1972,25 +1973,18 @@ export default function VisitDetails() {
 
             {/* {toggle ===1? "tab2" :"tab1"} */}
             {tab === "tab2" && (
-              <Col md={6} xl={6} style={{ marginTop: 20 }}>
+              <Col md={12} xl={12} style={{ marginTop: 20,height:400 }}>
                 <h1>Medical Acts</h1>
-                {acts.length > 0 ? (
-                  acts.map((act) => (
-                    <Fragment key={act.id}>
-                      <input
-                        type="checkbox"
-                        style={{ marginBottom: 15 }}
-                        value={act.value}
-                        checked={medicalActs.includes(act.value)}
-                        onChange={handleCheckboxChange}
-                      />{" "}
-                      {act.label}
-                      <br />
-                    </Fragment>
-                  ))
-                ) : (
-                  <p>No medical acts</p>
-                )}
+                <Select
+                    isMulti
+                    className="basic-single"
+                    options={acts}
+                    value={medicalActs}
+                    onChange={(e) => setMedicalActs(e)}
+                    classNamePrefix="Select2"
+                    placeholder="Select..."
+                    required
+                  />
               </Col>
             )}
           </>
@@ -2034,6 +2028,9 @@ export default function VisitDetails() {
                         setTopUpAmount(
                           (invoice?.insurerAmount - newValue).toFixed(1)
                         );
+                        }else if(e.value === "INSURANCE"){
+                          setInsuranceAmount(invoice?.totalAmount)
+                          setTopUpAmount(0)
                         }
                       }}
                     />
@@ -2048,7 +2045,7 @@ export default function VisitDetails() {
                       <Form.Label>Insurance Amount</Form.Label>
                       <Form.Control
                         type="number"
-                        value={paymentMethod === "INSURANCE"?invoice?.insurerAmount:insuranceAmount}
+                        value={insuranceAmount}
                         className="form-control"
                         name="example-text-input"
                         // placeholder="names"
@@ -2073,7 +2070,7 @@ export default function VisitDetails() {
                       <Form.Label>Copay</Form.Label>
                       <Form.Control
                         type="number"
-                        value={insuranceAmount*10/100}
+                        value={insuranceAmount*parseInt(invoice?.ticket)/100}
                         className="form-control"
                         name="example-text-input"
                         // placeholder="names"
@@ -2081,7 +2078,8 @@ export default function VisitDetails() {
                       />
                     </Form.Group>
                   </Col>
-                  <Col xl={12}>
+                  {topUpAmount>0&&(
+                    <Col xl={12}>
                     <Form.Group className="form-group">
                       <Form.Label>Top Up Amount</Form.Label>
                       <Form.Control
@@ -2094,12 +2092,13 @@ export default function VisitDetails() {
                       />
                     </Form.Group>
                   </Col>
+                  )}
                   <Col xl={12}>
                     <Form.Group className="form-group">
                       <Form.Label>Amount to pay</Form.Label>
                       <Form.Control
                         type="number"
-                        value={parseFloat(invoice?.totalAmount) - parseFloat(insuranceAmount) + parseFloat(insuranceAmount*10/100) }
+                        value={parseFloat(invoice?.totalAmount) - parseFloat(insuranceAmount) + parseFloat(insuranceAmount*parseInt(invoice?.ticket)/100) }
                         className="form-control"
                         name="example-text-input"
                         // placeholder="names"

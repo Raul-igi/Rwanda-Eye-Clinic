@@ -22,11 +22,6 @@ const columns = [
     sortable: true,
   },
   {
-    name: "Doctor's phone",
-    selector: (row) => [row.doctor?.phoneNumber],
-    sortable: true,
-  },
-  {
     name: "Insurance",
     selector: (row) => [row.patientInsurance?.insuranceName || "-"],
     sortable: true,
@@ -50,6 +45,7 @@ const columns = [
           data: {
             patient: row.patient,
             doctor: `${row.doctor.firstName} ${row.doctor.lastName}`,
+            insurance: row.patientInsurance,
             createdAt: row.createdAt,
             visitId: row.id,
             visitStatus: row.status,
@@ -371,7 +367,7 @@ function Visits() {
               >
                 <div
                   class="tab"
-                  onClick={()=>{setTab('tab1');fetchVisits()}}
+                  onClick={()=>{setVisits([]);setTab('tab1');fetchVisits()}}
                   style={{
                     padding: "10px 20px",
                     cursor: "pointer",
@@ -388,7 +384,7 @@ function Visits() {
 
                 <div
                   class="tab"
-                  onClick={()=>{setTab('tab2');fetchVisitsDiagnostics()}}
+                  onClick={()=>{setVisits([]);setTab('tab2');fetchVisitsDiagnostics()}}
                   style={{
                     padding: "10px 20px",
                     cursor: "pointer",

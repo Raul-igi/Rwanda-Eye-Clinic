@@ -1155,7 +1155,7 @@ function Patients() {
                         <Form.Group className="form-group">
                           <Form.Label>Contact Person</Form.Label>
                           <Form.Control
-                            type="email"
+                            type="text"
                             className="form-control"
                             name="example-text-input"
                             value={contactPerson}

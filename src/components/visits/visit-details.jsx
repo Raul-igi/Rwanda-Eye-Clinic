@@ -1523,6 +1523,10 @@ export default function VisitDetails() {
                   <Card.Title style={{ fontSize: "15px" }}>
                     Doctor: Dr {location.state?.data?.doctor}
                   </Card.Title>
+
+                  <Card.Title style={{ fontSize: "15px" }}>
+                    Insurance: {location.state?.data?.insurance?.insuranceName}
+                  </Card.Title>
                 </Card.Body>
               </Card>
             </Col>
@@ -1558,6 +1562,10 @@ export default function VisitDetails() {
                     <Card.Title style={{ fontSize: "15px" }}>
                       Doctor: Dr {location.state?.data?.doctor}
                     </Card.Title>
+
+                    <Card.Title style={{ fontSize: "15px" }}>
+                    Insurance: {location.state?.data?.insurance?.insuranceName}
+                  </Card.Title>
                   </Card.Body>
                 </Card>
               </Col>

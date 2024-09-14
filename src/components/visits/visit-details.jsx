@@ -1150,13 +1150,13 @@ export default function VisitDetails() {
   const addRefraction = async () => {
     if (
       !(
-        refraction[0].sphere &&
-        refraction[0].cylinder &&
-        refraction[0].axis &&
-        refraction[0].addition &&
-        refraction[1].sphere &&
-        refraction[1].cylinder &&
-        refraction[1].axis &&
+        refraction[0].sphere ||
+        refraction[0].cylinder ||
+        refraction[0].axis ||
+        refraction[0].addition ||
+        refraction[1].sphere ||
+        refraction[1].cylinder ||
+        refraction[1].axis ||
         refraction[1].addition
       )
     ) {
@@ -1207,13 +1207,13 @@ export default function VisitDetails() {
   const addOptRefraction = async () => {
     if (
       !(
-        optRefraction[0].sphere &&
-        optRefraction[0].cylinder &&
-        optRefraction[0].axis &&
-        optRefraction[0].addition &&
-        optRefraction[1].sphere &&
-        optRefraction[1].cylinder &&
-        optRefraction[1].axis &&
+        optRefraction[0].sphere ||
+        optRefraction[0].cylinder ||
+        optRefraction[0].axis ||
+        optRefraction[0].addition ||
+        optRefraction[1].sphere ||
+        optRefraction[1].cylinder ||
+        optRefraction[1].axis ||
         optRefraction[1].addition
       )
     ) {
@@ -2007,7 +2007,7 @@ export default function VisitDetails() {
       <Modal show={showModal} onHide={handleClose8}>
         <Modal.Header closeButton>
           <Modal.Title>
-            Pay Invoice
+            Pay Invoice | Total Amount: {invoice?.totalAmount} Rwf
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

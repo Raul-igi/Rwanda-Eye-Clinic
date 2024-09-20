@@ -83,12 +83,12 @@ const columns3 = [
   },
   {
     name: "Insurance Amount",
-    selector: (row) => [row.insuranceAmount],
+    selector: (row) => [Math.round(row.insuranceAmount)],
     sortable: true,
   },
   {
     name: "Patient Amount",
-    selector: (row) => [row.patientAmount],
+    selector: (row) => [Math.round(row.patientAmount)],
     sortable: true,
   },
   // {
@@ -98,12 +98,12 @@ const columns3 = [
   // },
   {
     name: "Top Up Amount",
-    selector: (row) => [row.topUpAmount],
+    selector: (row) => [Math.round(row.topUpAmount)],
     sortable: true,
   },
   {
     name: "Paid Amount",
-    selector: (row) => [row.patientAmount],
+    selector: (row) => [Math.round(row.patientAmount)],
     sortable: true,
   },
 ];
@@ -315,7 +315,7 @@ import DataTable from "react-data-table-component";
       try {
         const response = await axios.get(url, config);
         const paymentTotals = {
-          Cash: 0,
+          CASH: 0,
           MOMO: 0,
           POS: 0,
         };
@@ -336,7 +336,7 @@ import DataTable from "react-data-table-component";
           setTotalPaidAmount(totalPaidAmount)
           setTotalTopUpAmount(totalTopUpAmount)
 
-          const paymentMethod = el.paymentMode || 'Cash'; // Assuming 'Cash' as the default if paymentMethod is null
+          const paymentMethod = el.paymentMode || 'CASH'; // Assuming 'Cash' as the default if paymentMethod is null
           const topUpAmount = el.topUpAmount || 0;
           const totalAmount = el.amount;
 
@@ -528,15 +528,15 @@ import DataTable from "react-data-table-component";
               {reports.length>0&&(
                 <div>
                   <p style={{fontWeight:'bold'}}>
-                    Total Amount: {totalPaidAmount} Rwf
+                    Total Amount: {Math.round(totalPaidAmount)} Rwf
                   </p>
 
                   <p style={{fontWeight:'bold'}}>
-                    Total insurance amount: {totalPaidAmount-totalTopUpAmount} Rwf
+                    Total insurance amount: {Math.round(totalPaidAmount-totalTopUpAmount)} Rwf
                   </p>
 
                   <p style={{fontWeight:'bold'}}>
-                    Total top-up amount: {totalTopUpAmount} Rwf
+                    Total top-up amount: {Math.round(totalTopUpAmount)} Rwf
                   </p>
                 </div>
               )}

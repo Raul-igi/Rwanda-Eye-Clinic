@@ -246,7 +246,7 @@ function Visits() {
       .get(`http://www.ubuzima.rw/rec/patient`, config)
       .then((res) => {
         // console.log(res.data);
-        const patients = res.data.response.map((el) => {
+        const patients = res.data?.response?.patients?.map((el) => {
           return { label: el.names, value: el.id };
         }); //const that assign value to the property
         setPatients(patients);

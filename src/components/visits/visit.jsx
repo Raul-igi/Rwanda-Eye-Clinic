@@ -48,16 +48,8 @@ export default function Visit({visitId}) {
   const [patientId, setPatientId] = useState(false);
   const [totalRows, setTotalRows] = useState("");
 
-  const [tab, setTab] = useState("tab1");
   const [toggle, setToggle] = useState(1);
-  const [sphereRightEye, setSphereRightEye] = useState("");
-  const [sphereLeftEye, setSphereLeftEye] = useState("");
-  const [cylindreRightEye, setCylindreRightEye] = useState("");
-  const [cylindreLeftEye, setCylindreLeftEye] = useState("");
-  const [axeRightEye, setAxeRightEye] = useState("");
-  const [axeLeftEye, setAxeLeftEye] = useState("");
-  const [lensType, setLensType] = useState("");
-  const [dip, setDip] = useState("");
+
 
   const [refraction_,setRefraction_]= useState("")
 
@@ -71,83 +63,26 @@ export default function Visit({visitId}) {
     setToggle(id);
   }
 
-  const columns2 = [
-    {
-      name: "Patient's names",
-      selector: (row) => [row.patient?.names],
-      sortable: true,
-    },
-    {
-      name: "Patient's phone ",
-      selector: (row) => [row.patient?.phoneNumber],
-      sortable: true,
-    },
-    {
-      name: "Doctor's names",
-      selector: (row) => [`${row.doctor?.firstName} ${row.doctor?.lastName}`],
-      sortable: true,
-    },
-    {
-      name: "Doctor's phone",
-      selector: (row) => [row.doctor?.phoneNumber],
-      sortable: true,
-    },
 
-    {
-      name: "Visit Type",
-      selector: (row) => [row.visitType],
-      sortable: true,
-    },
 
-    {
-      name: "Records",
-      cell: (row) => (
-        <div
-          onClick={() => {
-            setShow6(true);
-            fetchPreviousVisits(row.id);
-            setPatientId(row.id);
-          }}
-          style={{ color: "#2D6CC5", cursor: "pointer" }}
-        >
-          Previous Visits
-        </div>
-      ),
-    },
-  ];
 
-  const [Comments, setSetComments] = useState([
-    {
-      name: "RIght Eye",
-      right: "",
-      left: "",
-    },
-  ]);
 
   const [refraction, setRefraction] = useState([
     {
-      name: "RIght Eye",
-      right: "",
-      left: "",
+      name: "Right Eye",
+      sphere: "",
+      cylinder: "",
+      axis: "",
+      addition: "",
     },
 
     {
       name: "Left Eye",
-      right: "",
-      left: "",
+      sphere: "",
+      cylinder: "",
+      axis: "",
+      addition: "",
     },
-
-    // {
-    //   name: "Lens Type",
-    //   select: true,
-    //   right: "",
-    // },
-
-    // {
-    //   name: "DIP",
-    //   select: true,
-    //   right: "",
-    // },
   ]);
 
   const [savedRefraction, setSavedRefraction] = useState("");
@@ -292,23 +227,23 @@ export default function Visit({visitId}) {
     {
       name: "Sphere",
       sortable: true,
-      selector: (row) => [row.right],
+      selector: (row) => [row.sphere],
     },
     {
       name: "Cylinder",
       sortable: true,
-      selector: (row) => [row.left],
+      selector: (row) => [row.cylinder],
     },
     {
       name: "Axis",
       sortable: true,
-      selector: (row) => [row.left],
+      selector: (row) => [row.axis],
     },
 
     {
       name: "Addition",
       sortable: true,
-      selector: (row) => [row.left],
+      selector: (row) => [row.addition],
     },
   ];
 
@@ -788,33 +723,18 @@ export default function Visit({visitId}) {
         setIsReSaved(true);
         const refraction_ = [
           {
-            name: "Sphere Right Eye",
-            right: response.data.response[0].sphereRightEye,
-            left: response.data.response[0].sphereLeftEye,
+            name: "Right Eye",
+            sphere: response.data.response[0].sphereRightEye || "",
+            cylinder: response.data.response[0].cylindreRightEye || "",
+            axis: response.data.response[0].axeRightEye || "",
+            addition: response.data.response[0].additionRightEye || "",
           },
-
           {
-            name: "Cylindre Right Eye",
-            right: response.data.response[0].cylindreRightEye,
-            left: response.data.response[0].cylindreLeftEye,
-          },
-
-          {
-            name: "Axe Right Eye",
-            right: response.data.response[0].axeRightEye,
-            left: response.data.response[0].axeLeftEye,
-          },
-
-          {
-            name: "Lens Type",
-            select: true,
-            right: response.data.response[0].lensType,
-          },
-
-          {
-            name: "DIP",
-            select: true,
-            right: response.data.response[0].dip,
+            name: "Left Eye",
+            sphere: response.data.response[0].sphereLeftEye || "",
+            cylinder: response.data.response[0].cylindreLeftEye || "",
+            axis: response.data.response[0].axeLeftEye || "",
+            addition: response.data.response[0].additionLeftEye || "",
           },
         ];
         setRefraction(refraction_);

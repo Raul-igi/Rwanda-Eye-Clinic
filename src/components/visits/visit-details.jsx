@@ -122,7 +122,7 @@ export default function VisitDetails() {
           }}
           style={{ color: "#2D6CC5", cursor: "pointer" }}
         >
-          Previous Visits
+          Records
         </div>
       ),
     },
@@ -868,7 +868,7 @@ export default function VisitDetails() {
         currentGlasses[1].addition
       )
     ) {
-      alert("Fill all the visual acuity and current glasses fields!");
+      alert("Fill in some fields!");
     } else {
       let my_token = localStorage.getItem("token");
       const config = {

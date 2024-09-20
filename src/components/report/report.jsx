@@ -17,18 +17,7 @@ import {
 import "./report.css";
 
 
-const columns2 = [
-  {
-    name: "Payment method",
-    selector: (row) => [row.name],
-    sortable: true,
-  },
-  {
-    name: "Total amount",
-    selector: (row) => [row.total],
-    sortable: true,
-  }
-]
+
 
 const columns = [
   {
@@ -66,29 +55,62 @@ const columns = [
     selector: (row) => [row.topUpAmount],
     sortable: true,
   },
+];
+
+const columns2 = [
+  {
+    name: "Payment method",
+    selector: (row) => [row.name],
+    sortable: true,
+  },
+  {
+    name: "Total amount",
+    selector: (row) => [row.total],
+    sortable: true,
+  }
+]
+
+const columns3 = [
+  {
+    name: "Insurance",
+    selector: (row) => [row.insurance],
+    sortable: true,
+  },
+  {
+    name: "No Of Cases",
+    selector: (row) => [row.numOfCases],
+    sortable: true,
+  },
+  {
+    name: "Insurance Amount",
+    selector: (row) => [row.insuranceAmount],
+    sortable: true,
+  },
+  {
+    name: "Patient Amount",
+    selector: (row) => [row.patientAmount],
+    sortable: true,
+  },
   // {
-  //   name: "Actions",
-  //   cell: (row) => (
-  //     <Link
-  //       to="/visit-details"
-  //       state={{
-  //         data:{
-  //           patient:row.patient,
-  //           doctor:`${row.doctor.firstName} ${row.doctor.lastName}`,
-  //           createdAt:row.createdAt,
-  //           visitId:row.id,
-  //           visitStatus:row.status
-  //         }
-  //       }}
-  //     >
-  //       View Details
-  //     </Link>
-  //   ),
+  //   name: "Payment Date",
+  //   selector: (row) => [row.paymentDate],
+  //   sortable: true,
   // },
+  {
+    name: "Top Up Amount",
+    selector: (row) => [row.topUpAmount],
+    sortable: true,
+  },
+  {
+    name: "Paid Amount",
+    selector: (row) => [row.patientAmount],
+    sortable: true,
+  },
 ];
 
 import DataTable from "react-data-table-component";
-function Report() {
+  function Report() {
+
   const formatDate = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
@@ -96,6 +118,32 @@ function Report() {
 
     return `${year}-${month}-${day}`;
   };
+
+  function groupByInsurance(data) {
+    return data.reduce((acc, current) => {
+      const insuranceName = current.insurance.name; // Access the insurance name
+      let existingInsurance = acc.find(item => item.insurance === insuranceName);
+
+      if (existingInsurance) {
+        existingInsurance.numOfCases += 1;
+        existingInsurance.totalAmount += current.totalAmount || 0;
+        existingInsurance.insuranceAmount += current.insuranceAmount || 0;
+        existingInsurance.patientAmount += current.amount || 0; // Patient amount is from 'amount'
+        existingInsurance.topUpAmount += current.topUpAmount || 0;
+      } else {
+        acc.push({
+          insurance: insuranceName,
+          numOfCases: 1,
+          totalAmount: current.totalAmount || 0,
+          insuranceAmount: current.insuranceAmount || 0,
+          patientAmount: current.amount || 0, // Patient amount is from 'amount'
+          topUpAmount: current.topUpAmount || 0,
+        });
+      }
+
+      return acc;
+    }, []);
+  }
 
   //useState must be declared between the function and  return   //creating useState is the first step
   const [loading, setLoading] = useState(false);
@@ -117,44 +165,7 @@ function Report() {
 
   const [show, setShow] = useState(false);
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
 
-  const handleSubmit = async (e) => {
-    //handle submit is the second step
-    e.preventDefault();
-    setLoading(true);
-    const postObj = JSON.stringify({
-      patientId: patientId, // modify body properties
-      patientInsuranceId: patientInsuranceId || null,
-      visitType: visitType,
-      caseType: caseType,
-      doctorId: doctorId,
-    });
-    console.log(postObj);
-    let my_token = await localStorage.getItem("token");
-    axios.defaults.headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${my_token}`,
-    };
-    axios
-      .post(`http://www.ubuzima.rw/rec/visit`, postObj) //declare api Path
-      .then((res) => {
-        console.log(res.data);
-        setShow(false);
-        if (res.data.status === true) {
-          alert("Visit added successfully");
-          fetchVisits();
-        } else {
-          alert("something went wrong");
-        }
-      })
-      .catch((error) => {
-        setLoading(false);
-        setShow(false);
-        console.log(error.message);
-      });
-  };
 
   const fetchAllDoctors = async () => {
     let my_token = await localStorage.getItem("token");
@@ -223,20 +234,20 @@ function Report() {
         `http://www.ubuzima.rw/rec/report/date`,
         config
       );
+        
+      // const reports_ = response.data.response.map((el) => {
+      //   return {
+      //     doctorNames: `${el.doctor?.firstName} ${el.doctor?.lastName}`,
+      //     doctorPhone: el.doctor?.phoneNumber,
+      //     paymentMethod: el.paymentMethod,
+      //     paidAmaount: el.amount,
+      //     paymentDate: el.paymentDate,
+      //     insurance: el.insurance.name,
+      //     topUpAmount: el.topUpAmount || 0,
+      //   };
+      // });
 
-      const reports_ = response.data.response.map((el) => {
-        return {
-          doctorNames: `${el.doctor?.firstName} ${el.doctor?.lastName}`,
-          doctorPhone: el.doctor?.phoneNumber,
-          paymentMethod: el.paymentMethod,
-          paidAmaount: el.amount,
-          paymentDate: el.paymentDate,
-          insurance: el.insurance.name,
-          topUpAmount: el.topUpAmount || 0,
-        };
-      });
-
-      setReports(reports_);
+      setReports(groupByInsurance(response.data.response));
     } catch (error) {
       console.error("Error fetching payrolls:", error);
     }
@@ -311,6 +322,8 @@ function Report() {
 
         let totalPaidAmount = 0;
         let totalTopUpAmount = 0;
+
+        console.log(JSON.stringify(response.data.response))
         
         const reports_ = response.data.response.map((el) => {
 
@@ -325,10 +338,10 @@ function Report() {
 
           const paymentMethod = el.paymentMode || 'Cash'; // Assuming 'Cash' as the default if paymentMethod is null
           const topUpAmount = el.topUpAmount || 0;
-          const totalAmount = topUpAmount;
+          const totalAmount = el.amount;
 
           if (paymentTotals[paymentMethod] !== undefined) {
-            paymentTotals[paymentMethod] += totalAmount;
+            paymentTotals[paymentMethod] = Math.round(paymentTotals[paymentMethod] + totalAmount);
           } else {
             paymentTotals[paymentMethod] = totalAmount;
           }
@@ -343,14 +356,17 @@ function Report() {
           };
         });
 
-        setReports(reports_);
+        if ((rep || reportType)?.value !== "INSURANCE"){
+          setReports(groupByInsurance(response.data.response))
+        }else{
+          setReports(reports_);
+        }
         
         const paymentTotalsArray = Object.entries(paymentTotals).map(([name, total]) => ({
           name,
           total,
         }));
 
-        console.log(paymentTotalsArray)
 
         setPaymentTotals(paymentTotalsArray)
       } catch (error) {
@@ -384,6 +400,7 @@ function Report() {
                       ]}
                       onChange={(e) => {
                         setReportType(e);
+                        setReports([])
                         setEndDate("");
                         setStartDate("");
                         setDoctor("");
@@ -523,7 +540,9 @@ function Report() {
                   </p>
                 </div>
               )}
-              <DataTable columns={columns} data={reports} pagination />
+              {reportType?.value === "INSURANCE" ? (
+                <DataTable columns={columns} data={reports} pagination />
+              ) : (<DataTable columns={columns3} data={reports} pagination />) }
             </Card.Body>
 
             {reports.length>0&&(

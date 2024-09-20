@@ -11,6 +11,7 @@ import Select from "react-select";
 import axios from "axios";
 import {membershipTypes} from "../../data/elementsdata";
 import DataTable from "react-data-table-component";
+import Visit from "../visits/visit";
 
 import { ECaseType, EVisitType } from "../../data/elementsdata";
 import { Link } from "react-router-dom";
@@ -63,6 +64,7 @@ function Patients() {
   const [show4, setShow4] = useState(false);
   const [show5, setShow5] = useState(false);
   const [show6,setShow6]  =useState(false);
+  const [show7,setShow7]  =useState(false);
   const [selectedAssignees, setSelectedAssignees] = useState([]);
 
   const [totalRows, setTotalRows] = useState(0);
@@ -81,6 +83,8 @@ function Patients() {
   const [scheduleDayId,setscheduleDayId] =useState("");
 
   const [action,setAction] =useState("");
+
+  const [visitId,setVisitId] =useState("");
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedTerm, setDebouncedTerm] = useState('');
@@ -257,20 +261,9 @@ function Patients() {
     {
       name: "Actions",
       cell: (row) => (
-        <Link
-          to="/visit-details"
-          state={{
-            data:{
-              patient:row.patient,
-              doctor:`${row.doctor.firstName} ${row.doctor.lastName}`,
-              createdAt:row.createdAt,
-              visitId:row.id,
-              visitStatus:row.status
-            }
-          }}
-        >
+        <div style={{cursor:'pointer',color:'blue'}} onClick={()=>{setShow3(false);setShow7(true);setVisitId(row.id)}}>
           View Details
-        </Link>
+        </div>
       ),
     },
   ];
@@ -867,7 +860,7 @@ function Patients() {
 
 
 
-  const fetchPreviousVisits = async (id) => {
+  const fetchPreviousVisits = async (id,cPage=null) => {
     setPreviousVisits_([]);
       setPreviousVisits([]);
     let my_token = localStorage.getItem("token");
@@ -876,7 +869,7 @@ function Patients() {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${my_token}`,
         "size":10,
-        "page":currentPage,
+        "page":cPage  || currentPage,
         patientId:id
       },
     };
@@ -1517,7 +1510,7 @@ function Patients() {
           </Modal.Header>
           <Card.Body>
               <Card.Body>
-                <DataTable columns={columns2} data={previousVisits} paginationTotalRows={totalRows?totalRows:previousVisits.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]} onChangePage={page=>setCurrentPage(page)} pagination paginationServer/>
+                <DataTable columns={columns2} data={previousVisits} paginationTotalRows={totalRows?totalRows:previousVisits.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]} onChangePage={page=>{fetchPreviousVisits(patientId,page);setCurrentPage(page)}} pagination paginationServer/>
               </Card.Body>
             </Card.Body>
           <Modal.Footer>
@@ -1827,6 +1820,11 @@ function Patients() {
             </Col>
           </Modal.Body>
         </Form>
+      </Modal>
+
+      <Modal show={show7} onHide={() => setShow7(false)}>
+        <Modal.Header closeButton></Modal.Header>
+        <Modal.Body>{visitId && <Visit visitId={visitId} />}</Modal.Body>
       </Modal>
 
 

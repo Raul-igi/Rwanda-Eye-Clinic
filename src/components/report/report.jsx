@@ -162,6 +162,7 @@ import DataTable from "react-data-table-component";
   const [doctor, setDoctor] = useState("");
   const [totalPaidAmount, setTotalPaidAmount] = useState(0);
   const [totalTopUpAmount, setTotalTopUpAmount] = useState(0);
+  const [totalInsuranceAmount, setTotalInsuranceAmount] = useState(0);
 
   const [show, setShow] = useState(false);
 
@@ -234,20 +235,51 @@ import DataTable from "react-data-table-component";
         `http://www.ubuzima.rw/rec/report/date`,
         config
       );
+
+      var paymentTotals = {
+        CASH: 0,
+        MOMO: 0,
+        POS: 0,
+      };
+
+      let totalPaidAmount = 0;
+      let totalTopUpAmount = 0;
+      let totalInsuranceAmount = 0;
         
-      // const reports_ = response.data.response.map((el) => {
-      //   return {
-      //     doctorNames: `${el.doctor?.firstName} ${el.doctor?.lastName}`,
-      //     doctorPhone: el.doctor?.phoneNumber,
-      //     paymentMethod: el.paymentMethod,
-      //     paidAmaount: el.amount,
-      //     paymentDate: el.paymentDate,
-      //     insurance: el.insurance.name,
-      //     topUpAmount: el.topUpAmount || 0,
-      //   };
-      // });
+      response.data.response.map((el) => {
+
+        var paidAmount_ = parseFloat(el.amount) || 0;
+        var topUpAmount_ = parseFloat(el.topUpAmount) || 0;
+        var insuranceAmount_ = parseFloat(el.insuranceAmount) || 0;
+
+        totalPaidAmount += paidAmount_;
+        totalTopUpAmount += topUpAmount_;
+        totalInsuranceAmount += insuranceAmount_;
+        
+        setTotalPaidAmount(totalPaidAmount)
+        setTotalTopUpAmount(totalTopUpAmount)
+        setTotalInsuranceAmount(totalInsuranceAmount)
+
+        const paymentMethod = el.paymentMode || 'CASH'; // Assuming 'Cash' as the default if paymentMethod is null
+        const topUpAmount = el.topUpAmount || 0;
+        const totalAmount = el.amount;
+
+        if (paymentTotals[paymentMethod] !== undefined) {
+          paymentTotals[paymentMethod] = Math.round(paymentTotals[paymentMethod] + totalAmount);
+        } else {
+          paymentTotals[paymentMethod] = totalAmount;
+        }
+      });
 
       setReports(groupByInsurance(response.data.response));
+
+      const paymentTotalsArray = Object.entries(paymentTotals).map(([name, total]) => ({
+        name,
+        total,
+      }));
+
+
+      setPaymentTotals(paymentTotalsArray)
     } catch (error) {
       console.error("Error fetching payrolls:", error);
     }
@@ -322,6 +354,7 @@ import DataTable from "react-data-table-component";
 
         let totalPaidAmount = 0;
         let totalTopUpAmount = 0;
+        let totalInsuranceAmount = 0;
 
         console.log(JSON.stringify(response.data.response))
         
@@ -329,12 +362,15 @@ import DataTable from "react-data-table-component";
 
           const paidAmount_ = parseFloat(el.amount) || 0;
           const topUpAmount_ = parseFloat(el.topUpAmount) || 0;
+          const insuranceAmount_ = parseFloat(el.insuranceAmount) || 0;
 
           totalPaidAmount += paidAmount_;
           totalTopUpAmount += topUpAmount_;
+          totalInsuranceAmount += insuranceAmount_;
           
           setTotalPaidAmount(totalPaidAmount)
           setTotalTopUpAmount(totalTopUpAmount)
+          setTotalInsuranceAmount(totalInsuranceAmount)
 
           const paymentMethod = el.paymentMode || 'CASH'; // Assuming 'Cash' as the default if paymentMethod is null
           const topUpAmount = el.topUpAmount || 0;
@@ -532,7 +568,7 @@ import DataTable from "react-data-table-component";
                   </p>
 
                   <p style={{fontWeight:'bold'}}>
-                    Total insurance amount: {Math.round(totalPaidAmount-totalTopUpAmount)} Rwf
+                    Total insurance amount: {Math.round(totalInsuranceAmount)} Rwf
                   </p>
 
                   <p style={{fontWeight:'bold'}}>

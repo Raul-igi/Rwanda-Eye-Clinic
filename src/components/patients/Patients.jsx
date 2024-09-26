@@ -307,7 +307,7 @@ function Patients() {
       dob: dob,
       contactPerson: contactPerson,
       contactPersonPhoneNumber: contactPersonPhoneNumber,
-      locationId: selectedVillage.value,
+      locationId: selectedVillage?.value,
       status: "INDIGENT",
       patientInsuranceDto: insuranceId?.label?.toLowerCase()==='private'?null:
       {
@@ -337,7 +337,7 @@ function Patients() {
           setPatientId({label:res.data.response.names,value:res.data.response.id});
           fetchPatients();
         } else {
-          alert("something went wrong");
+          alert(res.data.message);
         }
       })
       .catch((error) => {
@@ -388,7 +388,7 @@ function Patients() {
           alert('Patient successfully updated')
           fetchPatients();
         } else {
-          alert("something went wrong");
+          alert(res.data.message);
         }
       })
       .catch((error) => {
@@ -445,7 +445,7 @@ function Patients() {
           alert('Patient successfully updated')
           fetchInsurances();
         } else {
-          alert("something went wrong");
+          alert(res.data.message);
         }
       })
       .catch((error) => {
@@ -652,7 +652,7 @@ function Patients() {
           alert("Visit added successfully");
           fetchVisits();
         } else {
-          alert("something went wrong");
+          alert(res.data.message);
         }
       })
       .catch((error) => {
@@ -1076,7 +1076,6 @@ function Patients() {
                             value={email}
                             // placeholder="email"
                             onChange={(e) => setEmail(e.target.value)}
-                            required
                           />
                         </Form.Group>
                       </Col>
@@ -1154,7 +1153,6 @@ function Patients() {
                             value={contactPerson}
                             // placeholder="Contact Person"
                             onChange={(e) => setcontactPerson(e.target.value)}
-                            required
                           />
                         </Form.Group>
                       </Col>
@@ -1172,7 +1170,6 @@ function Patients() {
                             onChange={(e) =>
                               setcontactPersonPhoneNumber(e.target.value)
                             }
-                            required
                           />
                         </Form.Group>
                       </Col>
@@ -1192,7 +1189,6 @@ function Patients() {
                             classNamePrefix="Select2"
                             className="multi-select"
                             // placeholder="Select them"
-                            required
                           />
                         </Form.Group>
                       </Col>
@@ -1213,7 +1209,6 @@ function Patients() {
                               classNamePrefix="Select2"
                               className="multi-select"
                               // placeholder="Select them"
-                              required
                             />
                           </Form.Group>
                         </Col>
@@ -1234,7 +1229,6 @@ function Patients() {
                               classNamePrefix="Select2"
                               className="multi-select"
                               // placeholder="Select them"
-                              required
                             />
                           </Form.Group>
                         </Col>
@@ -1254,7 +1248,6 @@ function Patients() {
                               classNamePrefix="Select2"
                               className="multi-select"
                               // placeholder="Select them"
-                              required
                             />
                           </Form.Group>
                         </Col>
@@ -1271,7 +1264,6 @@ function Patients() {
                               classNamePrefix="Select2"
                               className="multi-select"
                               // placeholder="Select them"
-                              required
                             />
                           </Form.Group>
                         </Col>

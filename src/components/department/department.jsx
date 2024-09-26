@@ -102,7 +102,7 @@ function Department() {
           alert("Department Added successfully");
           fetchDepartments();
         } else {
-          alert("something went wrong");
+          alert(res.data.message);
         }
       })
       .catch((error) => {

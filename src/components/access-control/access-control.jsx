@@ -103,7 +103,7 @@ function AccessControl() {
           alert("User Added successfully");
           fetchUsers();
         } else {
-          alert("something went wrong");
+          alert(res.data.message);
         }
       })
       .catch((error) => {

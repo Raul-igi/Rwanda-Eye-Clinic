@@ -101,7 +101,7 @@ function Specialists() {
           alert("Doctor added successfully");
           fetchDoctors();
         } else {
-          alert("something went wrong");
+          alert(res.data.message);
         }
       })
       .catch((error) => {

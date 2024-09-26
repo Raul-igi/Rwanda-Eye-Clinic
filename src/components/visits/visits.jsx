@@ -157,7 +157,7 @@ function Visits() {
           alert("Visit added successfully");
           fetchVisits();
         } else {
-          alert("something went wrong");
+          alert(res.data.message);
         }
       })
       .catch((error) => {

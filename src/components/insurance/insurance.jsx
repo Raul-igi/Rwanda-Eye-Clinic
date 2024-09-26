@@ -75,7 +75,7 @@ function Insurance() {
             alert("Department Added successfully");
         fetchInsurances()
         }else{
-            alert("something went wrong")
+            alert(res.data.message)
         }
       })
       .catch((error) => {

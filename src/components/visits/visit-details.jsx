@@ -24,6 +24,7 @@ export default function VisitDetails() {
   const [show5, setShow5] = useState(false);
   const [show6, setShow6] = useState(false);
 
+  const [isNoteSaved, setIsNoteSaved] = useState(false);
   const [isVaSaved, setIsVaSaved] = useState(true);
   const [isReSaved, setIsReSaved] = useState(true);
   const [isOptReSaved, setIsOptReSaved] = useState(true);
@@ -43,6 +44,8 @@ export default function VisitDetails() {
 
   const [treatment, setTreatment] = useState([]);
   const [savedTreatment, setSavedTreatment] = useState([]);
+  const [notes, setNotes] = useState("");
+  const [savedNotes, setSavedNotes] = useState("");
   const [diagnostic, setDiagnostic] = useState("");
   const [savedDiagnostic, setSavedDiagnostic] = useState("");
 
@@ -103,7 +106,7 @@ export default function VisitDetails() {
     },
     {
       name: "Date",
-      selector: (row) => [row.createdAt?.slice(0,10) || '-'],
+      selector: (row) => [row.createdAt?.slice(0, 10) || "-"],
       sortable: true,
     },
     {
@@ -699,6 +702,30 @@ export default function VisitDetails() {
     }
   };
 
+  const fetchNotes = async () => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+        patientVisitId: location.state?.data?.visitId,
+      },
+    };
+
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/visit/doctor/note/visit-id`,
+        config
+      );
+      if (response.data.status && response.data.response?.notes) {
+        setIsNoteSaved(true);
+        setSavedNotes(response.data.response?.notes);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const fetchMedicalActs = async () => {
     let my_token = localStorage.getItem("token");
     const config = {
@@ -714,7 +741,12 @@ export default function VisitDetails() {
         `http://www.ubuzima.rw/rec/visit/id`,
         config
       );
-      setMedicalActs(response.data.response.medicalAct.map((el) => ({value:el.id,label:el.name})));
+      setMedicalActs(
+        response.data.response.medicalAct.map((el) => ({
+          value: el.id,
+          label: el.name,
+        }))
+      );
     } catch (error) {
       console.error(error);
     }
@@ -850,26 +882,6 @@ export default function VisitDetails() {
   };
 
   const addVisualAcuity = async () => {
-    if (
-      !(
-        visualAcuity[0].sc ||
-        visualAcuity[0].ac ||
-        visualAcuity[0].ph ||
-        visualAcuity[1].sc ||
-        visualAcuity[1].ac ||
-        visualAcuity[1].ph ||
-        currentGlasses[0].sphere ||
-        currentGlasses[0].cylinder ||
-        currentGlasses[0].axis ||
-        currentGlasses[0].addition ||
-        currentGlasses[1].sphere ||
-        currentGlasses[1].cylinder ||
-        currentGlasses[1].axis ||
-        currentGlasses[1].addition
-      )
-    ) {
-      alert("Fill in some fields!");
-    } else {
       let my_token = localStorage.getItem("token");
       const config = {
         headers: {
@@ -910,7 +922,6 @@ export default function VisitDetails() {
         setShow(false);
         console.error(error);
       }
-    }
   };
 
   const pay = async () => {
@@ -923,10 +934,13 @@ export default function VisitDetails() {
     };
     var paymentDto = {
       invoiceNumber: invoice.invoiceNumber,
-      paymentMethod: paymentMethod? paymentMethod:"INSURANCE",
-      amount: parseFloat(invoice?.totalAmount) - parseFloat(insuranceAmount) + parseFloat(insuranceAmount*parseInt(invoice?.ticket)/100),
+      paymentMethod: paymentMethod ? paymentMethod : "INSURANCE",
+      amount:
+        parseFloat(invoice?.totalAmount) -
+        parseFloat(insuranceAmount) +
+        parseFloat((insuranceAmount * parseInt(invoice?.ticket)) / 100),
       paymentMode: paymentMode,
-      insuranceAmount: insuranceAmount
+      insuranceAmount: insuranceAmount,
     };
     if (topUpAmount > 0) {
       paymentDto.topUpAmount = topUpAmount;
@@ -989,7 +1003,7 @@ export default function VisitDetails() {
 
   // Effect to handle changes to medicalActs state
   useEffect(() => {
-    debouncedFunction(medicalActs.map(act=>act.value));
+    debouncedFunction(medicalActs.map((act) => act.value));
 
     // Cleanup the debounce on unmount
     return () => debouncedFunction.cancel();
@@ -1000,14 +1014,15 @@ export default function VisitDetails() {
     const userRoles = JSON.parse(roles_);
     if (
       (userRoles.includes("Nurse") &&
-      location.state?.data?.visitStatus === "TRANSFER_TO_NURSE") ||
-      (userRoles.includes("Doctor") &&  location.state?.data?.visitStatus === "TRANSFER_TO_DOCTOR")
+        location.state?.data?.visitStatus === "TRANSFER_TO_NURSE") ||
+      (userRoles.includes("Doctor") &&
+        location.state?.data?.visitStatus === "TRANSFER_TO_DOCTOR")
     ) {
       let my_token = localStorage.getItem("token");
       const config = {
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${my_token}`,
+          Authorization: `Bearer ${my_token}`,
         },
       };
       const postObj = JSON.stringify({
@@ -1037,8 +1052,8 @@ export default function VisitDetails() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        "patientVisitId": location.state?.data?.visitId,
+        Authorization: `Bearer ${my_token}`,
+        patientVisitId: location.state?.data?.visitId,
       },
     };
     try {
@@ -1057,14 +1072,14 @@ export default function VisitDetails() {
   };
 
   const doctorSave = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        "patientVisitId": location.state?.data?.visitId,
-        "isPrescriptionAdded": `${generatePrescription}`,
+        Authorization: `Bearer ${my_token}`,
+        patientVisitId: location.state?.data?.visitId,
+        isPrescriptionAdded: `${generatePrescription}`,
       },
     };
     try {
@@ -1073,16 +1088,15 @@ export default function VisitDetails() {
         {},
         config
       );
-      setShow5(false)
+      setShow5(false);
       if (response.data.status) {
         alert("Successfully saved!");
         navigate("/visits");
-      }
-      else{
-        alert(response.data.message)
+      } else {
+        alert(response.data.message);
       }
     } catch (error) {
-      setShow5(false)
+      setShow5(false);
       console.error(error);
     }
   };
@@ -1117,6 +1131,38 @@ export default function VisitDetails() {
     }
   };
 
+  const addNotes = async (e) => {
+    if(notes){
+      e.preventDefault();
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+    const postObj = JSON.stringify({
+      patientVisitId: location.state?.data?.visitId,
+      notes: notes,
+    });
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/visit/doctor/note`,
+        postObj,
+        config
+      );
+      if (response.data.status) {
+        alert("Notes added successfully!");
+        fetchNotes();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    }else{
+      alert('Add notes before submitting...')
+    }
+  };
+
   const addDiagnostic = async (e) => {
     e.preventDefault();
     let my_token = localStorage.getItem("token");
@@ -1148,20 +1194,6 @@ export default function VisitDetails() {
   };
 
   const addRefraction = async () => {
-    if (
-      !(
-        refraction[0].sphere ||
-        refraction[0].cylinder ||
-        refraction[0].axis ||
-        refraction[0].addition ||
-        refraction[1].sphere ||
-        refraction[1].cylinder ||
-        refraction[1].axis ||
-        refraction[1].addition
-      )
-    ) {
-      alert("Fill all the refraction fields");
-    } else {
       let my_token = localStorage.getItem("token");
       const config = {
         headers: {
@@ -1201,24 +1233,9 @@ export default function VisitDetails() {
         console.error(error);
         console.log(res.data);
       }
-    }
   };
 
   const addOptRefraction = async () => {
-    if (
-      !(
-        optRefraction[0].sphere ||
-        optRefraction[0].cylinder ||
-        optRefraction[0].axis ||
-        optRefraction[0].addition ||
-        optRefraction[1].sphere ||
-        optRefraction[1].cylinder ||
-        optRefraction[1].axis ||
-        optRefraction[1].addition
-      )
-    ) {
-      alert("Fill all the refraction fields");
-    } else {
       let my_token = localStorage.getItem("token");
       const config = {
         headers: {
@@ -1258,7 +1275,6 @@ export default function VisitDetails() {
         console.error(error);
         console.log(res.data);
       }
-    }
   };
 
   const fetchRefraction = async () => {
@@ -1393,6 +1409,7 @@ export default function VisitDetails() {
       fetchOptRefraction();
       fetchPreviousVisits();
       fetchAllTreatments();
+      fetchNotes();
     }
   }, []);
 
@@ -1413,13 +1430,11 @@ export default function VisitDetails() {
             save and send
           </Button>
         )}
-        
 
       {visualAcuity.length > 0 &&
         medicalActs.length > 0 &&
         roles.includes("Nurse") &&
-        location.state?.data?.visitStatus ===
-                        "TRANSFER_TO_NURSE"  && (
+        location.state?.data?.visitStatus === "TRANSFER_TO_NURSE" && (
           <Button
             onClick={() => {
               if (window.confirm("Are you sure you want to save?")) {
@@ -1564,8 +1579,9 @@ export default function VisitDetails() {
                     </Card.Title>
 
                     <Card.Title style={{ fontSize: "15px" }}>
-                    Insurance: {location.state?.data?.insurance?.insuranceName}
-                  </Card.Title>
+                      Insurance:{" "}
+                      {location.state?.data?.insurance?.insuranceName}
+                    </Card.Title>
                   </Card.Body>
                 </Card>
               </Col>
@@ -1607,7 +1623,7 @@ export default function VisitDetails() {
                   Visual Acuity
                 </div>
               )}
-              {(roles.includes("Nurse") || roles.includes("Doctor")) && (
+              {(roles.includes("Doctor")) && (
                 <div
                   class="tab"
                   onClick={() => {
@@ -1627,7 +1643,7 @@ export default function VisitDetails() {
                   Medical Act
                 </div>
               )}
-              {(roles.includes("Doctor")) && (
+              {roles.includes("Doctor") && (
                 <div
                   class="tab"
                   onClick={() => {
@@ -1647,7 +1663,7 @@ export default function VisitDetails() {
                   Doctor's Refraction
                 </div>
               )}
-              {(roles.includes("Doctor")) && (
+              {roles.includes("Doctor") && (
                 <div
                   class="tab"
                   onClick={() => {
@@ -1732,6 +1748,22 @@ export default function VisitDetails() {
                   </Col>
                 )}
 
+              {roles.includes("Nurse") && tab === "tab1" &&(
+                <Col md={12} xl={12} style={{ marginTop: 20, height: 150 }}>
+                <h1>Medical Acts</h1>
+                <Select
+                  isMulti
+                  className="basic-single"
+                  options={acts}
+                  value={medicalActs}
+                  onChange={(e) => setMedicalActs(e)}
+                  classNamePrefix="Select2"
+                  placeholder="Select..."
+                  required
+                />
+              </Col>
+              )}
+
               {(roles.includes("Doctor") ||
                 roles.includes("Nurse") ||
                 roles.includes("Optometrist")) &&
@@ -1804,92 +1836,133 @@ export default function VisitDetails() {
                       </Col>
                     </Row>
                     <Row>
-
-                    <Col md={3} xl={3} style={{ marginTop: 20 }}>
-                            <h1></h1>
-                            {prescriptionCheckBox.map((act) => (
-                              <Fragment key={act.id}>
-                                <input
-                                  type="checkbox"
-                                  style={{ marginBottom: 15 }}
-                                  value={act.value}
-                                  readOnly={!roles.includes("Doctor")}
-                                  checked={generatePrescription}
-                                  onChange={() => {
-                                      if(roles.includes("Doctor")){
-                                        setGeneratePrescription(
-                                          !generatePrescription
-                                        );
-                                      }
-                                  }}
-                                />{" "}
-                                {act.label}
-                                <br />
-                              </Fragment>
-                            ))}
-                          </Col>
+                      <Col md={3} xl={3} style={{ marginTop: 20 }}>
+                        <h1></h1>
+                        {prescriptionCheckBox.map((act) => (
+                          <Fragment key={act.id}>
+                            <input
+                              type="checkbox"
+                              style={{ marginBottom: 15 }}
+                              value={act.value}
+                              readOnly={!roles.includes("Doctor")}
+                              checked={generatePrescription}
+                              onChange={() => {
+                                if (roles.includes("Doctor")) {
+                                  setGeneratePrescription(
+                                    !generatePrescription
+                                  );
+                                }
+                              }}
+                            />{" "}
+                            {act.label}
+                            <br />
+                          </Fragment>
+                        ))}
+                      </Col>
                     </Row>
                     {roles.includes("Doctor") && !isReSaved && (
-                          <Button
-                            onClick={() => addRefraction()}
-                            style={{ marginTop: 20, width: 100 }}
-                          >
-                            Save
-                          </Button>
+                      <Button
+                        onClick={() => addRefraction()}
+                        style={{ marginTop: 20, width: 100 }}
+                      >
+                        Save
+                      </Button>
                     )}
                   </>
                 )}
 
               {(roles.includes("Doctor") || roles.includes("Nurse")) &&
                 tab === "tab4" && (
-                  <Row>
-                    <Col
-                      lg={6}
-                      style={{ marginBottom: "200px", marginTop: "40px" }}
-                    >
-                      {roles.includes("Doctor") && (
-                        <>
-                          <Form.Group className="form-group">
-                            <Form.Label>Select Treatment</Form.Label>
-                            <Select
-                              isMulti
-                              className="basic-single"
-                              options={treatments}
-                              value={treatment}
-                              onChange={(e) => setTreatment(e)}
-                              classNamePrefix="Select2"
-                              placeholder="Select..."
-                              required
-                            />
-                          </Form.Group>
+                  <div>
+                    {!isNoteSaved?(
+                    <Col md={4} xl={4} style={{ marginTop: 20 }}>
+                      <Form.Group className="form-group">
+                        <Form.Label>Add Dr notes</Form.Label>
+                        <textarea
+                          className="form-control"
+                          value={notes}
+                          onChange={(e) => setNotes(e.target.value)}
+                          placeholder="Enter notes here..."
+                          required
+                        />
+                      </Form.Group>
 
-                          <Button
-                            onClick={(e) => addTreatment(e)}
-                            style={{ marginTop: 20, width: 100 }}
-                          >
-                            Save
-                          </Button>
-                        </>
-                      )}
+                      <Button
+                        onClick={(e) => addNotes(e)}
+                        style={{ marginTop: 20, width: 100 }}
+                      >
+                        Save
+                      </Button>
                     </Col>
-                    <Col
-                      lg={6}
-                      style={{ marginBottom: "200px", marginTop: "40px" }}
-                    >
-                      {savedTreatment?.length > 0 && treatments ? (
-                        <>
-                          <h1>Saved Treatments</h1>
-                          {savedTreatment.map((el, index) => {
-                            return (
-                              <h5>
-                                {index + 1}. {el.label}
-                              </h5>
-                            );
-                          })}
-                        </>
-                      ):(<p>No Treatment yet...</p>)}
+                    ):(
+                      <Col md={4} xl={4} style={{ marginTop: 20 }}>
+                      <Card>
+                        <Card.Header className=" d-flex justify-content-between align-items-center">
+                          <div className="">
+                            <Card.Title>Dr Notes</Card.Title>
+                          </div>
+                        </Card.Header>
+                        <Card.Body>
+                          <Card.Title>
+                            {savedNotes
+                              ? `Dr notes: ${savedNotes}`
+                              : "There are currently no notes available. The doctor has not added any notes yet."}
+                          </Card.Title>
+                        </Card.Body>
+                      </Card>
                     </Col>
-                  </Row>
+                    )}
+                    <Row>
+                      <Col
+                        lg={6}
+                        style={{ marginBottom: "100px", marginTop: "40px",marginLeft: 18 }}
+                      >
+                        {roles.includes("Doctor") && (
+                          <>
+                            <Form.Group className="form-group">
+                              <Form.Label>Select Treatment</Form.Label>
+                              <Select
+                                isMulti
+                                className="basic-single"
+                                options={treatments}
+                                value={treatment}
+                                onChange={(e) => setTreatment(e)}
+                                classNamePrefix="Select2"
+                                placeholder="Select..."
+                                required
+                              />
+                            </Form.Group>
+
+                            <Button
+                              onClick={(e) => addTreatment(e)}
+                              style={{ marginTop: 20, width: 100 }}
+                            >
+                              Save
+                            </Button>
+                          </>
+                        )}
+                      </Col>
+                      <Col
+                        lg={5}
+                        style={{ marginBottom: "200px", marginTop: "40px" }}
+                      >
+                        {savedTreatment?.length > 0 && treatments ? (
+                          <>
+                            <h1>Saved Treatments</h1>
+                            {savedTreatment.map((el, index) => {
+                              return (
+                                <h5>
+                                  {index + 1}. {el.label}
+                                </h5>
+                              );
+                            })}
+                          </>
+                        ) : (
+                          <p>No Treatment yet...</p>
+                        )}
+                      </Col>
+                    </Row>
+                  </div>
                 )}
 
               {(roles.includes("Doctor") ||
@@ -1930,22 +2003,6 @@ export default function VisitDetails() {
               {(roles.includes("Doctor") || roles.includes("Nurse")) &&
                 tab === "tab5" && (
                   <>
-                    {/* <Col md={4} xl={4} style={{ marginTop: 20 }}>
-              <Card style={{ minHeight: 250 }}>
-                <Card.Header className=" d-flex justify-content-between align-items-center">
-                  <div className="">
-                    <Card.Title>Dr.Note</Card.Title>
-                  </div>
-                </Card.Header>
-                <Card.Body>
-                  <Card.Title>
-                    {savedTreatment
-                      ? `Dr.Note: ${savedTreatment}`
-                      : "No treatment yet..."}
-                  </Card.Title>
-                </Card.Body>
-              </Card>
-            </Col> */}
                     <Row>
                       <Col style={{ marginTop: 10 }}>
                         {roles.includes("Nurse") && !savedDiagnostic && (
@@ -1981,18 +2038,18 @@ export default function VisitDetails() {
 
             {/* {toggle ===1? "tab2" :"tab1"} */}
             {tab === "tab2" && (
-              <Col md={12} xl={12} style={{ marginTop: 20,height:400 }}>
+              <Col md={12} xl={12} style={{ marginTop: 20, height: 400 }}>
                 <h1>Medical Acts</h1>
                 <Select
-                    isMulti
-                    className="basic-single"
-                    options={acts}
-                    value={medicalActs}
-                    onChange={(e) => setMedicalActs(e)}
-                    classNamePrefix="Select2"
-                    placeholder="Select..."
-                    required
-                  />
+                  isMulti
+                  className="basic-single"
+                  options={acts}
+                  value={medicalActs}
+                  onChange={(e) => setMedicalActs(e)}
+                  classNamePrefix="Select2"
+                  placeholder="Select..."
+                  required
+                />
               </Col>
             )}
           </>
@@ -2026,19 +2083,22 @@ export default function VisitDetails() {
                       placeholder="Select method"
                       classNamePrefix="Select2"
                       onChange={(e) => {
-                        setPaymentMethod(e.value)
-                        if(e.value === "INSURANCE_AND_TOP_UP"){
+                        setPaymentMethod(e.value);
+                        if (e.value === "INSURANCE_AND_TOP_UP") {
                           let newValue = parseFloat(0, 10);
-                        // Ensure the value is between 0 and 20
-                        newValue = Math.min(Math.max(newValue, 0), invoice.insurerAmount);
+                          // Ensure the value is between 0 and 20
+                          newValue = Math.min(
+                            Math.max(newValue, 0),
+                            invoice.insurerAmount
+                          );
 
-                        setInsuranceAmount(newValue);
-                        setTopUpAmount(
-                          (invoice?.insurerAmount - newValue).toFixed(1)
-                        );
-                        }else if(e.value === "INSURANCE"){
-                          setInsuranceAmount(invoice?.totalAmount)
-                          setTopUpAmount(0)
+                          setInsuranceAmount(newValue);
+                          setTopUpAmount(
+                            (invoice?.insurerAmount - newValue).toFixed(1)
+                          );
+                        } else if (e.value === "INSURANCE") {
+                          setInsuranceAmount(invoice?.totalAmount);
+                          setTopUpAmount(0);
                         }
                       }}
                     />
@@ -2046,7 +2106,8 @@ export default function VisitDetails() {
                 </Form>
               </Col>
 
-              {(paymentMethod === "INSURANCE_AND_TOP_UP" || paymentMethod === "INSURANCE") && (
+              {(paymentMethod === "INSURANCE_AND_TOP_UP" ||
+                paymentMethod === "INSURANCE") && (
                 <>
                   <Col xl={12}>
                     <Form.Group className="form-group">
@@ -2058,15 +2119,18 @@ export default function VisitDetails() {
                         name="example-text-input"
                         // placeholder="names"
                         onChange={(e) => {
-                          if(paymentMethod === "INSURANCE_AND_TOP_UP"){
+                          if (paymentMethod === "INSURANCE_AND_TOP_UP") {
                             let newValue = parseFloat(e.target.value, 10);
-                          // Ensure the value is between 0 and 20
-                          newValue = Math.min(Math.max(newValue, 0), invoice.insurerAmount);
+                            // Ensure the value is between 0 and 20
+                            newValue = Math.min(
+                              Math.max(newValue, 0),
+                              invoice.insurerAmount
+                            );
 
-                          setInsuranceAmount(newValue);
-                          setTopUpAmount(
-                            (invoice?.totalAmount - newValue).toFixed(1)
-                          );
+                            setInsuranceAmount(newValue);
+                            setTopUpAmount(
+                              (invoice?.totalAmount - newValue).toFixed(1)
+                            );
                           }
                         }}
                         required
@@ -2078,7 +2142,9 @@ export default function VisitDetails() {
                       <Form.Label>Copay</Form.Label>
                       <Form.Control
                         type="number"
-                        value={insuranceAmount*parseInt(invoice?.ticket)/100}
+                        value={
+                          (insuranceAmount * parseInt(invoice?.ticket)) / 100
+                        }
                         className="form-control"
                         name="example-text-input"
                         // placeholder="names"
@@ -2086,27 +2152,33 @@ export default function VisitDetails() {
                       />
                     </Form.Group>
                   </Col>
-                  {topUpAmount>0&&(
+                  {topUpAmount > 0 && (
                     <Col xl={12}>
-                    <Form.Group className="form-group">
-                      <Form.Label>Top Up Amount</Form.Label>
-                      <Form.Control
-                        type="number"
-                        value={topUpAmount}
-                        className="form-control"
-                        name="example-text-input"
-                        // placeholder="names"
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
+                      <Form.Group className="form-group">
+                        <Form.Label>Top Up Amount</Form.Label>
+                        <Form.Control
+                          type="number"
+                          value={topUpAmount}
+                          className="form-control"
+                          name="example-text-input"
+                          // placeholder="names"
+                          required
+                        />
+                      </Form.Group>
+                    </Col>
                   )}
                   <Col xl={12}>
                     <Form.Group className="form-group">
                       <Form.Label>Amount to pay</Form.Label>
                       <Form.Control
                         type="number"
-                        value={parseFloat(invoice?.totalAmount) - parseFloat(insuranceAmount) + parseFloat(insuranceAmount*parseInt(invoice?.ticket)/100) }
+                        value={
+                          parseFloat(invoice?.totalAmount) -
+                          parseFloat(insuranceAmount) +
+                          parseFloat(
+                            (insuranceAmount * parseInt(invoice?.ticket)) / 100
+                          )
+                        }
                         className="form-control"
                         name="example-text-input"
                         // placeholder="names"
@@ -2116,24 +2188,24 @@ export default function VisitDetails() {
                   </Col>
                 </>
               )}
-              {invoice?.patientAmount > 0 &&(
+              {invoice?.patientAmount > 0 && (
                 <Col xl={12}>
-                <Form.Group className="form-group">
-                  <Form.Label>Select payment mode</Form.Label>
-                  <Select
-                    options={[
-                      { label: "Cash", value: "CASH" },
-                      { label: "MoMo", value: "MOMO" },
-                      { label: "POS", value: "POS" },
-                    ]}
-                    onChange={(e) => setPaymentMode(e.value)}
-                    classNamePrefix="Select2"
-                    className="multi-select"
-                    // placeholder="Select them"
-                    required
-                  />
-                </Form.Group>
-              </Col>
+                  <Form.Group className="form-group">
+                    <Form.Label>Select payment mode</Form.Label>
+                    <Select
+                      options={[
+                        { label: "Cash", value: "CASH" },
+                        { label: "MoMo", value: "MOMO" },
+                        { label: "POS", value: "POS" },
+                      ]}
+                      onChange={(e) => setPaymentMode(e.value)}
+                      classNamePrefix="Select2"
+                      className="multi-select"
+                      // placeholder="Select them"
+                      required
+                    />
+                  </Form.Group>
+                </Col>
               )}
             </>
           ) : (
@@ -2187,10 +2259,6 @@ export default function VisitDetails() {
         </Form>
       </Modal>
 
-
-
-
-
       <Modal show={show5} onHide={() => setShow5(false)}>
         <Form>
           <Modal.Header closeButton></Modal.Header>
@@ -2201,12 +2269,6 @@ export default function VisitDetails() {
                   <Card.Title>Submit refraction</Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  
-
-
-
-
-
                   <>
                     <Row>
                       <Col
@@ -2263,49 +2325,42 @@ export default function VisitDetails() {
                       </Col>
                     </Row>
                     <Row>
-
-                    <Col md={3} xl={3} style={{ marginTop: 20 }}>
-                            <h1></h1>
-                            {prescriptionCheckBox.map((act) => (
-                              <Fragment key={act.id}>
-                                <input
-                                  type="checkbox"
-                                  style={{ marginBottom: 15 }}
-                                  value={act.value}
-                                  readOnly={!roles.includes("Doctor")}
-                                  checked={generatePrescription}
-                                  onChange={() => {
-                                      if(roles.includes("Doctor")){
-                                        setGeneratePrescription(
-                                          !generatePrescription
-                                        );
-                                      }
-                                  }}
-                                />{" "}
-                                {act.label}
-                                <br />
-                              </Fragment>
-                            ))}
-                          </Col>
+                      <Col md={3} xl={3} style={{ marginTop: 20 }}>
+                        <h1></h1>
+                        {prescriptionCheckBox.map((act) => (
+                          <Fragment key={act.id}>
+                            <input
+                              type="checkbox"
+                              style={{ marginBottom: 15 }}
+                              value={act.value}
+                              readOnly={!roles.includes("Doctor")}
+                              checked={generatePrescription}
+                              onChange={() => {
+                                if (roles.includes("Doctor")) {
+                                  setGeneratePrescription(
+                                    !generatePrescription
+                                  );
+                                }
+                              }}
+                            />{" "}
+                            {act.label}
+                            <br />
+                          </Fragment>
+                        ))}
+                      </Col>
                     </Row>
                     <Button
                       type="submit"
                       className="btn ripple btn-primary my-3"
                       style={{ width: "40%", marginLeft: "320px" }}
                       variant="primary"
-                      onClick={(e)=>{doctorSave(e)}}
-                      
+                      onClick={(e) => {
+                        doctorSave(e);
+                      }}
                     >
                       Submit
                     </Button>
                   </>
-               
-
-
-
-
-
-
                 </Card.Body>
               </Card>
             </Col>

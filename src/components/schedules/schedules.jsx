@@ -416,6 +416,7 @@ function Schedules() {
         ],
         "doctorId": location.state.data.doctor.id
       })
+      console.log(JSON.stringify(postObj))
     axios
       .post(`http://www.ubuzima.rw/rec/schedule`,postObj) //declare api Path
       .then((res) => {
@@ -424,7 +425,7 @@ function Schedules() {
           alert("Department Added successfully");
           fetchSchedules();
         } else {
-          alert("something went wrong");
+          alert(res.data.message);
         }
       })
       .catch((error) => {

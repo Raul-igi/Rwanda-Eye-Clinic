@@ -34,6 +34,7 @@ function Patients() {
   const [cardNumber, setcardNumber] = useState("");
   const [employer, setemployer] = useState("");
   const [expiryDate, setexpiryDate] = useState("");
+  const [voucherNumber, setVoucherNumber] = useState("");
 
   
   const [patients_, setPatients_] = useState([]);
@@ -632,6 +633,7 @@ function Patients() {
     setLoading(true);
     const postObj = JSON.stringify({
       patientId: patientId.value || patientId, // modify body properties
+      voucherNumber: voucherNumber,
       patientInsuranceId: patientInsuranceId || null,
       visitType: visitType,
       caseType: caseType,
@@ -1433,6 +1435,18 @@ function Patients() {
                 </Form.Group>
               </Col>
 
+              <Col xl={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Voucher ID</Form.Label>
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="form-control"
+                    onChange={(e) => setVoucherNumber(e.target.value)}
+                  />
+                </Form.Group>
+              </Col>
+              
               <Col xl={6}>
                 <Form.Group className="form-group">
                   <Form.Label>Case Type</Form.Label>

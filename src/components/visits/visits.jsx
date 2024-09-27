@@ -67,6 +67,7 @@ function Visits() {
   const [doctors, setDoctors] = useState([]);
   const [department, setDepartment] = useState("");
   const [patientId, setPatientId] = useState("");
+  const [voucherNumber, setVoucherNumber] = useState("");
   const [patientsInsurances, setPatientsInsurances] = useState([]);
   const [diagnostics, setDiagnostics] = useState([]);
 
@@ -139,6 +140,7 @@ function Visits() {
       patientId: patientId, // modify body properties
       patientInsuranceId: patientInsuranceId || null,
       visitType: visitType,
+      voucherNumber: voucherNumber,
       caseType: caseType,
       doctorId: doctorId,
     });
@@ -491,6 +493,18 @@ function Visits() {
                     className="multi-select"
                     placeholder="Case Type"
                     required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col xl={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Voucher ID</Form.Label>
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="form-control"
+                    onChange={(e) => setVoucherNumber(e.target.value)}
                   />
                 </Form.Group>
               </Col>

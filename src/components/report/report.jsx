@@ -108,6 +108,120 @@ const columns3 = [
   },
 ];
 
+const columns4 = [
+  {
+    name: "Date",
+    selector: (row) => [row.paymentDate],
+    sortable: true,
+  },
+  {
+    name: "Voucher ID",
+    selector: (row) => [row.voucherNumber||'N/A'],
+    sortable: true,
+  },
+  {
+    name: "Card ID",
+    selector: (row) => [row.patientInsurance?.cardNumber],
+    sortable: true,
+  },
+  {
+    name: "Age/DOB",
+    selector: (row) => [row.patient?.dob],
+    sortable: true,
+  },
+  {
+    name: "Beneficiary's name",
+    selector: (row) => [row.patientInsurance?.membershipType === 'DEPENDENT'?row.patient?.names:'N/A'],
+    sortable: true,
+  },
+  {
+    name: "Affiliate's name",
+    selector: (row) => [row.patientInsurance?.membershipType === 'PRINCIPAL'?row.patient?.names:row.patientInsurance?.principalNames||'N/A'],
+    sortable: true,
+  },
+  {
+    name: "Consultation",
+    selector: (row) => [row.acts?.length>0 ? (row.acts[0]?.insurerAmount+row.acts[0]?.patientAmount):0],
+    sortable: true,
+  },
+  {
+    name: "ORA",
+    selector: (row) => ['N/A'],
+    sortable: true,
+  },
+  {
+    name: "AGI",
+    selector: (row) => ['N/A'],
+    sortable: true,
+  },
+  {
+    name: "ALI",
+    selector: (row) => ['N/A'],
+    sortable: true,
+  },
+  {
+    name: "Procedures",
+    selector: (row) => [row.acts?.length>0 ? (row.acts[1]?.insurerAmount+row.acts[1]?.patientAmount):0],
+    sortable: true,
+  },
+  {
+    name: "Total 100%",
+    selector: (row) => [row.totalAmount||0],
+    sortable: true,
+  },
+  {
+    name: "Total 85%",
+    selector: (row) => [Math.round(row.totalAmount*0.85)],
+    sortable: true,
+  },
+  
+];
+
+const columns5 = [
+  {
+    name: "Customer",
+    selector: (row) => [row.patient?.names],
+    sortable: true,
+  },
+  {
+    name: "Card Number",
+    selector: (row) => [row.patientInsurance?.cardNumber],
+    sortable: true,
+  },
+  {
+    name: "Prescription ID",
+    selector: (row) => [row.voucherNumber||'N/A'],
+    sortable: true,
+  },
+  {
+    name: "Consultation",
+    selector: (row) => [row.acts?.length>0 ? (row.acts[0]?.insurerAmount+row.acts[0]?.patientAmount):0],
+    sortable: true,
+  },
+  {
+    name: "Procedures",
+    selector: (row) => [row.acts?.length>0 ? (row.acts[1]?.insurerAmount+row.acts[1]?.patientAmount):0],
+    sortable: true,
+  },
+  {
+    name: "Total amount",
+    selector: (row) => [row.totalAmount],
+    sortable: true,
+  },
+  {
+    name: "Total insurance cover",
+    selector: (row) => [row.insuranceAmount],
+    sortable: true,
+  },
+  {
+    name: "Date",
+    selector: (row) => [row.paymentDate],
+    sortable: true,
+  },
+
+  
+];
+
 import DataTable from "react-data-table-component";
   function Report() {
 
@@ -121,7 +235,7 @@ import DataTable from "react-data-table-component";
 
   function groupByInsurance(data) {
     return data.reduce((acc, current) => {
-      const insuranceName = current.insurance.name; // Access the insurance name
+      const insuranceName = current.patientInsurance.insuranceName; // Access the insurance name
       let existingInsurance = acc.find(item => item.insurance === insuranceName);
 
       if (existingInsurance) {
@@ -160,6 +274,7 @@ import DataTable from "react-data-table-component";
   const [paymentTotals, setPaymentTotals] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [doctor, setDoctor] = useState("");
+  const [total, setTotal] = useState(0);
   const [totalPaidAmount, setTotalPaidAmount] = useState(0);
   const [totalTopUpAmount, setTotalTopUpAmount] = useState(0);
   const [totalInsuranceAmount, setTotalInsuranceAmount] = useState(0);
@@ -352,6 +467,7 @@ import DataTable from "react-data-table-component";
           POS: 0,
         };
 
+        let totalAmount2 = 0;
         let totalPaidAmount = 0;
         let totalTopUpAmount = 0;
         let totalInsuranceAmount = 0;
@@ -360,14 +476,17 @@ import DataTable from "react-data-table-component";
         
         const reports_ = response.data.response.map((el) => {
 
+          const totalAmount_ = parseFloat(el.totalAmount) || 0;
           const paidAmount_ = parseFloat(el.amount) || 0;
           const topUpAmount_ = parseFloat(el.topUpAmount) || 0;
           const insuranceAmount_ = parseFloat(el.insuranceAmount) || 0;
 
+          totalAmount2 += totalAmount_;
           totalPaidAmount += paidAmount_;
           totalTopUpAmount += topUpAmount_;
           totalInsuranceAmount += insuranceAmount_;
           
+          setTotal(totalAmount2)
           setTotalPaidAmount(totalPaidAmount)
           setTotalTopUpAmount(totalTopUpAmount)
           setTotalInsuranceAmount(totalInsuranceAmount)
@@ -382,12 +501,13 @@ import DataTable from "react-data-table-component";
             paymentTotals[paymentMethod] = totalAmount;
           }
           return {
+            ...el,
             doctorNames: `${el.doctor?.firstName} ${el.doctor?.lastName}`,
             doctorPhone: el.doctor?.phoneNumber,
             paymentMethod: el.paymentMethod,
             paidAmaount: el.amount,
             paymentDate: el.paymentDate,
-            insurance: el.insurance.name,
+            insurance: el.patientInsurance.insuranceName,
             topUpAmount: el.topUpAmount || 0,
           };
         });
@@ -564,7 +684,11 @@ import DataTable from "react-data-table-component";
               {reports.length>0&&(
                 <div>
                   <p style={{fontWeight:'bold'}}>
-                    Total Amount: {Math.round(totalPaidAmount)} Rwf
+                    Total Amount: {Math.round(total)} Rwf
+                  </p>
+
+                  <p style={{fontWeight:'bold'}}>
+                    Total Paid Amount: {Math.round(totalPaidAmount)} Rwf
                   </p>
 
                   <p style={{fontWeight:'bold'}}>
@@ -577,7 +701,10 @@ import DataTable from "react-data-table-component";
                 </div>
               )}
               {reportType?.value === "INSURANCE" ? (
-                <DataTable columns={columns} data={reports} pagination />
+                <DataTable columns={
+                  insurance.label==='RSSB'?columns4:
+                  insurance.label==='MMI'?columns5:columns
+                } data={reports} pagination />
               ) : (<DataTable columns={columns3} data={reports} pagination />) }
             </Card.Body>
 

@@ -13,6 +13,7 @@ import {
   prescriptionCheckBox,
 } from "../../data/elementsdata";
 import Visit from "./visit";
+import Pagination from "./components/Pagination";
 
 export default function VisitDetails() {
   const location = useLocation();
@@ -23,6 +24,22 @@ export default function VisitDetails() {
   const [show4, setShow4] = useState(false);
   const [show5, setShow5] = useState(false);
   const [show6, setShow6] = useState(false);
+  const [show7, setShow7] = useState(false);
+  const [show8, setShow8] = useState(false);
+
+  const [firstButtonValues, setFirstButtonValues] = useState({
+    sphere: '',
+    cylinder: '',
+    axis: '',
+    addition: '',
+  });
+
+  const [secondButtonValues, setSecondButtonValues] = useState({
+    sphere: '',
+    cylinder: '',
+    axis: '',
+    addition: '',
+  });
 
   const [isNoteSaved, setIsNoteSaved] = useState(false);
   const [isVaSaved, setIsVaSaved] = useState(true);
@@ -49,10 +66,13 @@ export default function VisitDetails() {
   const [diagnostic, setDiagnostic] = useState("");
   const [savedDiagnostic, setSavedDiagnostic] = useState("");
 
-  const [previousVisits, setPreviousVisits] = useState("");
-  const [previousVisits_, setPreviousVisits_] = useState("");
+  const [previousVisits, setPreviousVisits] = useState([]);
+  const [previousVisits_, setPreviousVisits_] = useState([]);
+  const [previousVisits2, setPreviousVisits2] = useState([]);
+  const [previousVisits_2, setPreviousVisits_2] = useState([]);
   const [visitId, setVisitId] = useState("");
   const [totalRows, setTotalRows] = useState("");
+  const [totalRows2, setTotalRows2] = useState("");
   const [billingDetails, setBillingDetails] = useState("");
   const [insuranceId, setInsuranceId] = useState("");
 
@@ -61,9 +81,10 @@ export default function VisitDetails() {
   const [tab, setTab] = useState("tab1");
   const [toggle, setToggle] = useState(1);
 
-  function updateToggle(id) {
-    setToggle(id);
-  }
+  const handlePageChange = (page) => {
+    setCurrentPage2(page);
+    console.log(`Page changed to ${page}`); // You can use this to detect page changes
+  };
 
   const billingDetailsColumn = [
     {
@@ -210,6 +231,8 @@ export default function VisitDetails() {
   ]);
 
   const [showModal, setShowModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage2, setCurrentPage2] = useState(1);
   const handleClose8 = () => setShowModal(false);
   const handleShow8 = () => setShowModal(true);
 
@@ -415,6 +438,7 @@ export default function VisitDetails() {
             type="text"
             readOnly={isReSaved}
             value={row.sphere}
+            onClick={()=>setShow7(true)}
             onChange={(e) =>
               handleInputChange2(e.target.value, row.name, "sphere")
             }
@@ -880,6 +904,25 @@ export default function VisitDetails() {
       console.error(error);
     }
   };
+
+  const handleChange = (column, value, buttonType) => {
+    const setValues = buttonType === 'first' ? setFirstButtonValues : setSecondButtonValues;
+    const currentValues = buttonType === 'first' ? firstButtonValues : secondButtonValues;
+
+    if (buttonType === 'first') {
+      var data = { ...firstButtonValues, [column]: firstButtonValues[column] === value ? '' : value }
+      setRefraction([{...refraction[0],cylinder:data.cylinder,sphere:data.sphere,axis:data.axis,addition:data.addition},refraction[1]])
+    } else {
+      var data = { ...secondButtonValues, [column]: secondButtonValues[column] === value ? '' : value }
+      setRefraction([refraction[0],{...refraction[1],cylinder:data.cylinder,sphere:data.sphere,axis:data.axis,addition:data.addition}])
+    }
+
+    setValues((prev) => ({
+      ...prev,
+      [column]: prev[column] === value ? '' : value, // Toggle the value
+    }));
+  };
+
 
   const addVisualAcuity = async () => {
       let my_token = localStorage.getItem("token");
@@ -1374,7 +1417,7 @@ export default function VisitDetails() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
         size: 5,
-        page: 1,
+        page: currentPage,
         patientId: location.state?.data?.patient?.id,
       },
     };
@@ -1394,6 +1437,35 @@ export default function VisitDetails() {
     }
   };
 
+  const fetchPreviousVisits2 = async (id) => {
+    setPreviousVisits_2([]);
+    setPreviousVisits2([]);
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+        size: 5,
+        page: currentPage2,
+        patientId: location.state?.data?.patient?.id,
+      },
+    };
+
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/visit/patient/id`,
+        config
+      );
+      setPreviousVisits_2(response.data.response.patientVisits);
+      setPreviousVisits2(response.data.response.patientVisits);
+      if (response.data.response.totalElements) {
+        setTotalRows2(response.data.response.totalElements);
+      }
+    } catch (error) {
+      console.error("Error fetching payrolls:", error);
+    }
+  };
+
   useEffect(() => {
     const roles_ = localStorage.getItem("role");
     const userRoles = JSON.parse(roles_);
@@ -1407,11 +1479,21 @@ export default function VisitDetails() {
       fetchDiagnostic();
       fetchRefraction();
       fetchOptRefraction();
-      fetchPreviousVisits();
       fetchAllTreatments();
       fetchNotes();
     }
   }, []);
+
+  useEffect(() => {
+      fetchPreviousVisits();
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchPreviousVisits2();
+}, [currentPage2]);
+
+
+
 
   return (
     <Fragment>
@@ -1447,7 +1529,7 @@ export default function VisitDetails() {
           </Button>
         )}
       <Row>
-        {invoice && roles.includes("Receptionist") && (
+        {invoice && (roles.includes("Receptionist") || roles.includes("Administrator")) && (
           <Col lg={12} style={{ marginTop: 20 }}>
             <Card>
               <Card.Header className="d-flex justify-content-between align-items-center">
@@ -1465,7 +1547,7 @@ export default function VisitDetails() {
           </Col>
         )}
 
-        {invoice && roles.includes("Receptionist") && (
+        {invoice && (roles.includes("Receptionist") || roles.includes("Administrator")) && (
           <>
             <Col md={4} xl={4} style={{ marginTop: 20 }}>
               <Card style={{ minHeight: 250 }}>
@@ -1590,10 +1672,22 @@ export default function VisitDetails() {
                 <Card>
                   <Card.Header className="d-flex justify-content-between align-items-center">
                     <Card.Title>Last Visits</Card.Title>
+                    {previousVisits.length>0 && (
+                      <Card.Title onClick={()=>setShow8(true)}>View all</Card.Title>
+                    )}
                   </Card.Header>
                   <Card.Body>
                     <Card.Body>
-                      <DataTable columns={columns2} data={previousVisits} />
+                      <DataTable 
+                      columns={columns2} 
+                      data={previousVisits}
+                      paginationPerPage={5}
+                      paginationRowsPerPageOptions={[5]}
+                      paginationTotalRows={totalRows ? totalRows : previousVisits.length}
+                      onChangePage={(page) => setCurrentPage(page)}
+                      pagination
+                      paginationServer
+                      />
                     </Card.Body>
                   </Card.Body>
                 </Card>
@@ -1603,7 +1697,9 @@ export default function VisitDetails() {
             <div class="tabs" style={{ display: "flex" }}>
               {(roles.includes("Nurse") ||
                 roles.includes("Doctor") ||
-                roles.includes("Optometrist")) && (
+                roles.includes("Optometrist") ||
+                roles.includes("Administrator")
+                ) && (
                 <div
                   class="tab"
                   onClick={() => {
@@ -1623,7 +1719,7 @@ export default function VisitDetails() {
                   Visual Acuity
                 </div>
               )}
-              {(roles.includes("Doctor")) && (
+              {(roles.includes("Doctor") || roles.includes("Administrator")) && (
                 <div
                   class="tab"
                   onClick={() => {
@@ -1643,7 +1739,7 @@ export default function VisitDetails() {
                   Medical Act
                 </div>
               )}
-              {roles.includes("Doctor") && (
+              {(roles.includes("Doctor") || roles.includes("Administrator")) && (
                 <div
                   class="tab"
                   onClick={() => {
@@ -1663,7 +1759,7 @@ export default function VisitDetails() {
                   Doctor's Refraction
                 </div>
               )}
-              {roles.includes("Doctor") && (
+              {(roles.includes("Doctor") || roles.includes("Administrator")) && (
                 <div
                   class="tab"
                   onClick={() => {
@@ -1683,7 +1779,7 @@ export default function VisitDetails() {
                   Dr treatments / Note
                 </div>
               )}
-              {roles.includes("Nurse") && (
+              {(roles.includes("Nurse") || roles.includes("Administrator")) && (
                 <div
                   class="tab"
                   onClick={() => {
@@ -1733,7 +1829,7 @@ export default function VisitDetails() {
                   </Col>
                 )}
 
-              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
+              {(roles.includes("Doctor") || roles.includes("Nurse") || roles.includes("Administrator")) &&
                 tab === "tab1" && (
                   <Col
                     md={6}
@@ -1748,7 +1844,7 @@ export default function VisitDetails() {
                   </Col>
                 )}
 
-              {roles.includes("Nurse") && tab === "tab1" &&(
+              {(roles.includes("Nurse")||  roles.includes("Administrator")) && tab === "tab1" &&(
                 <Col md={12} xl={12} style={{ marginTop: 20, height: 150 }}>
                 <h1>Medical Acts</h1>
                 <Select
@@ -1766,6 +1862,7 @@ export default function VisitDetails() {
 
               {(roles.includes("Doctor") ||
                 roles.includes("Nurse") ||
+                roles.includes("Administrator") ||
                 roles.includes("Optometrist")) &&
                 tab === "tab1" && (
                   <Col
@@ -1778,7 +1875,7 @@ export default function VisitDetails() {
                   </Col>
                 )}
 
-              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
+              {(roles.includes("Doctor") || roles.includes("Nurse") || roles.includes("Administrator")) &&
                 tab === "tab3" && (
                   <>
                     <Row>
@@ -1871,7 +1968,7 @@ export default function VisitDetails() {
                   </>
                 )}
 
-              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
+              {(roles.includes("Doctor") || roles.includes("Nurse") || roles.includes("Administrator")) &&
                 tab === "tab4" && (
                   <div>
                     {!isNoteSaved?(
@@ -1917,7 +2014,7 @@ export default function VisitDetails() {
                         lg={6}
                         style={{ marginBottom: "100px", marginTop: "40px",marginLeft: 18 }}
                       >
-                        {roles.includes("Doctor") && (
+                        {(roles.includes("Doctor") || roles.includes("Administrator")) && (
                           <>
                             <Form.Group className="form-group">
                               <Form.Label>Select Treatment</Form.Label>
@@ -1967,6 +2064,7 @@ export default function VisitDetails() {
 
               {(roles.includes("Doctor") ||
                 roles.includes("Nurse") ||
+                roles.includes("Administrator") ||
                 roles.includes("Optometrist")) &&
                 tab === "tab1" && (
                   <>
@@ -2000,7 +2098,7 @@ export default function VisitDetails() {
                   </>
                 )}
 
-              {(roles.includes("Doctor") || roles.includes("Nurse")) &&
+              {(roles.includes("Doctor") || roles.includes("Nurse") || roles.includes("Administrator")) &&
                 tab === "tab5" && (
                   <>
                     <Row>
@@ -2366,6 +2464,97 @@ export default function VisitDetails() {
             </Col>
           </Modal.Body>
         </Form>
+      </Modal>
+
+      <Modal show={show7} onHide={()=>setShow7(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Select Options</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Row>
+              <Col md={2}>
+                <h5>Sphere</h5>
+                {['-1.00', '-2.00', '-3.00'].map((value) => (
+                  <Form.Check
+                    key={value}
+                    type="checkbox"
+                    label={value}
+                    onChange={() => handleChange('sphere', value, 'first')}
+                    checked={firstButtonValues.sphere === value}
+                  />
+                ))}
+              </Col>
+
+              <Col md={1} className="border-right"></Col> {/* Vertical line */}
+
+              <Col md={2}>
+                <h5>Cylinder</h5>
+                {['-1.50', '-2.50', '-3.50'].map((value) => (
+                  <Form.Check
+                    key={value}
+                    type="checkbox"
+                    label={value}
+                    onChange={() => handleChange('cylinder', value, 'first')}
+                    checked={firstButtonValues.cylinder === value}
+                  />
+                ))}
+              </Col>
+
+              <Col md={1} className="border-right"></Col> {/* Vertical line */}
+
+              <Col md={2}>
+                <h5>Axis</h5>
+                {['90', '180', '270'].map((value) => (
+                  <Form.Check
+                    key={value}
+                    type="checkbox"
+                    label={value}
+                    onChange={() => handleChange('axis', value, 'first')}
+                    checked={firstButtonValues.axis === value}
+                  />
+                ))}
+              </Col>
+
+              <Col md={1} className="border-right"></Col> {/* Vertical line */}
+
+              <Col md={2}>
+                <h5>Addition</h5>
+                {['+1.00', '+1.50', '+2.00'].map((value) => (
+                  <Form.Check
+                    key={value}
+                    type="checkbox"
+                    label={value}
+                    onChange={() => handleChange('addition', value, 'first')}
+                    checked={firstButtonValues.addition === value}
+                  />
+                ))}
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={()=>setShow7(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={show8} onHide={() => setShow8(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            All previous visits
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {previousVisits2.length>0 && previousVisits2.map(visit=><Visit visitId={null} visit={visit} />)}
+          <Pagination
+          currentPage={currentPage2}
+          totalItems={totalRows2 ? totalRows2 : previousVisits2.length}
+          itemsPerPage={5}
+          onPageChange={handlePageChange}
+        />
+        </Modal.Body>
       </Modal>
     </Fragment>
   );

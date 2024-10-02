@@ -12,8 +12,18 @@ const columns = [
     sortable: true,
   },
   {
-    name: "Patient's phone ",
+    name: "Patient's phone",
     selector: (row) => [row.patient?.phoneNumber],
+    sortable: true,
+  },
+  {
+    name: "Gender",
+    selector: (row) => [row.patient?.gender],
+    sortable: true,
+  },
+  {
+    name: "DoB",
+    selector: (row) => [row.patient?.dob],
     sortable: true,
   },
   {
@@ -362,7 +372,7 @@ function Visits() {
             <Card.Header className="d-flex justify-content-between align-items-center">
               <Card.Title>Visits</Card.Title>
 
-              {roles.includes('Nurse')&&(
+              {(roles.includes('Nurse') || roles.includes('Administrator'))&&(
                 <div
                 class="tabs"
                 style={{ display: "flex", borderBottom: " 1px solid #ccc" }}

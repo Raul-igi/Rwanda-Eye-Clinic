@@ -12,7 +12,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}patients`,
-    roles: ['Nurse','Doctor','Receptionist','Optometrist','Optic'],
+    roles: ['Administrator', 'Nurse','Doctor','Receptionist','Optometrist','Optic'],
     condition: false,
   },  
   {
@@ -26,7 +26,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}visits`,
-    roles: ['Nurse','Doctor','Receptionist','Optometrist'],
+    roles: ['Administrator', 'Nurse','Doctor','Receptionist','Optometrist'],
     condition: false,
   },
   {
@@ -40,7 +40,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}insurance`,
-    roles: ['Doctor'],
+    roles: ['Administrator', 'Doctor'],
     condition: false,
   },
   {
@@ -54,7 +54,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}Department`,
-    roles: ['Doctor'],
+    roles: ['Administrator', 'Doctor'],
     condition: false,
   },
   {
@@ -68,7 +68,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}access-control`,
-    roles: ['Doctor'],
+    roles: ['Administrator', 'Doctor'],
     condition: false,
   },
   {
@@ -82,7 +82,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}appointments`,
-    roles: ['Doctor'],
+    roles: ['Administrator', 'Doctor'],
     condition: false,
   },
 
@@ -97,7 +97,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}specialists`,
-    roles: ['Doctor','Receptionist'],
+    roles: ['Administrator', 'Doctor','Receptionist'],
     condition: false,
   },
 
@@ -112,7 +112,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}report`,
-    roles: ['Doctor'],
+    roles: ['Administrator', 'Doctor'],
     condition: false,
   },
 
@@ -127,7 +127,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}chat`,
-    roles: ['Doctor','Receptionist','Nurse','Optometrist'],
+    roles: ['Administrator', 'Doctor','Receptionist','Nurse','Optometrist'],
     condition: false,
   },
   {
@@ -141,7 +141,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}ordonance`,
-    roles: ['Optic'],
+    roles: ['Administrator', 'Optic'],
     condition: false,
   },
 ]

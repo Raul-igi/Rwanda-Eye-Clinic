@@ -18,20 +18,20 @@ import Ordonance from '../components/ordonance/ordonance'
 
 export const Routingdata=[
 
-{path:`${import.meta.env.BASE_URL}appointments` ,element:<Appointments />, roles:['Nurse','Doctor','Optometrist']},
-{path:`${import.meta.env.BASE_URL}report` ,element:<Report />, roles:['Nurse','Doctor','Optometrist']},
-{path:`${import.meta.env.BASE_URL}chat` ,element:<Chat />, roles:['Nurse','Doctor','Receptionist','Optometrist']},
-{path:`${import.meta.env.BASE_URL}ordonance` ,element:<Ordonance />, roles:['Optic']},
+{path:`${import.meta.env.BASE_URL}appointments` ,element:<Appointments />, roles:['Administrator','Nurse','Doctor','Optometrist']},
+{path:`${import.meta.env.BASE_URL}report` ,element:<Report />, roles:['Administrator', 'Nurse','Doctor','Optometrist']},
+{path:`${import.meta.env.BASE_URL}chat` ,element:<Chat />, roles:['Administrator', 'Nurse','Doctor','Receptionist','Optometrist']},
+{path:`${import.meta.env.BASE_URL}ordonance` ,element:<Ordonance />, roles:['Administrator', 'Optic']},
 
-{path:`${import.meta.env.BASE_URL}insurance` ,element:<Insurance />, roles:['Nurse','Doctor','Optometrist']},
-{path:`${import.meta.env.BASE_URL}access-control` ,element:<AccessControl />, roles:['Nurse','Doctor','Optometrist']},
-{path:`${import.meta.env.BASE_URL}department` ,element:<Department />, roles:['Nurse','Doctor','Optometrist']},
-{path:`${import.meta.env.BASE_URL}patients` ,element:<Patients />, roles:['Nurse','Doctor','Receptionist','Optometrist','Optic']},
-{path:`${import.meta.env.BASE_URL}visit-details` ,element:<VisitDetails />, roles:['Nurse','Doctor','Receptionist','Optometrist']},
-{path:`${import.meta.env.BASE_URL}visits` ,element:<Visits />, roles:['Nurse','Doctor','Receptionist','Optometrist']},
+{path:`${import.meta.env.BASE_URL}insurance` ,element:<Insurance />, roles:['Administrator', 'Nurse','Doctor','Optometrist']},
+{path:`${import.meta.env.BASE_URL}access-control` ,element:<AccessControl />, roles:['Administrator', 'Nurse','Doctor','Optometrist']},
+{path:`${import.meta.env.BASE_URL}department` ,element:<Department />, roles:['Administrator', 'Nurse','Doctor','Optometrist']},
+{path:`${import.meta.env.BASE_URL}patients` ,element:<Patients />, roles:['Administrator', 'Nurse','Doctor','Receptionist','Optometrist','Optic']},
+{path:`${import.meta.env.BASE_URL}visit-details` ,element:<VisitDetails />, roles:['Administrator', 'Nurse','Doctor','Receptionist','Optometrist']},
+{path:`${import.meta.env.BASE_URL}visits` ,element:<Visits />, roles:['Administrator', 'Nurse','Doctor','Receptionist','Optometrist']},
 {path:`${import.meta.env.BASE_URL}specialists` ,element:<Specialists />, roles:['Nurse','Doctor','Optometrist']},
-{path:`${import.meta.env.BASE_URL}profile` ,element:<Profile />, roles:['Nurse','Doctor','Optometrist']},
-{path:`${import.meta.env.BASE_URL}schedules` ,element:<Schedules />, roles:['Nurse','Doctor','Optometrist']},
+{path:`${import.meta.env.BASE_URL}profile` ,element:<Profile />, roles:['Nurse','Doctor','Optometrist','Receptionist','Optic']},
+{path:`${import.meta.env.BASE_URL}schedules` ,element:<Schedules />, roles:['Administrator', 'Nurse','Doctor','Optometrist']},
 
 
 ]

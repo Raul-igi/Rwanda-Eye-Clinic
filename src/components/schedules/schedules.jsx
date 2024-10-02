@@ -313,6 +313,18 @@ function Schedules() {
     setSundayWindows(newWindows);
   };
 
+  const formatToTime = (isoString) => {
+    // Parse the ISO date string into a Date object
+    const date = new Date(isoString);
+    
+    // Extract hours and minutes
+    const hours = date.getUTCHours().toString().padStart(2, '0');
+    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+    
+    // Return the formatted time in hh:mm format
+    return `${hours}:${minutes}`;
+  }
+
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -360,56 +372,56 @@ function Schedules() {
           {
             "day": "Monday",
             "windows": mondayAvailability? mondayWindows.map(window=>{return({
-                from:window.start,
-                to:window.end,
+                from:formatToTime(window.start),
+                to:formatToTime(window.end),
                 slots:calculateSlots(window.start,window.end)
             })}):[]
           },
           {
             "day": "Tuesday",
             "windows": tuesdayAvailability? tuesdayWindows.map(window=>{return({
-                from:window.start,
-                to:window.end,
+                from:formatToTime(window.start),
+                to:formatToTime(window.end),
                 slots:calculateSlots(window.start,window.end)
             })}):[]
           },
           {
             "day": "Wednesday",
             "windows": wednesdayAvailability? wednesdayWindows.map(window=>{return({
-                from:window.start,
-                to:window.end,
+                from:formatToTime(window.start),
+                to:formatToTime(window.end),
                 slots:calculateSlots(window.start,window.end)
             })}):[]
           },
           {
             "day": "Thursday",
             "windows": thursdayAvailability? thursdayWindows.map(window=>{return({
-                from:window.start,
-                to:window.end,
+                from:formatToTime(window.start),
+                to:formatToTime(window.end),
                 slots:calculateSlots(window.start,window.end)
             })}):[]
           },
           {
             "day": "Friday",
             "windows": fridayAvailability? fridayWindows.map(window=>{return({
-                from:window.start,
-                to:window.end,
+                from:formatToTime(window.start),
+                to:formatToTime(window.end),
                 slots:calculateSlots(window.start,window.end)
             })}):[]
           },
           {
             "day": "Saturday",
             "windows": saturdayAvailability? saturdayWindows.map(window=>{return({
-                from:window.start,
-                to:window.end,
+                from:formatToTime(window.start),
+                to:formatToTime(window.end),
                 slots:calculateSlots(window.start,window.end)
             })}):[]
           },
           {
             "day": "Sunday",
             "windows": sundayAvailability? sundayWindows.map(window=>{return({
-                from:window.start,
-                to:window.end,
+                from:formatToTime(window.start),
+                to:formatToTime(window.end),
                 slots:calculateSlots(window.start,window.end)
             })}):[]
           }

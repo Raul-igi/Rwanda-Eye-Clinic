@@ -35,6 +35,7 @@ function Patients() {
   const [employer, setemployer] = useState("");
   const [expiryDate, setexpiryDate] = useState("");
   const [voucherNumber, setVoucherNumber] = useState("");
+  
 
   
   const [patients_, setPatients_] = useState([]);
@@ -89,6 +90,66 @@ function Patients() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedTerm, setDebouncedTerm] = useState('');
+
+  var columns = [
+    {
+      name: "Names",
+      selector: (row) => [row.names],
+      sortable: true,
+    },
+    {
+      name: "Phone Number",
+      selector: (row) => [row.phoneNumber],
+      sortable: true,
+    },
+    {
+      name: "Gender",
+      selector: (row) => [row.gender],
+      sortable: true,
+    },
+
+    {
+      name: "Date of Birth",
+      selector: (row) => [row.dob],
+      sortable: true,
+    },
+
+    {
+      name: "Add visit",
+      cell: (row) => (
+        <div
+          onClick={() => {
+            setPatientsInsurances([])
+            setShow2(true);
+            fetchPatientsInsuranceID(row.id);
+            setPatientId(row.id);
+          }}
+          style={{ color: "#2D6CC5", cursor: "pointer" }}
+        >
+          Add visit
+        </div>
+      ),
+    },
+
+    {
+      name: "Previous visits",
+      cell: (row) => (
+        <div
+          onClick={() => {
+            setShow3(true);
+            fetchPreviousVisits(row.id);
+            setPatientId(row.id);
+          }}
+          style={{ color: "#2D6CC5", cursor: "pointer" }}
+        >
+          Previous Visits
+        </div>
+      ),
+    },
+  
+  ];
+
+  const [columns_, setColumns] = useState(columns);
 
   useEffect(() => {
     // Set up a timer to update the debounced term after 7 seconds
@@ -146,80 +207,7 @@ function Patients() {
   };
 
 
-  const columns = [
-    {
-      name: "Names",
-      selector: (row) => [row.names],
-      sortable: true,
-    },
-    {
-      name: "Phone Number",
-      selector: (row) => [row.phoneNumber],
-      sortable: true,
-    },
-    {
-      name: "Gender",
-      selector: (row) => [row.gender],
-      sortable: true,
-    },
 
-    {
-      name: "Date of Birth",
-      selector: (row) => [row.dob],
-      sortable: true,
-    },
-
-    {
-      name: "Add visit",
-      cell: (row) => (
-        <div
-          onClick={() => {
-            setPatientsInsurances([])
-            setShow2(true);
-            fetchPatientsInsuranceID(row.id);
-            setPatientId(row.id);
-          }}
-          style={{ color: "#2D6CC5", cursor: "pointer" }}
-        >
-          Add visit
-        </div>
-      ),
-    },
-
-    {
-      name: "Previous visits",
-      cell: (row) => (
-        <div
-          onClick={() => {
-            setShow3(true);
-            fetchPreviousVisits(row.id);
-            setPatientId(row.id);
-          }}
-          style={{ color: "#2D6CC5", cursor: "pointer" }}
-        >
-          Previous Visits
-        </div>
-      ),
-    },
-
-    {
-      name: "Update",
-      cell: (row) => (
-        <div
-          onClick={() => {
-            setShow(true);
-            setAction("update");
-            fetchPatientsInsuranceID(row.id,true);
-            setPatientId(row.id);
-          }}
-          style={{ color: "#2D6CC5", cursor: "pointer" }}
-        >
-          Update
-        </div>
-      ),
-    },
-
-  ];
 
 
 
@@ -957,6 +945,29 @@ function Patients() {
 
   
   useEffect(() => {
+    const roles_ = localStorage.getItem("role");
+    const userRoles = JSON.parse(roles_);
+
+    
+
+    if(userRoles.includes('Administrator')){
+      columns.push({
+        name: "Update",
+        cell: (row) => (
+          <div
+            onClick={() => {
+              setShow(true);
+              setAction("update");
+              fetchPatientsInsuranceID(row.id,true);
+              setPatientId(row.id);
+            }}
+            style={{ color: "#2D6CC5", cursor: "pointer" }}
+          >
+            Update
+          </div>
+        ),
+      })
+    }
     fetchInsurances();
     fetchProvinces();
     fetchDepartments();
@@ -995,7 +1006,7 @@ function Patients() {
             </Card.Header>
             <Card.Body>
               <Card.Body>
-                <DataTable columns={columns} data={patients} paginationTotalRows={totalRows?totalRows:patients.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]}  onChangePage={page=>setCurrentPage2(page)} pagination paginationServer/>
+                <DataTable columns={columns_} data={patients} paginationTotalRows={totalRows?totalRows:patients.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]}  onChangePage={page=>setCurrentPage2(page)} pagination paginationServer/>
               </Card.Body>
             </Card.Body>
           </Card>

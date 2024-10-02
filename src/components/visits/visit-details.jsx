@@ -27,6 +27,8 @@ export default function VisitDetails() {
   const [show7, setShow7] = useState(false);
   const [show8, setShow8] = useState(false);
 
+  const [button,setButton] = useState(false);
+
   const [firstButtonValues, setFirstButtonValues] = useState({
     sphere: '',
     cylinder: '',
@@ -438,7 +440,7 @@ export default function VisitDetails() {
             type="text"
             readOnly={isReSaved}
             value={row.sphere}
-            onClick={()=>setShow7(true)}
+            onClick={()=>{setShow7(true);setButton(row.name==='Right Eye'?'first':'second')}}
             onChange={(e) =>
               handleInputChange2(e.target.value, row.name, "sphere")
             }
@@ -449,6 +451,7 @@ export default function VisitDetails() {
               options={row.name === "Lens Type" ? lensType_ : dip_}
               value={{ label: row.sphere, value: row.sphere }}
               style={{ width: "100%" }}
+              onClick={()=>{setShow7(true);setButton(row.name==='Right Eye'?'first':'second')}}
               onChange={(e) => handleInputChange2(e.value, row.name, "sphere")}
               classNamePrefix="Select2"
               className="multi-select"
@@ -467,6 +470,7 @@ export default function VisitDetails() {
             className="form-control"
             type="text"
             readOnly={isReSaved}
+            onClick={()=>{setShow7(true);setButton(row.name==='Right Eye'?'first':'second')}}
             value={row.cylinder}
             onChange={(e) =>
               handleInputChange2(e.target.value, row.name, "cylinder")
@@ -483,6 +487,7 @@ export default function VisitDetails() {
             className="form-control"
             type="text"
             readOnly={isReSaved}
+            onClick={()=>{setShow7(true);setButton(row.name==='Right Eye'?'first':'second')}}
             value={row.axis}
             onChange={(e) =>
               handleInputChange2(e.target.value, row.name, "axis")
@@ -501,6 +506,7 @@ export default function VisitDetails() {
             type="text"
             readOnly={isReSaved}
             value={row.addition}
+            onClick={()=>{setShow7(true);setButton(row.name==='Right Eye'?'first':'second')}}
             onChange={(e) =>
               handleInputChange2(e.target.value, row.name, "addition")
             }
@@ -2475,13 +2481,26 @@ export default function VisitDetails() {
             <Row>
               <Col md={2}>
                 <h5>Sphere</h5>
-                {['-1.00', '-2.00', '-3.00'].map((value) => (
+                {['-20.00', '-19.75', '-19.50', '-19.25', '-19.00', '-18.75', '-18.50', '-18.25', '-18.00', '-17.75', '-17.50', '-17.25', 
+                  '-17.00', '-16.75', '-16.50', '-16.25', '-16.00', '-15.75', '-15.50', '-15.25', '-15.00', '-14.75', '-14.50', '-14.25', 
+                  '-14.00', '-13.75', '-13.50', '-13.25', '-13.00', '-12.75', '-12.50', '-12.25', '-12.00', '-11.75', '-11.50', '-11.25', 
+                  '-11.00', '-10.75', '-10.50', '-10.25', '-10.00', '-9.75', '-9.50', '-9.25', '-9.00', '-8.75', '-8.50', '-8.25', '-8.00', 
+                  '-7.75', '-7.50', '-7.25', '-7.00', '-6.75', '-6.50', '-6.25', '-6.00', '-5.75', '-5.50', '-5.25', '-5.00', '-4.75', 
+                  '-4.50', '-4.25', '-4.00', '-3.75', '-3.50', '-3.25', '-3.00', '-2.75', '-2.50', '-2.25', '-2.00', '-1.75', '-1.50', 
+                  '-1.25', '-1.00', '-0.75', '-0.50', '-0.25', '0.00', '0.25', '0.50', '0.75', '1.00', '1.25', '1.50', '1.75', '2.00', 
+                  '2.25', '2.50', '2.75', '3.00', '3.25', '3.50', '3.75', '4.00', '4.25', '4.50', '4.75', '5.00', '5.25', '5.50', 
+                  '5.75', '6.00', '6.25', '6.50', '6.75', '7.00', '7.25', '7.50', '7.75', '8.00', '8.25', '8.50', '8.75', '9.00', 
+                  '9.25', '9.50', '9.75', '10.00', '10.25', '10.50', '10.75', '11.00', '11.25', '11.50', '11.75', '12.00', '12.25', 
+                  '12.50', '12.75', '13.00', '13.25', '13.50', '13.75', '14.00', '14.25', '14.50', '14.75', '15.00', '15.25', '15.50', 
+                  '15.75', '16.00', '16.25', '16.50', '16.75', '17.00', '17.25', '17.50', '17.75', '18.00', '18.25', '18.50', '18.75', 
+                  '19.00', '19.25', '19.50', '19.75', '20.00']
+                  .map((value) => (
                   <Form.Check
                     key={value}
                     type="checkbox"
                     label={value}
-                    onChange={() => handleChange('sphere', value, 'first')}
-                    checked={firstButtonValues.sphere === value}
+                    onChange={() => handleChange('sphere', value, button)}
+                    checked={(button === 'first' ? firstButtonValues:secondButtonValues).sphere === value}
                   />
                 ))}
               </Col>
@@ -2490,13 +2509,26 @@ export default function VisitDetails() {
 
               <Col md={2}>
                 <h5>Cylinder</h5>
-                {['-1.50', '-2.50', '-3.50'].map((value) => (
+                {['-20.00', '-19.75', '-19.50', '-19.25', '-19.00', '-18.75', '-18.50', '-18.25', '-18.00', '-17.75', '-17.50', '-17.25', 
+                  '-17.00', '-16.75', '-16.50', '-16.25', '-16.00', '-15.75', '-15.50', '-15.25', '-15.00', '-14.75', '-14.50', '-14.25', 
+                  '-14.00', '-13.75', '-13.50', '-13.25', '-13.00', '-12.75', '-12.50', '-12.25', '-12.00', '-11.75', '-11.50', '-11.25', 
+                  '-11.00', '-10.75', '-10.50', '-10.25', '-10.00', '-9.75', '-9.50', '-9.25', '-9.00', '-8.75', '-8.50', '-8.25', '-8.00', 
+                  '-7.75', '-7.50', '-7.25', '-7.00', '-6.75', '-6.50', '-6.25', '-6.00', '-5.75', '-5.50', '-5.25', '-5.00', '-4.75', 
+                  '-4.50', '-4.25', '-4.00', '-3.75', '-3.50', '-3.25', '-3.00', '-2.75', '-2.50', '-2.25', '-2.00', '-1.75', '-1.50', 
+                  '-1.25', '-1.00', '-0.75', '-0.50', '-0.25', '0.00', '0.25', '0.50', '0.75', '1.00', '1.25', '1.50', '1.75', '2.00', 
+                  '2.25', '2.50', '2.75', '3.00', '3.25', '3.50', '3.75', '4.00', '4.25', '4.50', '4.75', '5.00', '5.25', '5.50', 
+                  '5.75', '6.00', '6.25', '6.50', '6.75', '7.00', '7.25', '7.50', '7.75', '8.00', '8.25', '8.50', '8.75', '9.00', 
+                  '9.25', '9.50', '9.75', '10.00', '10.25', '10.50', '10.75', '11.00', '11.25', '11.50', '11.75', '12.00', '12.25', 
+                  '12.50', '12.75', '13.00', '13.25', '13.50', '13.75', '14.00', '14.25', '14.50', '14.75', '15.00', '15.25', '15.50', 
+                  '15.75', '16.00', '16.25', '16.50', '16.75', '17.00', '17.25', '17.50', '17.75', '18.00', '18.25', '18.50', '18.75', 
+                  '19.00', '19.25', '19.50', '19.75', '20.00']
+                  .map((value) => (
                   <Form.Check
                     key={value}
                     type="checkbox"
                     label={value}
-                    onChange={() => handleChange('cylinder', value, 'first')}
-                    checked={firstButtonValues.cylinder === value}
+                    onChange={() => handleChange('cylinder', value, button)}
+                    checked={(button === 'first' ? firstButtonValues:secondButtonValues).cylinder === value}
                   />
                 ))}
               </Col>
@@ -2505,13 +2537,13 @@ export default function VisitDetails() {
 
               <Col md={2}>
                 <h5>Axis</h5>
-                {['90', '180', '270'].map((value) => (
+                {['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100', '110', '120', '130', '140', '150', '160', '170', '180'].map((value) => (
                   <Form.Check
                     key={value}
                     type="checkbox"
                     label={value}
-                    onChange={() => handleChange('axis', value, 'first')}
-                    checked={firstButtonValues.axis === value}
+                    onChange={() => handleChange('axis', value, button)}
+                    checked={(button === 'first' ? firstButtonValues:secondButtonValues).axis === value}
                   />
                 ))}
               </Col>
@@ -2520,13 +2552,19 @@ export default function VisitDetails() {
 
               <Col md={2}>
                 <h5>Addition</h5>
-                {['+1.00', '+1.50', '+2.00'].map((value) => (
+                {['0.00', '0.25', '0.50', '0.75', '1.00', '1.25', '1.50', '1.75', '2.00', 
+                  '2.25', '2.50', '2.75', '3.00', '3.25', '3.50', '3.75', '4.00', '4.25', '4.50', '4.75', '5.00', '5.25', '5.50', 
+                  '5.75', '6.00', '6.25', '6.50', '6.75', '7.00', '7.25', '7.50', '7.75', '8.00', '8.25', '8.50', '8.75', '9.00', 
+                  '9.25', '9.50', '9.75', '10.00', '10.25', '10.50', '10.75', '11.00', '11.25', '11.50', '11.75', '12.00', '12.25', 
+                  '12.50', '12.75', '13.00', '13.25', '13.50', '13.75', '14.00', '14.25', '14.50', '14.75', '15.00', '15.25', '15.50', 
+                  '15.75', '16.00', '16.25', '16.50', '16.75', '17.00', '17.25', '17.50', '17.75', '18.00', '18.25', '18.50', '18.75', 
+                  '19.00', '19.25', '19.50', '19.75', '20.00'].map((value) => (
                   <Form.Check
                     key={value}
                     type="checkbox"
                     label={value}
-                    onChange={() => handleChange('addition', value, 'first')}
-                    checked={firstButtonValues.addition === value}
+                    onChange={() => handleChange('addition', value, button)}
+                    checked={(button === 'first' ? firstButtonValues:secondButtonValues).addition === value}
                   />
                 ))}
               </Col>

@@ -67,7 +67,7 @@ function Patients() {
   const [show5, setShow5] = useState(false);
   const [show6,setShow6]  =useState(false);
   const [show7,setShow7]  =useState(false);
-  const [selectedAssignees, setSelectedAssignees] = useState([]);
+  const [status, setStatus] = useState("");
 
   const [totalRows, setTotalRows] = useState(0);
 
@@ -167,7 +167,15 @@ function Patients() {
 
 
 
-
+  const statuses = [
+    {label:"No paid private",value:"NO_PAID_PRIVATE"},
+    {label:"No paid with insurance",value:"NO_PAID_WITH_INSURANCE"},
+    {label:"Follow up private",value:"FOLLOW_UP_PRIVATE"},
+    {label:"Follow up result",value:"FOLLOW_UP_RESULT"},
+    {label:"Follow up private act",value:"FOLLOW_UP_PRIVATE_ACT"},
+    {label:"Follow up medicine",value:"FOLLOW_UP_MEDECINE"},
+    {label:"Follow up glasses",value:"FOLLOW_UP_GLASSES"}
+  ]
 
 
   const handleSubmit3 = async (e) => {
@@ -626,6 +634,7 @@ function Patients() {
       visitType: visitType,
       caseType: caseType,
       doctorId: doctorId,
+      patientStatus: status
     });
     console.log(postObj);
     let my_token = await localStorage.getItem("token");
@@ -1498,6 +1507,21 @@ function Patients() {
                     classNamePrefix="Select2"
                     className="multi-select"
                     placeholder="Doctor"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col xl={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Patient status</Form.Label>
+                  <Select
+                    options={statuses}
+                    onChange={(e) => setStatus(e.value)}
+                    EVisitType
+                    classNamePrefix="Select2"
+                    className="multi-select"
+                    placeholder="Select Doctor"
                     required
                   />
                 </Form.Group>

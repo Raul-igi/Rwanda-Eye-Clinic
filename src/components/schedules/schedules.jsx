@@ -325,8 +325,38 @@ function Schedules() {
     return `${hours}:${minutes}`;
   }
 
+  function getDateTimeFromTimeString(timeString) {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    const today = new Date();
+    today.setHours(hours, minutes, 0, 0);
+    return today;
+  }
+
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleShow = () => {
+    var mondaySchedule = schedules.find(s=>s.day==='Monday');
+    var tuesdaySchedule = schedules.find(s=>s.day==='Tuesday');
+    var wednesdaySchedule = schedules.find(s=>s.day==='Wednesday');
+    var thursdaySchedule = schedules.find(s=>s.day==='Thursday');
+    var fridaySchedule = schedules.find(s=>s.day==='Friday');
+    var saturdaySchedule = schedules.find(s=>s.day==='Saturday');
+    var sundaySchedule = schedules.find(s=>s.day==='Sunday');
+    setMondayAvailability(mondaySchedule.windows?.length>0)
+    setMondayWindows(mondaySchedule.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setTuesdayAvailability(tuesdaySchedule.windows?.length>0)
+    setTuesdayWindows(tuesdaySchedule.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setWednesdayAvailability(wednesdaySchedule.windows?.length>0)
+    setWednesdayWindows(wednesdaySchedule.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setThursdayAvailability(thursdaySchedule.windows?.length>0)
+    setThursdayWindows(thursdaySchedule.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setFridayAvailability(fridaySchedule.windows?.length>0)
+    setFridayWindows(fridaySchedule.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setSaturdayAvailability(saturdaySchedule.windows?.length>0)
+    setSaturdayWindows(saturdaySchedule.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setSundayAvailability(sundaySchedule.windows?.length>0)
+    setSundayWindows(sundaySchedule.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setShow(true)
+  };
 
   const updateSchedule = async (e) => {
     //handle submit is the second step
@@ -496,7 +526,7 @@ function Schedules() {
       <Modal show={show} onHide={handleClose}>
         <Form onSubmit={handleSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>Add your schedule</Modal.Title>
+            <Modal.Title>Add doctor's schedule</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Row>
@@ -504,6 +534,7 @@ function Schedules() {
                 <div className="custom-controls-stacked">
                   <Form.Check
                     onChange={(e) => {mondayToggled()}}
+                    checked={mondayAvailability}
                     type="checkbox"
                     label="Monday"
                     value={'Monday'}
@@ -578,6 +609,7 @@ function Schedules() {
                   />
                   <Form.Check
                     onChange={(e) => tuesdayToggled()}
+                    checked={tuesdayAvailability}
                     type="checkbox"
                     label="Tuesday"
                   />
@@ -651,6 +683,7 @@ function Schedules() {
                   />
                   <Form.Check
                     onChange={(e) => wednesdayToggled()}
+                    checked={wednesdayAvailability}
                     type="checkbox"
                     label="Wednesday"
                   />
@@ -724,6 +757,7 @@ function Schedules() {
                   />
                   <Form.Check
                     onChange={(e) => thursdayToggled()}
+                    checked={thursdayAvailability}
                     type="checkbox"
                     label="Thursday"
                   />
@@ -797,6 +831,7 @@ function Schedules() {
                   />
                   <Form.Check
                     onChange={(e) => fridayToggled()}
+                    checked={fridayAvailability}
                     type="checkbox"
                     label="Friday"
                   />
@@ -870,6 +905,7 @@ function Schedules() {
                   />
                   <Form.Check
                     onChange={(e) => saturdayToggled()}
+                    checked={saturdayAvailability}
                     type="checkbox"
                     label="Saturday"
                   />
@@ -943,6 +979,7 @@ function Schedules() {
                   />
                   <Form.Check
                     onChange={(e) => sundayToggled()}
+                    checked={sundayAvailability}
                     type="checkbox"
                     label="Sunday"
                   />

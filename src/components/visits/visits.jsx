@@ -23,7 +23,7 @@ const columns = [
   },
   {
     name: "DoB",
-    selector: (row) => [row.patient?.dob],
+    selector: (row) => [row.patient?.dob || '-'],
     sortable: true,
   },
   {
@@ -54,7 +54,56 @@ const columns = [
         state={{
           data: {
             patient: row.patient,
-            doctor: `${row.doctor.firstName} ${row.doctor.lastName}`,
+            doctor: `${row.doctor?.firstName} ${row.doctor?.lastName}`,
+            insurance: row.patientInsurance,
+            createdAt: row.createdAt,
+            visitId: row.id,
+            visitStatus: row.status,
+          },
+        }}
+      >
+        View Details
+      </Link>
+    ),
+  },
+];
+
+const columns2 = [
+  {
+    name: "Patient's names",
+    selector: (row) => [row.patient?.names],
+    sortable: true,
+  },
+
+  {
+    name: "Gender",
+    selector: (row) => [row.patient?.gender],
+    sortable: true,
+  },
+  {
+    name: "DoB",
+    selector: (row) => [row.patient?.dob  || '-'],
+    sortable: true,
+  },
+  {
+    name: "Insurance",
+    selector: (row) => [row.patientInsurance?.insuranceName || "-"],
+    sortable: true,
+  },
+  {
+    name: "Patient status",
+    selector: (row) => [row.patientStatus || "-"],
+    sortable: true,
+  },
+  {
+    name: "Actions",
+    cell: (row) => (
+      <Link
+        to="/visit-details"
+        state={{
+          data: {
+            patient: row.patient,
+            doctor: `${row.doctor?.firstName} ${row.doctor?.lastName}`,
             insurance: row.patientInsurance,
             createdAt: row.createdAt,
             visitId: row.id,
@@ -79,7 +128,7 @@ function Visits() {
   const [patientId, setPatientId] = useState("");
   const [voucherNumber, setVoucherNumber] = useState("");
   const [patientsInsurances, setPatientsInsurances] = useState([]);
-  const [diagnostics, setDiagnostics] = useState([]);
+  const [status, setStatus] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [tab, setTab] = useState('tab1');
@@ -139,6 +188,16 @@ function Visits() {
     }
   };
 
+  const statuses = [
+    {label:"No paid private",value:"NO_PAID_PRIVATE"},
+    {label:"No paid with insurance",value:"NO_PAID_WITH_INSURANCE"},
+    {label:"Follow up private",value:"FOLLOW_UP_PRIVATE"},
+    {label:"Follow up result",value:"FOLLOW_UP_RESULT"},
+    {label:"Follow up private act",value:"FOLLOW_UP_PRIVATE_ACT"},
+    {label:"Follow up medicine",value:"FOLLOW_UP_MEDECINE"},
+    {label:"Follow up glasses",value:"FOLLOW_UP_GLASSES"}
+  ]
+
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -153,6 +212,7 @@ function Visits() {
       voucherNumber: voucherNumber,
       caseType: caseType,
       doctorId: doctorId,
+      patientStatus: status
     });
     console.log(postObj);
     let my_token = await localStorage.getItem("token");
@@ -225,6 +285,8 @@ function Visits() {
           ? `http://www.ubuzima.rw/rec/visit/nurse`
           : userRoles.includes("Doctor")
           ? `http://www.ubuzima.rw/rec/visit/doctor`
+          : userRoles.includes("Administrator")
+          ? `http://www.ubuzima.rw/rec/visit/all`
           : `http://www.ubuzima.rw/rec/visit/receptionist`,
         config
       )
@@ -348,6 +410,33 @@ function Visits() {
       });
   };
 
+  const fetchTodaysVisits = async (id) => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${my_token}`,
+        "selectedDate": new Date().toISOString().slice(0, 10),
+        "page": currentPage,
+        "size": 10,
+      },
+    }; //incase you have to deal with ID or Options
+    axios
+      .get(`http://www.ubuzima.rw/rec/visit/by-day`, config)
+      .then((res) => {
+        console.log(res.data);
+        setVisits(res.data.response.patientVisits);
+        setVisits_(res.data.response.patientVisits);
+        if (res.data.response.totalElements) {
+          setTotalRows(res.data.response.totalElements);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error.message);
+      });
+  };
+
   useEffect(() => {
     if(tab === 'tab1'){
       fetchVisits();
@@ -379,7 +468,7 @@ function Visits() {
               >
                 <div
                   class="tab"
-                  onClick={()=>{setVisits([]);setTab('tab1');fetchVisits()}}
+                  onClick={()=>{setVisits([]); setTotalRows(0); setTab('tab1');fetchVisits()}}
                   style={{
                     padding: "10px 20px",
                     cursor: "pointer",
@@ -394,20 +483,38 @@ function Visits() {
                   All Visits
                 </div>
 
+                {roles.includes('Nurse') && (
+                  <div
+                    class="tab"
+                    onClick={()=>{setVisits([]);  setTotalRows(0); setTab('tab2');fetchVisitsDiagnostics()}}
+                    style={{
+                      padding: "10px 20px",
+                      cursor: "pointer",
+                      border: "1px solid #ccc",
+                      borderBottom: tab === 'tab2'?"3px solid #467FCF":"none",
+                      backgroundColor: tab === 'tab2'?'white':"#f1f1f1",
+                      fontWeight: tab === 'tab2'?'bold':"normal",
+                    }}
+                    id="tab2"
+                  >
+                  Visits without diagnostics
+                  </div>
+                )}
+
                 <div
                   class="tab"
-                  onClick={()=>{setVisits([]);setTab('tab2');fetchVisitsDiagnostics()}}
+                  onClick={()=>{setVisits([]); setTotalRows(0) ;setTab('tab3');fetchTodaysVisits()}}
                   style={{
                     padding: "10px 20px",
                     cursor: "pointer",
                     border: "1px solid #ccc",
-                    borderBottom: tab === 'tab2'?"3px solid #467FCF":"none",
-                    backgroundColor: tab === 'tab2'?'white':"#f1f1f1",
-                    fontWeight: tab === 'tab2'?'bold':"normal",
+                    borderBottom: tab === 'tab3'?"3px solid #467FCF":"none",
+                    backgroundColor: tab === 'tab3'?'white':"#f1f1f1",
+                    fontWeight: tab === 'tab3'?'bold':"normal",
                   }}
-                  id="tab2"
+                  id="tab3"
                 >
-                 Visits without diagnostics
+                 Today's visits
                 </div>
               </div>
               )}
@@ -441,8 +548,11 @@ function Visits() {
               </Row>
             </Card.Header>
             <Card.Body>
+              {tab==='tab3'&&(
+                <p>Today's visits: {totalRows || visits.length} </p>
+              )}
               <DataTable
-                columns={columns}
+                columns={roles.includes('Doctor')?columns2:columns}
                 paginationPerPage={10}
                 paginationRowsPerPageOptions={[10]}
                 paginationTotalRows={totalRows ? totalRows : visits.length}
@@ -558,6 +668,21 @@ function Visits() {
                   <Select
                     options={doctors}
                     onChange={(e) => setDoctorId(e.value)}
+                    EVisitType
+                    classNamePrefix="Select2"
+                    className="multi-select"
+                    placeholder="Select Doctor"
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col xl={6}>
+                <Form.Group className="form-group">
+                  <Form.Label>Patient status</Form.Label>
+                  <Select
+                    options={statuses}
+                    onChange={(e) => setStatus(e.value)}
                     EVisitType
                     classNamePrefix="Select2"
                     className="multi-select"

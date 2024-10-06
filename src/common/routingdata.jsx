@@ -30,7 +30,7 @@ export const Routingdata=[
 {path:`${import.meta.env.BASE_URL}visit-details` ,element:<VisitDetails />, roles:['Administrator', 'Nurse','Doctor','Receptionist','Optometrist']},
 {path:`${import.meta.env.BASE_URL}visits` ,element:<Visits />, roles:['Administrator', 'Nurse','Doctor','Receptionist','Optometrist']},
 {path:`${import.meta.env.BASE_URL}specialists` ,element:<Specialists />, roles:['Nurse','Doctor','Optometrist']},
-{path:`${import.meta.env.BASE_URL}profile` ,element:<Profile />, roles:['Nurse','Doctor','Optometrist','Receptionist','Optic']},
+{path:`${import.meta.env.BASE_URL}profile` ,element:<Profile />, roles:['Nurse','Doctor','Optometrist','Receptionist','Optic', 'Administrator']},
 {path:`${import.meta.env.BASE_URL}schedules` ,element:<Schedules />, roles:['Administrator', 'Nurse','Doctor','Optometrist']},
 
 

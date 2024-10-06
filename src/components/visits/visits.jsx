@@ -461,7 +461,7 @@ function Visits() {
             <Card.Header className="d-flex justify-content-between align-items-center">
               <Card.Title>Visits</Card.Title>
 
-              {(roles.includes('Nurse') || roles.includes('Administrator'))&&(
+              {(roles.includes('Nurse') || roles.includes('Receptionist') || roles.includes('Administrator'))&&(
                 <div
                 class="tabs"
                 style={{ display: "flex", borderBottom: " 1px solid #ccc" }}
@@ -501,6 +501,8 @@ function Visits() {
                   </div>
                 )}
 
+                {!roles.includes('Nurse') && (
+
                 <div
                   class="tab"
                   onClick={()=>{setVisits([]); setTotalRows(0) ;setTab('tab3');fetchTodaysVisits()}}
@@ -514,8 +516,10 @@ function Visits() {
                   }}
                   id="tab3"
                 >
-                 Today's visits
+                 {roles.includes('Receptionist')?'Processed visits':`Today's visits`}
                 </div>
+                )}
+
               </div>
               )}
 

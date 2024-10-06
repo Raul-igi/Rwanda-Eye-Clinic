@@ -35,6 +35,8 @@ function Patients() {
   const [employer, setemployer] = useState("");
   const [expiryDate, setexpiryDate] = useState("");
   const [voucherNumber, setVoucherNumber] = useState("");
+
+  const [roles, setRoles] = useState([]);
   
 
   
@@ -149,7 +151,23 @@ function Patients() {
   
   ];
 
-  const [columns_, setColumns] = useState(columns);
+  var columns3 = [...columns,{
+    name: "Update",
+    cell: (row) => (
+      <div
+        onClick={() => {
+          setShow(true);
+          setAction("update");
+          fetchPatientsInsuranceID(row.id,true);
+          setPatientId(row.id);
+        }}
+        style={{ color: "#2D6CC5", cursor: "pointer" }}
+      >
+        Update
+      </div>
+    ),
+  }]
+
 
   useEffect(() => {
     // Set up a timer to update the debounced term after 7 seconds
@@ -957,26 +975,8 @@ function Patients() {
     const roles_ = localStorage.getItem("role");
     const userRoles = JSON.parse(roles_);
 
-    
+    setRoles(userRoles)
 
-    if(userRoles.includes('Administrator')){
-      columns.push({
-        name: "Update",
-        cell: (row) => (
-          <div
-            onClick={() => {
-              setShow(true);
-              setAction("update");
-              fetchPatientsInsuranceID(row.id,true);
-              setPatientId(row.id);
-            }}
-            style={{ color: "#2D6CC5", cursor: "pointer" }}
-          >
-            Update
-          </div>
-        ),
-      })
-    }
     fetchInsurances();
     fetchProvinces();
     fetchDepartments();
@@ -1015,7 +1015,7 @@ function Patients() {
             </Card.Header>
             <Card.Body>
               <Card.Body>
-                <DataTable columns={columns_} data={patients} paginationTotalRows={totalRows?totalRows:patients.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]}  onChangePage={page=>setCurrentPage2(page)} pagination paginationServer/>
+                <DataTable columns={roles.includes('Administrator')?columns3:columns} data={patients} paginationTotalRows={totalRows?totalRows:patients.length} paginationPerPage={10} paginationRowsPerPageOptions={[10]}  onChangePage={page=>setCurrentPage2(page)} pagination paginationServer/>
               </Card.Body>
             </Card.Body>
           </Card>

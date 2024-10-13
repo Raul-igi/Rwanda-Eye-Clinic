@@ -1395,6 +1395,81 @@ export default function VisitDetails() {
     }
   };
 
+  const fetchExams = async () => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/visit/doctor/exams`,
+        config
+      );
+      if (response.data.status) {
+        const exams_ = response.data.response.map((el) => {
+          return { label: el.name, value: el.name };
+        });
+        setRightOptions(exams_);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchProcedures = async () => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/visit/doctor/procedures`,
+        config
+      );
+      if (response.data.status) {
+        const procedures_ = response.data.response.map((el) => {
+          return { label: el.name, value: el.name };
+        });
+        setProceduresOptions(procedures_);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchLabs = async () => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+
+    try {
+      const response = await axios.get(
+        `http://www.ubuzima.rw/rec/visit/doctor/labs`,
+        config
+      );
+      if (response.data.status) {
+        const labs_ = response.data.response.map((el) => {
+          return { label: el.name, value: el.name };
+        });
+        setLabsOptions(labs_);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const fetchTreatment = async (treats) => {
     let my_token = localStorage.getItem("token");
     const config = {
@@ -1470,6 +1545,18 @@ export default function VisitDetails() {
           label: el.name,
         }))
       );
+      setRightValues(response.data.response.exams.map(el=>({
+        value:el,
+        label:el,
+      })))
+      setProceduresValues(response.data.response.procedures.map(el=>({
+        value:el,
+        label:el,
+      })))
+      setLabsValues(response.data.response.labs.map(el=>({
+        value:el,
+        label:el,
+      })))
     } catch (error) {
       console.error(error);
     }
@@ -1913,7 +2000,7 @@ export default function VisitDetails() {
     });
     try {
       const response = await axios.post(
-        `http://www.ubuzima.rw/rec/visit/nurse/patient/add-exams`,
+        `http://www.ubuzima.rw/rec/visit/doctor/add-exams`,
         postObj,
         config
       );
@@ -1943,7 +2030,7 @@ export default function VisitDetails() {
     });
     try {
       const response = await axios.post(
-        `http://www.ubuzima.rw/rec/visit/nurse/patient/add-exams`,
+        `http://www.ubuzima.rw/rec/visit/doctor/add-exams`,
         postObj,
         config
       );
@@ -1972,7 +2059,7 @@ export default function VisitDetails() {
     });
     try {
       const response = await axios.post(
-        `http://www.ubuzima.rw/rec/visit/nurse/patient/add-procedures`,
+        `http://www.ubuzima.rw/rec/visit/doctor/add-procedures`,
         postObj,
         config
       );
@@ -2000,7 +2087,7 @@ export default function VisitDetails() {
     });
     try {
       const response = await axios.post(
-        `http://www.ubuzima.rw/rec/visit/nurse/patient/add-labs`,
+        `http://www.ubuzima.rw/rec/visit/doctor/add-labs`,
         postObj,
         config
       );
@@ -2340,6 +2427,9 @@ export default function VisitDetails() {
       fetchOptRefraction();
       fetchAllTreatments();
       fetchNotes();
+      fetchLabs();
+      fetchProcedures();
+      fetchExams();
     }
   }, []);
 
@@ -2740,6 +2830,7 @@ export default function VisitDetails() {
                                 <CreatableSelect
                                   isMulti
                                   options={rightOptions}
+                                  value={rightValues}
                                   onCreateOption={handleCreateOD}
                                   onChange={(e) => setRightValues(e)}
                                   placeholder="Select or create"
@@ -2776,6 +2867,7 @@ export default function VisitDetails() {
                                 <CreatableSelect
                                   isMulti
                                   options={leftOptions}
+                                  value={leftValues}
                                   onChange={(e) => setLeftValues(e)}
                                   onCreateOption={handleCreateOS}
                                   placeholder="Select or create"
@@ -2823,6 +2915,7 @@ export default function VisitDetails() {
                                 <CreatableSelect
                                   isMulti
                                   options={proceduresOptions}
+                                  value={proceduresValues}
                                   onChange={(e) => setProceduresValues(e)}
                                   onCreateOption={handleCreateProcedure}
                                   placeholder="Select or create"
@@ -2859,6 +2952,7 @@ export default function VisitDetails() {
                                 <CreatableSelect
                                   isMulti
                                   options={labsOptions}
+                                  value={labsValues}
                                   onChange={(e) => setLabsValues(e)}
                                   onCreateOption={handleCreateLab}
                                   placeholder="Select or create"

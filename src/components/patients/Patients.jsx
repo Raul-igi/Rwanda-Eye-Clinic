@@ -1375,7 +1375,6 @@ function Patients() {
                               value={expiryDate}
                               // placeholder="Address"
                               onChange={(e) => setexpiryDate(e.target.value)}
-                              required
                             />
                           </Form.Group>
                         </Col>
@@ -1811,7 +1810,6 @@ function Patients() {
                               value={expiryDate}
                               // placeholder="Address"
                               onChange={(e) => setexpiryDate(e.target.value)}
-                              required
                             />
                           </Form.Group>
                         </Col>

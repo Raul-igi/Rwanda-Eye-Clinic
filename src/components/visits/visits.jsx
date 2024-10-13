@@ -68,6 +68,15 @@ const columns = [
   },
 ];
 
+const conditionalRowStyles = [
+  {
+    when: row => row.status === "DONE", // Define your condition here
+    style: {
+      backgroundColor: '#b5e48c', // Your custom background color
+    },
+  },
+];
+
 const columns2 = [
   {
     name: "Patient's names",
@@ -412,17 +421,23 @@ function Visits() {
 
   const fetchTodaysVisits = async (id) => {
     let my_token = await localStorage.getItem("token");
+    let user = await localStorage.getItem("user");
+    let roles = await localStorage.getItem("role");
+    let userRoles = JSON.parse(roles)
+    let userObj = JSON.parse(user)
     const config = {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${my_token}`,
         "selectedDate": new Date().toISOString().slice(0, 10),
         "page": currentPage,
+        "status":userRoles.includes('Receptionist')?"DONE":null,
+        "doctorId": userRoles.includes('Doctor')?userObj.id:"",
         "size": 10,
       },
     }; //incase you have to deal with ID or Options
     axios
-      .get(`http://www.ubuzima.rw/rec/visit/by-day`, config)
+      .get(userRoles.includes('Receptionist')?`http://www.ubuzima.rw/rec/visit/by-day-status`:`http://www.ubuzima.rw/rec/visit/by-day`, config)
       .then((res) => {
         console.log(res.data);
         setVisits(res.data.response.patientVisits);
@@ -461,7 +476,7 @@ function Visits() {
             <Card.Header className="d-flex justify-content-between align-items-center">
               <Card.Title>Visits</Card.Title>
 
-              {(roles.includes('Nurse') || roles.includes('Receptionist') || roles.includes('Administrator'))&&(
+              {(roles.includes('Nurse') || roles.includes('Receptionist') || roles.includes('Administrator') || roles.includes('Doctor'))&&(
                 <div
                 class="tabs"
                 style={{ display: "flex", borderBottom: " 1px solid #ccc" }}
@@ -562,6 +577,7 @@ function Visits() {
                 paginationTotalRows={totalRows ? totalRows : visits.length}
                 onChangePage={(page) => setCurrentPage(page)}
                 data={visits}
+                conditionalRowStyles={conditionalRowStyles}
                 pagination
                 paginationServer
               />

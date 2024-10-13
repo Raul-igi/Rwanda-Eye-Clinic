@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import DataTable from "react-data-table-component";
+import CreatableSelect from "react-select/creatable";
 import { debounce } from "lodash";
 import {
   lensType_,
@@ -14,6 +15,631 @@ import {
 } from "../../data/elementsdata";
 import Visit from "./visit";
 import Pagination from "./components/Pagination";
+
+const sphereArray = [
+  "-20.00",
+  "-19.75",
+  "-19.50",
+  "-19.25",
+  "-19.00",
+  "-18.75",
+  "-18.50",
+  "-18.25",
+  "-18.00",
+  "-17.75",
+  "-17.50",
+  "-17.25",
+  "-17.00",
+  "-16.75",
+  "-16.50",
+  "-16.25",
+  "-16.00",
+  "-15.75",
+  "-15.50",
+  "-15.25",
+  "-15.00",
+  "-14.75",
+  "-14.50",
+  "-14.25",
+  "-14.00",
+  "-13.75",
+  "-13.50",
+  "-13.25",
+  "-13.00",
+  "-12.75",
+  "-12.50",
+  "-12.25",
+  "-12.00",
+  "-11.75",
+  "-11.50",
+  "-11.25",
+  "-11.00",
+  "-10.75",
+  "-10.50",
+  "-10.25",
+  "-10.00",
+  "-9.75",
+  "-9.50",
+  "-9.25",
+  "-9.00",
+  "-8.75",
+  "-8.50",
+  "-8.25",
+  "-8.00",
+  "-7.75",
+  "-7.50",
+  "-7.25",
+  "-7.00",
+  "-6.75",
+  "-6.50",
+  "-6.25",
+  "-6.00",
+  "-5.75",
+  "-5.50",
+  "-5.25",
+  "-5.00",
+  "-4.75",
+  "-4.50",
+  "-4.25",
+  "-4.00",
+  "-3.75",
+  "-3.50",
+  "-3.25",
+  "-3.00",
+  "-2.75",
+  "-2.50",
+  "-2.25",
+  "-2.00",
+  "-1.75",
+  "-1.50",
+  "-1.25",
+  "-1.00",
+  "-0.75",
+  "-0.50",
+  "-0.25",
+  "0.00",
+  "0.25",
+  "0.50",
+  "0.75",
+  "1.00",
+  "1.25",
+  "1.50",
+  "1.75",
+  "2.00",
+  "2.25",
+  "2.50",
+  "2.75",
+  "3.00",
+  "3.25",
+  "3.50",
+  "3.75",
+  "4.00",
+  "4.25",
+  "4.50",
+  "4.75",
+  "5.00",
+  "5.25",
+  "5.50",
+  "5.75",
+  "6.00",
+  "6.25",
+  "6.50",
+  "6.75",
+  "7.00",
+  "7.25",
+  "7.50",
+  "7.75",
+  "8.00",
+  "8.25",
+  "8.50",
+  "8.75",
+  "9.00",
+  "9.25",
+  "9.50",
+  "9.75",
+  "10.00",
+  "10.25",
+  "10.50",
+  "10.75",
+  "11.00",
+  "11.25",
+  "11.50",
+  "11.75",
+  "12.00",
+  "12.25",
+  "12.50",
+  "12.75",
+  "13.00",
+  "13.25",
+  "13.50",
+  "13.75",
+  "14.00",
+  "14.25",
+  "14.50",
+  "14.75",
+  "15.00",
+  "15.25",
+  "15.50",
+  "15.75",
+  "16.00",
+  "16.25",
+  "16.50",
+  "16.75",
+  "17.00",
+  "17.25",
+  "17.50",
+  "17.75",
+  "18.00",
+  "18.25",
+  "18.50",
+  "18.75",
+  "19.00",
+  "19.25",
+  "19.50",
+  "19.75",
+  "20.00",
+];
+
+const cylinderArray = [
+  "-20.00",
+  "-19.75",
+  "-19.50",
+  "-19.25",
+  "-19.00",
+  "-18.75",
+  "-18.50",
+  "-18.25",
+  "-18.00",
+  "-17.75",
+  "-17.50",
+  "-17.25",
+  "-17.00",
+  "-16.75",
+  "-16.50",
+  "-16.25",
+  "-16.00",
+  "-15.75",
+  "-15.50",
+  "-15.25",
+  "-15.00",
+  "-14.75",
+  "-14.50",
+  "-14.25",
+  "-14.00",
+  "-13.75",
+  "-13.50",
+  "-13.25",
+  "-13.00",
+  "-12.75",
+  "-12.50",
+  "-12.25",
+  "-12.00",
+  "-11.75",
+  "-11.50",
+  "-11.25",
+  "-11.00",
+  "-10.75",
+  "-10.50",
+  "-10.25",
+  "-10.00",
+  "-9.75",
+  "-9.50",
+  "-9.25",
+  "-9.00",
+  "-8.75",
+  "-8.50",
+  "-8.25",
+  "-8.00",
+  "-7.75",
+  "-7.50",
+  "-7.25",
+  "-7.00",
+  "-6.75",
+  "-6.50",
+  "-6.25",
+  "-6.00",
+  "-5.75",
+  "-5.50",
+  "-5.25",
+  "-5.00",
+  "-4.75",
+  "-4.50",
+  "-4.25",
+  "-4.00",
+  "-3.75",
+  "-3.50",
+  "-3.25",
+  "-3.00",
+  "-2.75",
+  "-2.50",
+  "-2.25",
+  "-2.00",
+  "-1.75",
+  "-1.50",
+  "-1.25",
+  "-1.00",
+  "-0.75",
+  "-0.50",
+  "-0.25",
+  "0.00",
+  "0.25",
+  "0.50",
+  "0.75",
+  "1.00",
+  "1.25",
+  "1.50",
+  "1.75",
+  "2.00",
+  "2.25",
+  "2.50",
+  "2.75",
+  "3.00",
+  "3.25",
+  "3.50",
+  "3.75",
+  "4.00",
+  "4.25",
+  "4.50",
+  "4.75",
+  "5.00",
+  "5.25",
+  "5.50",
+  "5.75",
+  "6.00",
+  "6.25",
+  "6.50",
+  "6.75",
+  "7.00",
+  "7.25",
+  "7.50",
+  "7.75",
+  "8.00",
+  "8.25",
+  "8.50",
+  "8.75",
+  "9.00",
+  "9.25",
+  "9.50",
+  "9.75",
+  "10.00",
+  "10.25",
+  "10.50",
+  "10.75",
+  "11.00",
+  "11.25",
+  "11.50",
+  "11.75",
+  "12.00",
+  "12.25",
+  "12.50",
+  "12.75",
+  "13.00",
+  "13.25",
+  "13.50",
+  "13.75",
+  "14.00",
+  "14.25",
+  "14.50",
+  "14.75",
+  "15.00",
+  "15.25",
+  "15.50",
+  "15.75",
+  "16.00",
+  "16.25",
+  "16.50",
+  "16.75",
+  "17.00",
+  "17.25",
+  "17.50",
+  "17.75",
+  "18.00",
+  "18.25",
+  "18.50",
+  "18.75",
+  "19.00",
+  "19.25",
+  "19.50",
+  "19.75",
+  "20.00",
+];
+
+const axisArray = [
+  "0",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "11",
+  "12",
+  "13",
+  "14",
+  "15",
+  "16",
+  "17",
+  "18",
+  "19",
+  "20",
+  "21",
+  "22",
+  "23",
+  "24",
+  "25",
+  "26",
+  "27",
+  "28",
+  "29",
+  "30",
+  "31",
+  "32",
+  "33",
+  "34",
+  "35",
+  "36",
+  "37",
+  "38",
+  "39",
+  "40",
+  "41",
+  "42",
+  "43",
+  "44",
+  "45",
+  "46",
+  "47",
+  "48",
+  "49",
+  "50",
+  "51",
+  "52",
+  "53",
+  "54",
+  "55",
+  "56",
+  "57",
+  "58",
+  "59",
+  "60",
+  "61",
+  "62",
+  "63",
+  "64",
+  "65",
+  "66",
+  "67",
+  "68",
+  "69",
+  "70",
+  "71",
+  "72",
+  "73",
+  "74",
+  "75",
+  "76",
+  "77",
+  "78",
+  "79",
+  "80",
+  "81",
+  "82",
+  "83",
+  "84",
+  "85",
+  "86",
+  "87",
+  "88",
+  "89",
+  "90",
+  "91",
+  "92",
+  "93",
+  "94",
+  "95",
+  "96",
+  "97",
+  "98",
+  "99",
+  "100",
+  "101",
+  "102",
+  "103",
+  "104",
+  "105",
+  "106",
+  "107",
+  "108",
+  "109",
+  "110",
+  "111",
+  "112",
+  "113",
+  "114",
+  "115",
+  "116",
+  "117",
+  "118",
+  "119",
+  "120",
+  "121",
+  "122",
+  "123",
+  "124",
+  "125",
+  "126",
+  "127",
+  "128",
+  "129",
+  "130",
+  "131",
+  "132",
+  "133",
+  "134",
+  "135",
+  "136",
+  "137",
+  "138",
+  "139",
+  "140",
+  "141",
+  "142",
+  "143",
+  "144",
+  "145",
+  "146",
+  "147",
+  "148",
+  "149",
+  "150",
+  "151",
+  "152",
+  "153",
+  "154",
+  "155",
+  "156",
+  "157",
+  "158",
+  "159",
+  "160",
+  "161",
+  "162",
+  "163",
+  "164",
+  "165",
+  "166",
+  "167",
+  "168",
+  "169",
+  "170",
+  "171",
+  "172",
+  "173",
+  "174",
+  "175",
+  "176",
+  "177",
+  "178",
+  "179",
+  "180",
+];
+
+const additionsArray = [
+  "0.00",
+  "0.25",
+  "0.50",
+  "0.75",
+  "1.00",
+  "1.25",
+  "1.50",
+  "1.75",
+  "2.00",
+  "2.25",
+  "2.50",
+  "2.75",
+  "3.00",
+  "3.25",
+  "3.50",
+  "3.75",
+  "4.00",
+  "4.25",
+  "4.50",
+  "4.75",
+  "5.00",
+  "5.25",
+  "5.50",
+  "5.75",
+  "6.00",
+  "6.25",
+  "6.50",
+  "6.75",
+  "7.00",
+  "7.25",
+  "7.50",
+  "7.75",
+  "8.00",
+  "8.25",
+  "8.50",
+  "8.75",
+  "9.00",
+  "9.25",
+  "9.50",
+  "9.75",
+  "10.00",
+  "10.25",
+  "10.50",
+  "10.75",
+  "11.00",
+  "11.25",
+  "11.50",
+  "11.75",
+  "12.00",
+  "12.25",
+  "12.50",
+  "12.75",
+  "13.00",
+  "13.25",
+  "13.50",
+  "13.75",
+  "14.00",
+  "14.25",
+  "14.50",
+  "14.75",
+  "15.00",
+  "15.25",
+  "15.50",
+  "15.75",
+  "16.00",
+  "16.25",
+  "16.50",
+  "16.75",
+  "17.00",
+  "17.25",
+  "17.50",
+  "17.75",
+  "18.00",
+  "18.25",
+  "18.50",
+  "18.75",
+  "19.00",
+  "19.25",
+  "19.50",
+  "19.75",
+  "20.00",
+];
+
+const selectStyles = {
+  menu: (provided) => ({
+    ...provided,
+    height: 180, // Custom height for the dropdown menu
+  }),
+  menuList: (provided) => ({
+    ...provided,
+    maxHeight: 180, // Max height of the dropdown menu list
+  }),
+};
+
+const customStyles = {
+  header: {
+    style: {
+      padding: "2px",
+    },
+  },
+  rows: {
+    style: {
+      height: "30px", // override the row height
+      "&:not(:last-of-type)": {
+        borderBottomStyle: "solid",
+        borderBottomWidth: "2px",
+        borderBottomColor: "#ccc",
+      },
+    },
+  },
+};
 
 export default function VisitDetails() {
   const location = useLocation();
@@ -27,20 +653,20 @@ export default function VisitDetails() {
   const [show7, setShow7] = useState(false);
   const [show8, setShow8] = useState(false);
 
-  const [button,setButton] = useState(false);
+  const [button, setButton] = useState(false);
 
   const [firstButtonValues, setFirstButtonValues] = useState({
-    sphere: '',
-    cylinder: '',
-    axis: '',
-    addition: '',
+    sphere: "",
+    cylinder: "",
+    axis: "",
+    addition: "",
   });
 
   const [secondButtonValues, setSecondButtonValues] = useState({
-    sphere: '',
-    cylinder: '',
-    axis: '',
-    addition: '',
+    sphere: "",
+    cylinder: "",
+    axis: "",
+    addition: "",
   });
 
   const [isNoteSaved, setIsNoteSaved] = useState(false);
@@ -197,7 +823,18 @@ export default function VisitDetails() {
     },
   ]);
 
-  const [savedRefraction, setSavedRefraction] = useState("");
+  const [rightOptions, setRightOptions] = useState([]);
+  const [leftOptions, setLeftOptions] = useState([]);
+
+  const [rightValues, setRightValues] = useState([]);
+  const [leftValues, setLeftValues] = useState([]);
+
+
+  const [proceduresOptions, setProceduresOptions] = useState([]);
+  const [labsOptions, setLabsOptions] = useState([]);
+
+  const [proceduresValues, setProceduresValues] = useState([]);
+  const [labsValues, setLabsValues] = useState([]);
 
   const [medicalActs, setMedicalActs] = useState([]);
   const [visualAcuity, setVisualAcuity] = useState([
@@ -440,7 +1077,10 @@ export default function VisitDetails() {
             type="text"
             readOnly={isReSaved}
             value={row.sphere}
-            onClick={()=>{setShow7(true);setButton(row.name==='Right Eye'?'first':'second')}}
+            onClick={() => {
+              setShow7(true);
+              setButton(row.name === "Right Eye" ? "first" : "second");
+            }}
             onChange={(e) =>
               handleInputChange2(e.target.value, row.name, "sphere")
             }
@@ -451,7 +1091,10 @@ export default function VisitDetails() {
               options={row.name === "Lens Type" ? lensType_ : dip_}
               value={{ label: row.sphere, value: row.sphere }}
               style={{ width: "100%" }}
-              onClick={()=>{setShow7(true);setButton(row.name==='Right Eye'?'first':'second')}}
+              onClick={() => {
+                setShow7(true);
+                setButton(row.name === "Right Eye" ? "first" : "second");
+              }}
               onChange={(e) => handleInputChange2(e.value, row.name, "sphere")}
               classNamePrefix="Select2"
               className="multi-select"
@@ -470,7 +1113,10 @@ export default function VisitDetails() {
             className="form-control"
             type="text"
             readOnly={isReSaved}
-            onClick={()=>{setShow7(true);setButton(row.name==='Right Eye'?'first':'second')}}
+            onClick={() => {
+              setShow7(true);
+              setButton(row.name === "Right Eye" ? "first" : "second");
+            }}
             value={row.cylinder}
             onChange={(e) =>
               handleInputChange2(e.target.value, row.name, "cylinder")
@@ -487,7 +1133,10 @@ export default function VisitDetails() {
             className="form-control"
             type="text"
             readOnly={isReSaved}
-            onClick={()=>{setShow7(true);setButton(row.name==='Right Eye'?'first':'second')}}
+            onClick={() => {
+              setShow7(true);
+              setButton(row.name === "Right Eye" ? "first" : "second");
+            }}
             value={row.axis}
             onChange={(e) =>
               handleInputChange2(e.target.value, row.name, "axis")
@@ -506,7 +1155,10 @@ export default function VisitDetails() {
             type="text"
             readOnly={isReSaved}
             value={row.addition}
-            onClick={()=>{setShow7(true);setButton(row.name==='Right Eye'?'first':'second')}}
+            onClick={() => {
+              setShow7(true);
+              setButton(row.name === "Right Eye" ? "first" : "second");
+            }}
             onChange={(e) =>
               handleInputChange2(e.target.value, row.name, "addition")
             }
@@ -525,15 +1177,31 @@ export default function VisitDetails() {
       name: "Sphere",
       sortable: true,
       cell: (row) => (
-        <input
-          className="form-control"
-          type="text"
-          readOnly={isOptReSaved}
-          value={row.sphere}
-          onChange={(e) =>
-            handleInputChange3(e.target.value, row.name, "sphere")
-          }
-        />
+        <div style={{ width: "100%" }}>
+          <Select
+            isMulti={false}
+            className="basic-single"
+            styles={selectStyles}
+            isDisabled={isOptReSaved}
+            options={sphereArray.map((s) => ({ label: s, value: s }))}
+            value={{ label: row.sphere, value: row.sphere }}
+            onChange={(e) => handleInputChange3(e.value, row.name, "sphere")}
+            menuPlacement="auto" // Can be "top", "bottom", or "auto"
+            menuPosition="fixed"
+            classNamePrefix="Select2"
+            placeholder="Select..."
+            required
+          />
+        </div>
+        // <input
+        //   className="form-control"
+        //   type="text"
+        //   readOnly={isOptReSaved}
+        //   value={row.sphere}
+        //   onChange={(e) =>
+        //     handleInputChange3(e.target.value, row.name, "sphere")
+        //   }
+        // />
       ),
     },
     {
@@ -541,15 +1209,24 @@ export default function VisitDetails() {
       sortable: true,
       cell: (row) =>
         row.cylinder !== undefined && (
-          <input
-            className="form-control"
-            type="text"
-            readOnly={isOptReSaved}
-            value={row.cylinder}
-            onChange={(e) =>
-              handleInputChange3(e.target.value, row.name, "cylinder")
-            }
-          />
+          <div style={{ width: "100%" }}>
+            <Select
+              isMulti={false}
+              className="basic-single"
+              styles={selectStyles}
+              isDisabled={isOptReSaved}
+              options={cylinderArray.map((c) => ({ label: c, value: c }))}
+              value={{ label: row.cylinder, value: row.cylinder }}
+              onChange={(e) =>
+                handleInputChange3(e.value, row.name, "cylinder")
+              }
+              menuPlacement="auto" // Can be "top", "bottom", or "auto"
+              menuPosition="fixed"
+              classNamePrefix="Select2"
+              placeholder="Select..."
+              required
+            />
+          </div>
         ),
     },
     {
@@ -557,15 +1234,22 @@ export default function VisitDetails() {
       sortable: true,
       cell: (row) =>
         row.axis !== undefined && (
-          <input
-            className="form-control"
-            type="text"
-            readOnly={isOptReSaved}
-            value={row.axis}
-            onChange={(e) =>
-              handleInputChange3(e.target.value, row.name, "axis")
-            }
-          />
+          <div style={{ width: "100%" }}>
+            <Select
+              isMulti={false}
+              className="basic-single"
+              styles={selectStyles}
+              isDisabled={isOptReSaved}
+              options={axisArray.map((a) => ({ label: a, value: a }))}
+              value={{ label: row.axis, value: row.axis }}
+              onChange={(e) => handleInputChange3(e.value, row.name, "axis")}
+              menuPlacement="auto" // Can be "top", "bottom", or "auto"
+              menuPosition="fixed"
+              classNamePrefix="Select2"
+              placeholder="Select..."
+              required
+            />
+          </div>
         ),
     },
 
@@ -574,15 +1258,24 @@ export default function VisitDetails() {
       sortable: true,
       cell: (row) =>
         row.addition !== undefined && (
-          <input
-            className="form-control"
-            type="text"
-            readOnly={isReSaved}
-            value={row.addition}
-            onChange={(e) =>
-              handleInputChange3(e.target.value, row.name, "addition")
-            }
-          />
+          <div style={{ width: "100%" }}>
+            <Select
+              isMulti={false}
+              className="basic-single"
+              styles={selectStyles}
+              isDisabled={isOptReSaved}
+              options={additionsArray.map((a) => ({ label: a, value: a }))}
+              value={{ label: row.additions, value: row.additions }}
+              onChange={(e) =>
+                handleInputChange3(e.value, row.name, "additions")
+              }
+              menuPlacement="auto" // Can be "top", "bottom", or "auto"
+              menuPosition="fixed"
+              classNamePrefix="Select2"
+              placeholder="Select..."
+              required
+            />
+          </div>
         ),
     },
   ];
@@ -912,65 +1605,90 @@ export default function VisitDetails() {
   };
 
   const handleChange = (column, value, buttonType) => {
-    const setValues = buttonType === 'first' ? setFirstButtonValues : setSecondButtonValues;
-    const currentValues = buttonType === 'first' ? firstButtonValues : secondButtonValues;
+    const setValues =
+      buttonType === "first" ? setFirstButtonValues : setSecondButtonValues;
+    const currentValues =
+      buttonType === "first" ? firstButtonValues : secondButtonValues;
 
-    if (buttonType === 'first') {
-      var data = { ...firstButtonValues, [column]: firstButtonValues[column] === value ? '' : value }
-      setRefraction([{...refraction[0],cylinder:data.cylinder,sphere:data.sphere,axis:data.axis,addition:data.addition},refraction[1]])
+    if (buttonType === "first") {
+      var data = {
+        ...firstButtonValues,
+        [column]: firstButtonValues[column] === value ? "" : value,
+      };
+      setRefraction([
+        {
+          ...refraction[0],
+          cylinder: data.cylinder,
+          sphere: data.sphere,
+          axis: data.axis,
+          addition: data.addition,
+        },
+        refraction[1],
+      ]);
     } else {
-      var data = { ...secondButtonValues, [column]: secondButtonValues[column] === value ? '' : value }
-      setRefraction([refraction[0],{...refraction[1],cylinder:data.cylinder,sphere:data.sphere,axis:data.axis,addition:data.addition}])
+      var data = {
+        ...secondButtonValues,
+        [column]: secondButtonValues[column] === value ? "" : value,
+      };
+      setRefraction([
+        refraction[0],
+        {
+          ...refraction[1],
+          cylinder: data.cylinder,
+          sphere: data.sphere,
+          axis: data.axis,
+          addition: data.addition,
+        },
+      ]);
     }
 
     setValues((prev) => ({
       ...prev,
-      [column]: prev[column] === value ? '' : value, // Toggle the value
+      [column]: prev[column] === value ? "" : value, // Toggle the value
     }));
   };
 
-
   const addVisualAcuity = async () => {
-      let my_token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${my_token}`,
-        },
-      };
-      const postObj = JSON.stringify({
-        patientVisitId: location.state?.data?.visitId,
-        scRightEye: visualAcuity[0].sc,
-        scLeftEye: visualAcuity[1].sc,
-        acRightEye: visualAcuity[0].ac,
-        acLeftEye: visualAcuity[1].ac,
-        phRightEye: visualAcuity[0].ph,
-        phLeftEye: visualAcuity[1].ph,
-        glassSphereRightEye: currentGlasses[0].sphere,
-        glassSphereLeftEye: currentGlasses[1].sphere,
-        glassCylindreRightEye: currentGlasses[0].cylinder,
-        glassCylindreLeftEye: currentGlasses[1].cylinder,
-        glassAxeRightEye: currentGlasses[0].axis,
-        glassAxeLeftEye: currentGlasses[1].axis,
-        glassAdditionRightEye: currentGlasses[0].addition,
-        glassAdditionLeftEye: currentGlasses[1].addition,
-      });
-      console.log(postObj);
-      try {
-        const response = await axios.post(
-          `http://www.ubuzima.rw/rec/visit/nurse/va`,
-          postObj,
-          config
-        );
-        setShow(false);
-        if (response.data.status) {
-          alert("Visual acuity added successfully!");
-          fetchVisualAcuity();
-        }
-      } catch (error) {
-        setShow(false);
-        console.error(error);
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+    const postObj = JSON.stringify({
+      patientVisitId: location.state?.data?.visitId,
+      scRightEye: visualAcuity[0].sc,
+      scLeftEye: visualAcuity[1].sc,
+      acRightEye: visualAcuity[0].ac,
+      acLeftEye: visualAcuity[1].ac,
+      phRightEye: visualAcuity[0].ph,
+      phLeftEye: visualAcuity[1].ph,
+      glassSphereRightEye: currentGlasses[0].sphere,
+      glassSphereLeftEye: currentGlasses[1].sphere,
+      glassCylindreRightEye: currentGlasses[0].cylinder,
+      glassCylindreLeftEye: currentGlasses[1].cylinder,
+      glassAxeRightEye: currentGlasses[0].axis,
+      glassAxeLeftEye: currentGlasses[1].axis,
+      glassAdditionRightEye: currentGlasses[0].addition,
+      glassAdditionLeftEye: currentGlasses[1].addition,
+    });
+    console.log(postObj);
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/visit/nurse/va`,
+        postObj,
+        config
+      );
+      setShow(false);
+      if (response.data.status) {
+        alert("Visual acuity added successfully!");
+        fetchVisualAcuity();
       }
+    } catch (error) {
+      setShow(false);
+      console.error(error);
+    }
   };
 
   const pay = async () => {
@@ -1064,8 +1782,7 @@ export default function VisitDetails() {
     if (
       (userRoles.includes("Nurse") &&
         location.state?.data?.visitStatus === "TRANSFER_TO_NURSE") ||
-      (userRoles.includes("Doctor") &&
-        location.state?.data?.visitStatus === "TRANSFER_TO_DOCTOR")
+      userRoles.includes("Doctor")
     ) {
       let my_token = localStorage.getItem("token");
       const config = {
@@ -1180,9 +1897,8 @@ export default function VisitDetails() {
     }
   };
 
-  const addNotes = async (e) => {
-    if(notes){
-      e.preventDefault();
+  const addOd = async (e) => {
+    e.preventDefault();
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -1192,24 +1908,161 @@ export default function VisitDetails() {
     };
     const postObj = JSON.stringify({
       patientVisitId: location.state?.data?.visitId,
-      notes: notes,
+      eyeSide: "RIGHT",
+      exams: rightValues.map((el) => el.value),
     });
     try {
       const response = await axios.post(
-        `http://www.ubuzima.rw/rec/visit/doctor/note`,
+        `http://www.ubuzima.rw/rec/visit/nurse/patient/add-exams`,
         postObj,
         config
       );
+      // setShow3(false);
       if (response.data.status) {
-        alert("Notes added successfully!");
-        fetchNotes();
+        alert("Exams added successfully!");
+        // fetchOd(treatments);
       }
     } catch (error) {
       console.error(error);
     }
-    }else{
-      alert('Add notes before submitting...')
+  };
+
+  const addOs = async (e) => {
+    e.preventDefault();
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+    const postObj = JSON.stringify({
+      patientVisitId: location.state?.data?.visitId,
+      eyeSide: "LEFT",
+      exams: leftValues.map((el) => el.value),
+    });
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/visit/nurse/patient/add-exams`,
+        postObj,
+        config
+      );
+      // setShow3(false);
+      if (response.data.status) {
+        alert("Exams added successfully!");
+        // fetchOd(treatments);
+      }
+    } catch (error) {
+      console.error(error);
     }
+  };
+
+  const addProcedures = async (e) => {
+    e.preventDefault();
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+    const postObj = JSON.stringify({
+      patientVisitId: location.state?.data?.visitId,
+      labProcedures: proceduresValues.map((el) => el.value),
+    });
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/visit/nurse/patient/add-procedures`,
+        postObj,
+        config
+      );
+      if (response.data.status) {
+        alert("Procedures added successfully!");
+        // fetchOd(treatments);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const addLabs = async (e) => {
+    e.preventDefault();
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+    const postObj = JSON.stringify({
+      patientVisitId: location.state?.data?.visitId,
+      labProcedures: labsValues.map((el) => el.value),
+    });
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/visit/nurse/patient/add-labs`,
+        postObj,
+        config
+      );
+      if (response.data.status) {
+        alert("Labs added successfully!");
+        // fetchOd(treatments);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const addNotes = async (e) => {
+    if (notes) {
+      e.preventDefault();
+      let my_token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${my_token}`,
+        },
+      };
+      const postObj = JSON.stringify({
+        patientVisitId: location.state?.data?.visitId,
+        notes: notes,
+      });
+      try {
+        const response = await axios.post(
+          `http://www.ubuzima.rw/rec/visit/doctor/note`,
+          postObj,
+          config
+        );
+        if (response.data.status) {
+          alert("Notes added successfully!");
+          fetchNotes();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      alert("Add notes before submitting...");
+    }
+  };
+
+  const handleCreateOD = (inputValue) => {
+    const newOption = { value: inputValue.toLowerCase(), label: inputValue };
+    setRightOptions([...rightOptions, newOption]);
+  };
+
+  const handleCreateOS = (inputValue) => {
+    const newOption = { value: inputValue.toLowerCase(), label: inputValue };
+    setLeftOptions([...leftOptions, newOption]);
+  };
+
+  const handleCreateProcedure = (inputValue) => {
+    const newOption = { value: inputValue.toLowerCase(), label: inputValue };
+    setProceduresOptions([...proceduresOptions, newOption]);
+  };
+
+  const handleCreateLab = (inputValue) => {
+    const newOption = { value: inputValue.toLowerCase(), label: inputValue };
+    setLabsOptions([...labsOptions, newOption]);
   };
 
   const addDiagnostic = async (e) => {
@@ -1243,87 +2096,87 @@ export default function VisitDetails() {
   };
 
   const addRefraction = async () => {
-      let my_token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${my_token}`,
-        },
-      };
-      const postObj = JSON.stringify({
-        patientVisitId: location.state?.data?.visitId,
-        sphereRightEye: refraction[0].sphere,
-        sphereLeftEye: refraction[1].sphere,
-        cylindreRightEye: refraction[0].cylinder,
-        cylindreLeftEye: refraction[1].cylinder,
-        axeRightEye: refraction[0].axis,
-        axeLeftEye: refraction[1].axis,
-        lensType: lensType,
-        dip: "DIP_ON_DISTANCE",
-        lensAttribute: lensAttribute,
-        additionRightEye: refraction[0].addition,
-        additionLeftEye: refraction[1].addition,
-        comments: "",
-      });
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+    const postObj = JSON.stringify({
+      patientVisitId: location.state?.data?.visitId,
+      sphereRightEye: refraction[0].sphere,
+      sphereLeftEye: refraction[1].sphere,
+      cylindreRightEye: refraction[0].cylinder,
+      cylindreLeftEye: refraction[1].cylinder,
+      axeRightEye: refraction[0].axis,
+      axeLeftEye: refraction[1].axis,
+      lensType: lensType,
+      dip: "DIP_ON_DISTANCE",
+      lensAttribute: lensAttribute,
+      additionRightEye: refraction[0].addition,
+      additionLeftEye: refraction[1].addition,
+      comments: "",
+    });
 
-      try {
-        const response = await axios.post(
-          `http://www.ubuzima.rw/rec/visit/doctor/refraction`,
-          postObj,
-          config
-        );
-        setShow5(false);
-        if (response.data.status) {
-          alert("Refraction added successfully!");
-          fetchRefraction();
-        }
-      } catch (error) {
-        setShow5(false);
-        console.error(error);
-        console.log(res.data);
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/visit/doctor/refraction`,
+        postObj,
+        config
+      );
+      setShow5(false);
+      if (response.data.status) {
+        alert("Refraction added successfully!");
+        fetchRefraction();
       }
+    } catch (error) {
+      setShow5(false);
+      console.error(error);
+      console.log(res.data);
+    }
   };
 
   const addOptRefraction = async () => {
-      let my_token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${my_token}`,
-        },
-      };
-      const postObj = JSON.stringify({
-        patientVisitId: location.state?.data?.visitId,
-        sphereRightEye: optRefraction[0].sphere,
-        sphereLeftEye: optRefraction[1].sphere,
-        cylindreRightEye: optRefraction[0].cylinder,
-        cylindreLeftEye: optRefraction[1].cylinder,
-        axeRightEye: optRefraction[0].axis,
-        axeLeftEye: optRefraction[1].axis,
-        lensType: "BIFOCAL",
-        dip: "DIP_ON_DISTANCE",
-        lensAttribute: [],
-        additionRightEye: optRefraction[0].addition,
-        additionLeftEye: optRefraction[1].addition,
-        comments: comment[0].comment,
-      });
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+    const postObj = JSON.stringify({
+      patientVisitId: location.state?.data?.visitId,
+      sphereRightEye: optRefraction[0].sphere,
+      sphereLeftEye: optRefraction[1].sphere,
+      cylindreRightEye: optRefraction[0].cylinder,
+      cylindreLeftEye: optRefraction[1].cylinder,
+      axeRightEye: optRefraction[0].axis,
+      axeLeftEye: optRefraction[1].axis,
+      lensType: "BIFOCAL",
+      dip: "DIP_ON_DISTANCE",
+      lensAttribute: [],
+      additionRightEye: optRefraction[0].addition,
+      additionLeftEye: optRefraction[1].addition,
+      comments: comment[0].comment,
+    });
 
-      try {
-        const response = await axios.post(
-          `http://www.ubuzima.rw/rec/visit/optometrist/refraction`,
-          postObj,
-          config
-        );
-        setShow5(false);
-        if (response.data.status) {
-          alert("Refraction added successfully!");
-          fetchOptRefraction();
-        }
-      } catch (error) {
-        setShow5(false);
-        console.error(error);
-        console.log(res.data);
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/visit/optometrist/refraction`,
+        postObj,
+        config
+      );
+      setShow5(false);
+      if (response.data.status) {
+        alert("Refraction added successfully!");
+        fetchOptRefraction();
       }
+    } catch (error) {
+      setShow5(false);
+      console.error(error);
+      console.log(res.data);
+    }
   };
 
   const fetchRefraction = async () => {
@@ -1422,7 +2275,7 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        size: 5,
+        size: 2,
         page: currentPage,
         patientId: location.state?.data?.patient?.id,
       },
@@ -1491,15 +2344,12 @@ export default function VisitDetails() {
   }, []);
 
   useEffect(() => {
-      fetchPreviousVisits();
+    fetchPreviousVisits();
   }, [currentPage]);
 
   useEffect(() => {
     fetchPreviousVisits2();
-}, [currentPage2]);
-
-
-
+  }, [currentPage2]);
 
   return (
     <Fragment>
@@ -1535,106 +2385,105 @@ export default function VisitDetails() {
           </Button>
         )}
       <Row>
-        {invoice && (roles.includes("Receptionist") || roles.includes("Administrator")) && (
-          <Col lg={12} style={{ marginTop: 20 }}>
-            <Card>
-              <Card.Header className="d-flex justify-content-between align-items-center">
-                <Card.Title>Billing Details</Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <Card.Body>
-                  <DataTable
-                    columns={billingDetailsColumn}
-                    data={billingDetails}
-                  />
-                </Card.Body>
-              </Card.Body>
-            </Card>
-          </Col>
-        )}
-
-        {invoice && (roles.includes("Receptionist") || roles.includes("Administrator")) && (
-          <>
-            <Col md={4} xl={4} style={{ marginTop: 20 }}>
-              <Card style={{ minHeight: 250 }}>
-                <Card.Header className=" d-flex justify-content-between align-items-center">
-                  <Card.Title>
-                    Invoice Number: {invoice.invoiceNumber}
-                    {invoice.paymentStatus == "NOT_PAID" &&
-                      roles.includes("Receptionist") && (
-                        <Button
-                          style={{ marginLeft: 50 }}
-                          variant="green"
-                          onClick={handleShow8}
-                        >
-                          Pay Invoice
-                        </Button>
-                      )}
-                  </Card.Title>
+        {invoice &&
+          (roles.includes("Receptionist") ||
+            roles.includes("Administrator")) && (
+            <Col lg={12} style={{ marginTop: 20 }}>
+              <Card>
+                <Card.Header className="d-flex justify-content-between align-items-center">
+                  <Card.Title>Billing Details</Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  <Card.Title>
-                    {" "}
-                    Total Amount: Rwf {invoice?.totalAmount.toLocaleString()}{" "}
-                  </Card.Title>
-                  <Card.Title>
-                    Insurer Amount: Rwf{" "}
-                    {invoice?.insurerAmount.toLocaleString()}
-                  </Card.Title>
-                  <Card.Title>
-                    Patient Amount: Rwf{" "}
-                    {invoice?.patientAmount.toLocaleString()}
-                  </Card.Title>
-                  <Card.Title>
-                    Remaining Amount: Rwf{" "}
-                    {invoice?.remainingAmount.toLocaleString()}
-                  </Card.Title>
-                  <Card.Title
-                    style={{
-                      color:
-                        invoice?.paymentStatus == "NOT_PAID" ? "red" : "green",
-                    }}
-                  >
-                    Status: {invoice?.paymentStatus}
-                  </Card.Title>
+                  <Card.Body>
+                    <DataTable
+                      columns={billingDetailsColumn}
+                      data={billingDetails}
+                    />
+                  </Card.Body>
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={4} xl={4} style={{ marginTop: 20 }}>
-              <Card style={{ minHeight: 250 }}>
-                <Card.Header className=" d-flex justify-content-between align-items-center">
-                  <div className="">
+          )}
+
+        {invoice &&
+          (roles.includes("Receptionist") ||
+            roles.includes("Administrator")) && (
+            <>
+              <Col md={4} xl={4} style={{ marginTop: 20 }}>
+                <Card style={{ minHeight: 250 }}>
+                  <Card.Header className=" d-flex justify-content-between align-items-center">
                     <Card.Title>
-                      {location.state?.data?.createdAt?.slice(0, 10)}
+                      Invoice Number: {invoice.invoiceNumber}
+                      {invoice.paymentStatus == "NOT_PAID" &&
+                        roles.includes("Receptionist") && (
+                          <Button
+                            style={{ marginLeft: 50 }}
+                            variant="green"
+                            onClick={handleShow8}
+                          >
+                            Pay Invoice
+                          </Button>
+                        )}
                     </Card.Title>
-                    {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
-                  </div>
-                </Card.Header>
-                <Card.Body>
-                  <Card.Title>
-                    Names: {location.state?.data?.patient?.names}
-                  </Card.Title>
-
-                  <Card.Title>
-                    Sex: {location.state?.data?.patient?.gender}
-                  </Card.Title>
-
-                  <Card.Title>
-                    DOB: {location.state?.data?.patient?.dob}
-                  </Card.Title>
-
-                  <Card.Title style={{ fontSize: "15px" }}>
-                    Doctor: Dr {location.state?.data?.doctor}
-                  </Card.Title>
-
-                  <Card.Title style={{ fontSize: "15px" }}>
-                    Insurance: {location.state?.data?.insurance?.insuranceName}
-                  </Card.Title>
-                </Card.Body>
-              </Card>
-            </Col>
-          </>
-        )}
+                  </Card.Header>
+                  <Card.Body>
+                    <Card.Title>
+                      {" "}
+                      Total Amount: Rwf {invoice?.totalAmount.toLocaleString()}{" "}
+                    </Card.Title>
+                    <Card.Title>
+                      Insurer Amount: Rwf{" "}
+                      {invoice?.insurerAmount.toLocaleString()}
+                    </Card.Title>
+                    <Card.Title>
+                      Patient Amount: Rwf{" "}
+                      {invoice?.patientAmount.toLocaleString()}
+                    </Card.Title>
+                    <Card.Title>
+                      Remaining Amount: Rwf{" "}
+                      {invoice?.remainingAmount.toLocaleString()}
+                    </Card.Title>
+                    <Card.Title
+                      style={{
+                        color:
+                          invoice?.paymentStatus == "NOT_PAID"
+                            ? "red"
+                            : "green",
+                      }}
+                    >
+                      Status: {invoice?.paymentStatus}
+                    </Card.Title>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col md={4} xl={4} style={{ marginTop: 20 }}>
+                <Card style={{ minHeight: 250 }}>
+                  <Card.Header className=" d-flex justify-content-between align-items-center">
+                    <div className="">
+                      <Card.Title>
+                        {location.state?.data?.createdAt?.slice(0, 10)}
+                      </Card.Title>
+                      {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
+                    </div>
+                  </Card.Header>
+                  <Card.Body style={{ margin: 0, padding: 0 }}>
+                    <p style={{ margin: 0, padding: 0 }}>
+                      Names: {location.state?.data?.patient?.names}
+                    </p>
+                    <p>Sex: {location.state?.data?.patient?.gender}</p>
+                    <p>DOB: {location.state?.data?.patient?.dob}</p>
+                    <p style={{ fontSize: "15px" }}>
+                      Doctor: Dr {location.state?.data?.doctor}
+                    </p>
+                    <p style={{ fontSize: "15px" }}>
+                      Insurance:{" "}
+                      {location.state?.data?.insurance?.insuranceName}
+                    </p>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </>
+          )}
 
         {!roles.includes("Receptionist") && (
           <>
@@ -1649,27 +2498,31 @@ export default function VisitDetails() {
                       {/* <button type="button" className="btn btn-secondary btn-sm">Action 2</button> */}
                     </div>
                   </Card.Header>
-                  <Card.Body>
-                    <Card.Title>
+                  <Card.Body
+                    style={{ margin: 0, padding: "5px 5px 15px 20px" }}
+                  >
+                    <p style={{ marginBottom: 5 }}>
                       Names: {location.state?.data?.patient?.names}
-                    </Card.Title>
-
-                    <Card.Title>
+                    </p>
+                    <p style={{ marginBottom: 5 }}>
+                      phone: {location.state?.data?.patient?.phoneNumber}
+                    </p>
+                    <p style={{ marginBottom: 5 }}>
                       Sex: {location.state?.data?.patient?.gender}
-                    </Card.Title>
-
-                    <Card.Title>
+                    </p>
+                    <p style={{ marginBottom: 5 }}>
                       DOB: {location.state?.data?.patient?.dob}
-                    </Card.Title>
-
-                    <Card.Title style={{ fontSize: "15px" }}>
+                    </p>
+                    <p style={{ fontSize: "15px", marginBottom: 5 }}>
                       Doctor: Dr {location.state?.data?.doctor}
-                    </Card.Title>
-
-                    <Card.Title style={{ fontSize: "15px" }}>
+                    </p>
+                    <p style={{ fontSize: "15px", marginBottom: 5 }}>
                       Insurance:{" "}
                       {location.state?.data?.insurance?.insuranceName}
-                    </Card.Title>
+                    </p>
+                    <p style={{ fontSize: "15px", marginBottom: 5 }}>
+                      Ticket: {location.state?.data?.insurance?.ticket}
+                    </p>
                   </Card.Body>
                 </Card>
               </Col>
@@ -1678,134 +2531,79 @@ export default function VisitDetails() {
                 <Card>
                   <Card.Header className="d-flex justify-content-between align-items-center">
                     <Card.Title>Last Visits</Card.Title>
-                    {previousVisits.length>0 && (
-                      <Card.Title onClick={()=>setShow8(true)}>View all</Card.Title>
+                    {previousVisits.length > 0 && (
+                      <Card.Title onClick={() => setShow8(true)}>
+                        View all
+                      </Card.Title>
                     )}
                   </Card.Header>
-                  <Card.Body>
-                    <Card.Body>
-                      <DataTable 
-                      columns={columns2} 
+                  <Card.Body style={{ margin: 0, padding: "0px 8px" }}>
+                    <DataTable
+                      columns={columns2}
                       data={previousVisits}
-                      paginationPerPage={5}
-                      paginationRowsPerPageOptions={[5]}
-                      paginationTotalRows={totalRows ? totalRows : previousVisits.length}
+                      paginationPerPage={2}
+                      paginationRowsPerPageOptions={[2]}
+                      paginationTotalRows={
+                        totalRows ? totalRows : previousVisits.length
+                      }
                       onChangePage={(page) => setCurrentPage(page)}
                       pagination
                       paginationServer
-                      />
-                    </Card.Body>
+                      customStyles={customStyles}
+                    />
                   </Card.Body>
                 </Card>
               </Col>
             </Row>
 
-            <div class="tabs" style={{ display: "flex" }}>
-              {(roles.includes("Nurse") ||
-                roles.includes("Doctor") ||
-                roles.includes("Optometrist") ||
-                roles.includes("Administrator")
-                ) && (
-                <div
-                  class="tab"
-                  onClick={() => {
-                    setTab("tab1");
-                  }}
-                  style={{
-                    padding: "10px 20px",
-                    cursor: "pointer",
-                    border: "1px solid #ccc",
-                    borderBottom:
-                      tab === "tab1" ? "3px solid #467FCF" : "1px solid #ccc",
-                    backgroundColor: tab === "tab1" ? "white" : "#f1f1f1",
-                    fontWeight: tab === "tab1" ? "bold" : "normal",
-                  }}
-                  id="tab1"
-                >
-                  Visual Acuity
-                </div>
-              )}
-              {(roles.includes("Doctor") || roles.includes("Administrator")) && (
-                <div
-                  class="tab"
-                  onClick={() => {
-                    setTab("tab2");
-                  }}
-                  style={{
-                    padding: "10px 20px",
-                    cursor: "pointer",
-                    border: "1px solid #ccc",
-                    borderBottom:
-                      tab === "tab2" ? "3px solid #467FCF" : "1px solid #ccc",
-                    backgroundColor: tab === "tab2" ? "white" : "#f1f1f1",
-                    fontWeight: tab === "tab2" ? "bold" : "normal",
-                  }}
-                  id="tab2"
-                >
-                  Medical Act
-                </div>
-              )}
-              {(roles.includes("Doctor") || roles.includes("Administrator")) && (
-                <div
-                  class="tab"
-                  onClick={() => {
-                    setTab("tab3");
-                  }}
-                  style={{
-                    padding: "10px 20px",
-                    cursor: "pointer",
-                    border: "1px solid #ccc",
-                    borderBottom:
-                      tab === "tab3" ? "3px solid #467FCF" : "1px solid #ccc",
-                    backgroundColor: tab === "tab3" ? "white" : "#f1f1f1",
-                    fontWeight: tab === "tab3" ? "bold" : "normal",
-                  }}
-                  id="tab3"
-                >
-                  Doctor's Refraction
-                </div>
-              )}
-              {(roles.includes("Doctor") || roles.includes("Administrator")) && (
-                <div
-                  class="tab"
-                  onClick={() => {
-                    setTab("tab4");
-                  }}
-                  style={{
-                    padding: "10px 20px",
-                    cursor: "pointer",
-                    border: "1px solid #ccc",
-                    borderBottom:
-                      tab === "tab4" ? "3px solid #467FCF" : "1px solid #ccc",
-                    backgroundColor: tab === "tab4" ? "white" : "#f1f1f1",
-                    fontWeight: tab === "tab49" ? "bold" : "normal",
-                  }}
-                  id="tab3"
-                >
-                  Dr treatments / Note
-                </div>
-              )}
-              {(roles.includes("Nurse") || roles.includes("Administrator")) && (
-                <div
-                  class="tab"
-                  onClick={() => {
-                    setTab("tab5");
-                  }}
-                  style={{
-                    padding: "10px 20px",
-                    cursor: "pointer",
-                    border: "1px solid #ccc",
-                    borderBottom:
-                      tab === "tab5" ? "3px solid #467FCF" : "1px solid #ccc",
-                    backgroundColor: tab === "tab5" ? "white" : "#f1f1f1",
-                    fontWeight: tab === "tab5" ? "bold" : "normal",
-                  }}
-                  id="tab5"
-                >
-                  Diagnostic
-                </div>
-              )}
-            </div>
+            {!roles.includes("Doctor") && (
+              <div class="tabs" style={{ display: "flex" }}>
+                {(roles.includes("Nurse") ||
+                  roles.includes("Optometrist") ||
+                  roles.includes("Administrator")) && (
+                  <div
+                    class="tab"
+                    onClick={() => {
+                      setTab("tab1");
+                    }}
+                    style={{
+                      padding: "10px 20px",
+                      cursor: "pointer",
+                      border: "1px solid #ccc",
+                      borderBottom:
+                        tab === "tab1" ? "3px solid #467FCF" : "1px solid #ccc",
+                      backgroundColor: tab === "tab1" ? "white" : "#f1f1f1",
+                      fontWeight: tab === "tab1" ? "bold" : "normal",
+                    }}
+                    id="tab1"
+                  >
+                    Visual Acuity
+                  </div>
+                )}
+
+                {(roles.includes("Nurse") ||
+                  roles.includes("Administrator")) && (
+                  <div
+                    class="tab"
+                    onClick={() => {
+                      setTab("tab5");
+                    }}
+                    style={{
+                      padding: "10px 20px",
+                      cursor: "pointer",
+                      border: "1px solid #ccc",
+                      borderBottom:
+                        tab === "tab5" ? "3px solid #467FCF" : "1px solid #ccc",
+                      backgroundColor: tab === "tab5" ? "white" : "#f1f1f1",
+                      fontWeight: tab === "tab5" ? "bold" : "normal",
+                    }}
+                    id="tab5"
+                  >
+                    Diagnostic
+                  </div>
+                )}
+              </div>
+            )}
           </>
         )}
 
@@ -1815,9 +2613,13 @@ export default function VisitDetails() {
               {tab === "tab1" &&
                 (roles.includes("Nurse") || roles.includes("Doctor")) && (
                   <Col md={6} xl={6} style={{ marginTop: 20, paddingRight: 0 }}>
-                    <h1>Visual Acuity</h1>
+                    <h1 style={{ marginBottom: 0 }}>Visual Acuity</h1>
 
-                    <DataTable columns={vaColumns} data={visualAcuity} />
+                    <DataTable
+                      columns={vaColumns}
+                      data={visualAcuity}
+                      customStyles={customStyles}
+                    />
 
                     {roles.includes("Nurse") &&
                       location.state?.data?.visitStatus ===
@@ -1826,7 +2628,7 @@ export default function VisitDetails() {
                         <>
                           <Button
                             onClick={() => addVisualAcuity()}
-                            style={{ marginTop: 20 }}
+                            style={{ marginTop: 6 }}
                           >
                             Save
                           </Button>
@@ -1835,36 +2637,23 @@ export default function VisitDetails() {
                   </Col>
                 )}
 
-              {(roles.includes("Doctor") || roles.includes("Nurse") || roles.includes("Administrator")) &&
+              {(roles.includes("Doctor") ||
+                roles.includes("Nurse") ||
+                roles.includes("Administrator")) &&
                 tab === "tab1" && (
                   <Col
                     md={6}
                     xl={6}
                     style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
                   >
-                    <h1>Current Glasses</h1>
+                    <h1 style={{ marginBottom: 0 }}>Current Glasses</h1>
                     <DataTable
                       columns={currentGlassesColumns}
                       data={currentGlasses}
+                      customStyles={customStyles}
                     />
                   </Col>
                 )}
-
-              {(roles.includes("Nurse")||  roles.includes("Administrator")) && tab === "tab1" &&(
-                <Col md={12} xl={12} style={{ marginTop: 20, height: 150 }}>
-                <h1>Medical Acts</h1>
-                <Select
-                  isMulti
-                  className="basic-single"
-                  options={acts}
-                  value={medicalActs}
-                  onChange={(e) => setMedicalActs(e)}
-                  classNamePrefix="Select2"
-                  placeholder="Select..."
-                  required
-                />
-              </Col>
-              )}
 
               {(roles.includes("Doctor") ||
                 roles.includes("Nurse") ||
@@ -1876,196 +2665,13 @@ export default function VisitDetails() {
                     xl={6}
                     style={{ marginTop: 20, paddingRight: 0, paddingLeft: 0 }}
                   >
-                    <h1>Optometrist Refraction</h1>
-                    <DataTable columns={optReColumns} data={optRefraction} />
+                    <h1 style={{ marginBottom: 0 }}>Optometrist Refraction</h1>
+                    <DataTable
+                      columns={optReColumns}
+                      data={optRefraction}
+                      customStyles={customStyles}
+                    />
                   </Col>
-                )}
-
-              {(roles.includes("Doctor") || roles.includes("Nurse") || roles.includes("Administrator")) &&
-                tab === "tab3" && (
-                  <>
-                    <Row>
-                      <Col
-                        md={6}
-                        xl={6}
-                        style={{
-                          marginTop: 20,
-                          paddingRight: 0,
-                          paddingLeft: 0,
-                        }}
-                      >
-                        <h1>Doctor's Refraction</h1>
-                        <DataTable columns={reColumns} data={refraction} />
-                      </Col>
-                      <Col md={6} xl={6} style={{ marginTop: 20 }}>
-                        <Row>
-                          <Col
-                            md={6}
-                            xl={6}
-                            style={{ marginTop: 20, height: 20 }}
-                          >
-                            <h1>Lens Type</h1>
-                            {lensType_.map((act) => (
-                              <Fragment key={act.id}>
-                                <input
-                                  type="checkbox"
-                                  style={{ marginBottom: 15 }}
-                                  value={act.value}
-                                  checked={lensType === act.value}
-                                  onChange={(e) => setLensType(e.target.value)}
-                                />{" "}
-                                {act.label}
-                                <br />
-                              </Fragment>
-                            ))}
-                          </Col>
-                          <Col md={6} xl={6} style={{ marginTop: 20 }}>
-                            <h1>Lens Attribute</h1>
-                            {AdditionsTwo.map((act) => (
-                              <Fragment key={act.id}>
-                                <input
-                                  type="checkbox"
-                                  style={{ marginBottom: 15 }}
-                                  value={act.value}
-                                  checked={lensAttribute?.includes(act.value)}
-                                  onChange={handleCheckboxChange2}
-                                />{" "}
-                                {act.label}
-                                <br />
-                              </Fragment>
-                            ))}
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col md={3} xl={3} style={{ marginTop: 20 }}>
-                        <h1></h1>
-                        {prescriptionCheckBox.map((act) => (
-                          <Fragment key={act.id}>
-                            <input
-                              type="checkbox"
-                              style={{ marginBottom: 15 }}
-                              value={act.value}
-                              readOnly={!roles.includes("Doctor")}
-                              checked={generatePrescription}
-                              onChange={() => {
-                                if (roles.includes("Doctor")) {
-                                  setGeneratePrescription(
-                                    !generatePrescription
-                                  );
-                                }
-                              }}
-                            />{" "}
-                            {act.label}
-                            <br />
-                          </Fragment>
-                        ))}
-                      </Col>
-                    </Row>
-                    {roles.includes("Doctor") && !isReSaved && (
-                      <Button
-                        onClick={() => addRefraction()}
-                        style={{ marginTop: 20, width: 100 }}
-                      >
-                        Save
-                      </Button>
-                    )}
-                  </>
-                )}
-
-              {(roles.includes("Doctor") || roles.includes("Nurse") || roles.includes("Administrator")) &&
-                tab === "tab4" && (
-                  <div>
-                    {!isNoteSaved?(
-                    <Col md={4} xl={4} style={{ marginTop: 20 }}>
-                      <Form.Group className="form-group">
-                        <Form.Label>Add Dr notes</Form.Label>
-                        <textarea
-                          className="form-control"
-                          value={notes}
-                          onChange={(e) => setNotes(e.target.value)}
-                          placeholder="Enter notes here..."
-                          required
-                        />
-                      </Form.Group>
-
-                      <Button
-                        onClick={(e) => addNotes(e)}
-                        style={{ marginTop: 20, width: 100 }}
-                      >
-                        Save
-                      </Button>
-                    </Col>
-                    ):(
-                      <Col md={4} xl={4} style={{ marginTop: 20 }}>
-                      <Card>
-                        <Card.Header className=" d-flex justify-content-between align-items-center">
-                          <div className="">
-                            <Card.Title>Dr Notes</Card.Title>
-                          </div>
-                        </Card.Header>
-                        <Card.Body>
-                          <Card.Title>
-                            {savedNotes
-                              ? `Dr notes: ${savedNotes}`
-                              : "There are currently no notes available. The doctor has not added any notes yet."}
-                          </Card.Title>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                    )}
-                    <Row>
-                      <Col
-                        lg={6}
-                        style={{ marginBottom: "100px", marginTop: "40px",marginLeft: 18 }}
-                      >
-                        {(roles.includes("Doctor") || roles.includes("Administrator")) && (
-                          <>
-                            <Form.Group className="form-group">
-                              <Form.Label>Select Treatment</Form.Label>
-                              <Select
-                                isMulti
-                                className="basic-single"
-                                options={treatments}
-                                value={treatment}
-                                onChange={(e) => setTreatment(e)}
-                                classNamePrefix="Select2"
-                                placeholder="Select..."
-                                required
-                              />
-                            </Form.Group>
-
-                            <Button
-                              onClick={(e) => addTreatment(e)}
-                              style={{ marginTop: 20, width: 100 }}
-                            >
-                              Save
-                            </Button>
-                          </>
-                        )}
-                      </Col>
-                      <Col
-                        lg={5}
-                        style={{ marginBottom: "200px", marginTop: "40px" }}
-                      >
-                        {savedTreatment?.length > 0 && treatments ? (
-                          <>
-                            <h1>Saved Treatments</h1>
-                            {savedTreatment.map((el, index) => {
-                              return (
-                                <h5>
-                                  {index + 1}. {el.label}
-                                </h5>
-                              );
-                            })}
-                          </>
-                        ) : (
-                          <p>No Treatment yet...</p>
-                        )}
-                      </Col>
-                    </Row>
-                  </div>
                 )}
 
               {(roles.includes("Doctor") ||
@@ -2075,9 +2681,17 @@ export default function VisitDetails() {
                 tab === "tab1" && (
                   <>
                     <>
-                      <Col md={3} xl={6} style={{ marginTop: 20 }}>
-                        <h1>Comments</h1>
-                        <DataTable columns={CommentsColumn} data={comment} />
+                      <Col
+                        md={6}
+                        xl={6}
+                        style={{ marginTop: 20, paddingLeft: 2 }}
+                      >
+                        <h1 style={{ marginBottom: 0 }}>Comments</h1>
+                        <DataTable
+                          columns={CommentsColumn}
+                          data={comment}
+                          customStyles={{ rows: { style: { height: 95 } } }}
+                        />
                         {roles.includes("Doctor") &&
                           location.state?.data?.visitStatus ===
                             "TRANSFER_TO_DOCTOR" &&
@@ -2104,7 +2718,370 @@ export default function VisitDetails() {
                   </>
                 )}
 
-              {(roles.includes("Doctor") || roles.includes("Nurse") || roles.includes("Administrator")) &&
+              {roles.includes("Doctor") && (
+                <div style={{ marginTop: 40 }}>
+                  <h1 style={{ marginBottom: 0 }}>Dr Exams</h1>
+                  <Card style={{ padding: 0 }}>
+                    <Card.Body style={{ margin: 0, padding: 0 }}>
+                      <Row style={{ paddingRight: 20 }}>
+                        <Col
+                          lg={6}
+                          style={{
+                            marginBottom: "100px",
+                            marginTop: 20,
+                            paddingLeft: 18,
+                          }}
+                        >
+                          {(roles.includes("Doctor") ||
+                            roles.includes("Administrator")) && (
+                            <>
+                              <Form.Group className="form-group">
+                                <Form.Label>Right eye (OD)</Form.Label>
+                                <CreatableSelect
+                                  isMulti
+                                  options={rightOptions}
+                                  onCreateOption={handleCreateOD}
+                                  onChange={(e) => setRightValues(e)}
+                                  placeholder="Select or create"
+                                />
+                              </Form.Group>
+
+                              <Button
+                                onClick={(e) => {
+                                  if(rightValues.length>0){
+                                    addOd(e)
+                                  }
+                                }}
+                                style={{ marginTop: 20, width: 100 }}
+                              >
+                                Save
+                              </Button>
+                            </>
+                          )}
+                        </Col>
+
+                        <Col
+                          lg={6}
+                          style={{
+                            marginBottom: "100px",
+                            marginTop: 20,
+                            paddingLeft: 18,
+                          }}
+                        >
+                          {(roles.includes("Doctor") ||
+                            roles.includes("Administrator")) && (
+                            <>
+                              <Form.Group className="form-group">
+                                <Form.Label>Left eye (OD)</Form.Label>
+                                <CreatableSelect
+                                  isMulti
+                                  options={leftOptions}
+                                  onChange={(e) => setLeftValues(e)}
+                                  onCreateOption={handleCreateOS}
+                                  placeholder="Select or create"
+                                />
+                              </Form.Group>
+
+                              <Button
+                                onClick={(e) =>{
+                                  if(leftValues.length>0){
+                                    addOs(e)
+                                  }
+                                }}
+                                style={{ marginTop: 20, width: 100 }}
+                              >
+                                Save
+                              </Button>
+                            </>
+                          )}
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </div>
+              )}
+
+              {roles.includes("Doctor") && (
+                <div style={{ marginTop: 40 }}>
+                  <h1 style={{ marginBottom: 0 }}>Dr Procedures</h1>
+                  <Card style={{ padding: 0 }}>
+                    <Card.Body style={{ margin: 0, padding: 0 }}>
+                      <Row style={{ paddingRight: 20 }}>
+                        <Col
+                          lg={6}
+                          style={{
+                            marginBottom: "100px",
+                            marginTop: 20,
+                            paddingLeft: 18,
+                          }}
+                        >
+                          {(roles.includes("Doctor") ||
+                            roles.includes("Administrator")) && (
+                            <>
+                              <Form.Group className="form-group">
+                                <Form.Label>Select procedure</Form.Label>
+                                <CreatableSelect
+                                  isMulti
+                                  options={proceduresOptions}
+                                  onChange={(e) => setProceduresValues(e)}
+                                  onCreateOption={handleCreateProcedure}
+                                  placeholder="Select or create"
+                                />
+                              </Form.Group>
+
+                              <Button
+                                onClick={(e) => {
+                                  if(proceduresValues.length>0){
+                                    addProcedures(e)
+                                  }
+                                }}
+                                style={{ marginTop: 20, width: 100 }}
+                              >
+                                Save
+                              </Button>
+                            </>
+                          )}
+                        </Col>
+
+                        <Col
+                          lg={6}
+                          style={{
+                            marginBottom: "100px",
+                            marginTop: 20,
+                            paddingLeft: 18,
+                          }}
+                        >
+                          {(roles.includes("Doctor") ||
+                            roles.includes("Administrator")) && (
+                            <>
+                              <Form.Group className="form-group">
+                                <Form.Label>Select labs</Form.Label>
+                                <CreatableSelect
+                                  isMulti
+                                  options={labsOptions}
+                                  onChange={(e) => setLabsValues(e)}
+                                  onCreateOption={handleCreateLab}
+                                  placeholder="Select or create"
+                                />
+                              </Form.Group>
+
+                              <Button
+                                onClick={(e) => {
+                                  if(labsValues.length>0){
+                                    addLabs(e)
+                                  }
+                                }}
+                                style={{ marginTop: 20, width: 100 }}
+                              >
+                                Save
+                              </Button>
+                            </>
+                          )}
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </div>
+              )}
+
+              {(roles.includes("Doctor") ||
+                roles.includes("Nurse") ||
+                roles.includes("Administrator")) && (
+                <>
+                  <Row>
+                    <Col
+                      md={6}
+                      xl={6}
+                      style={{
+                        paddingRight: 0,
+                        paddingLeft: 0,
+                        margin: "10px 0 0 0",
+                      }}
+                    >
+                      <h1>Doctor's Refraction</h1>
+                      <DataTable
+                        columns={reColumns}
+                        data={refraction}
+                        customStyles={customStyles}
+                      />
+                    </Col>
+                    <Col md={6} xl={6} style={{ marginTop: 20 }}>
+                      <Row>
+                        <Col md={6} xl={6} style={{ height: 20 }}>
+                          <h1>Lens Type</h1>
+                          {lensType_.map((act) => (
+                            <Fragment key={act.id}>
+                              <input
+                                type="checkbox"
+                                style={{ marginBottom: 15 }}
+                                value={act.value}
+                                checked={lensType === act.value}
+                                onChange={(e) => setLensType(e.target.value)}
+                              />{" "}
+                              {act.label}
+                              <br />
+                            </Fragment>
+                          ))}
+                        </Col>
+                        <Col md={6} xl={6}>
+                          <h1>Lens Attribute</h1>
+                          {AdditionsTwo.map((act) => (
+                            <Fragment key={act.id}>
+                              <input
+                                type="checkbox"
+                                style={{ marginBottom: 15 }}
+                                value={act.value}
+                                checked={lensAttribute?.includes(act.value)}
+                                onChange={handleCheckboxChange2}
+                              />{" "}
+                              {act.label}
+                              <br />
+                            </Fragment>
+                          ))}
+                        </Col>
+                      </Row>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={3} xl={3}>
+                      {prescriptionCheckBox.map((act) => (
+                        <Fragment key={act.id}>
+                          <input
+                            type="checkbox"
+                            value={act.value}
+                            readOnly={!roles.includes("Doctor")}
+                            checked={generatePrescription}
+                            onChange={() => {
+                              if (roles.includes("Doctor")) {
+                                setGeneratePrescription(!generatePrescription);
+                              }
+                            }}
+                          />{" "}
+                          {act.label}
+                          <br />
+                        </Fragment>
+                      ))}
+                    </Col>
+                  </Row>
+                  {roles.includes("Doctor") && !isReSaved && (
+                    <Button
+                      onClick={() => addRefraction()}
+                      style={{ marginTop: 5, width: 100 }}
+                    >
+                      Save
+                    </Button>
+                  )}
+                </>
+              )}
+
+              {roles.includes("Doctor") && (
+                <div style={{ marginTop: 40 }}>
+                  <h1 style={{ marginBottom: 0 }}>Dr treatments/Notes</h1>
+                  <Card style={{ padding: 0 }}>
+                    <Card.Body style={{ margin: 0, padding: 0 }}>
+                      <Row style={{ paddingRight: 20 }}>
+                        <Col
+                          lg={6}
+                          style={{
+                            marginBottom: "100px",
+                            marginTop: 20,
+                            paddingLeft: 18,
+                          }}
+                        >
+                          {(roles.includes("Doctor") ||
+                            roles.includes("Administrator")) && (
+                            <>
+                              <Form.Group className="form-group">
+                                <Form.Label>Select Treatment</Form.Label>
+                                <Select
+                                  isMulti
+                                  className="basic-single"
+                                  styles={selectStyles}
+                                  options={treatments}
+                                  value={treatment}
+                                  onChange={(e) => setTreatment(e)}
+                                  classNamePrefix="Select2"
+                                  placeholder="Select..."
+                                  required
+                                />
+                              </Form.Group>
+
+                              <Button
+                                onClick={(e) => addTreatment(e)}
+                                style={{ marginTop: 20, width: 100 }}
+                              >
+                                Save
+                              </Button>
+                            </>
+                          )}
+                        </Col>
+
+                        {!isNoteSaved ? (
+                          <Col md={6} xl={6} style={{ marginTop: 20 }}>
+                            <Form.Group className="form-group">
+                              <Form.Label>Add Dr notes</Form.Label>
+                              <textarea
+                                className="form-control"
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                                placeholder="Enter notes here..."
+                                required
+                              />
+                            </Form.Group>
+
+                            <Button
+                              onClick={(e) => addNotes(e)}
+                              style={{ marginTop: 20, width: 100 }}
+                            >
+                              Save
+                            </Button>
+                          </Col>
+                        ) : (
+                          <Col md={6} xl={6} style={{ marginTop: 20 }}>
+                            <Card>
+                              <Card.Header className=" d-flex justify-content-between align-items-center">
+                                <div className="">
+                                  <Card.Title>Dr Notes</Card.Title>
+                                </div>
+                              </Card.Header>
+                              <Card.Body>
+                                <Card.Title>
+                                  {savedNotes
+                                    ? `Dr notes: ${savedNotes}`
+                                    : "There are currently no notes available. The doctor has not added any notes yet."}
+                                </Card.Title>
+                              </Card.Body>
+                            </Card>
+                          </Col>
+                        )}
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </div>
+              )}
+
+              {(roles.includes("Nurse") ||
+                roles.includes("Doctor") ||
+                roles.includes("Administrator")) &&
+                tab === "tab1" && (
+                  <Col md={12} xl={12} style={{ marginTop: 40, height: 150 }}>
+                    <h1 style={{ marginBottom: 0 }}>Medical Acts</h1>
+                    <Select
+                      isMulti
+                      className="basic-single"
+                      options={acts}
+                      value={medicalActs}
+                      onChange={(e) => setMedicalActs(e)}
+                      classNamePrefix="Select2"
+                      placeholder="Select..."
+                      required
+                    />
+                  </Col>
+                )}
+
+              {(roles.includes("Doctor") ||
+                roles.includes("Nurse") ||
+                roles.includes("Administrator")) &&
                 tab === "tab5" && (
                   <>
                     <Row>
@@ -2139,23 +3116,6 @@ export default function VisitDetails() {
                   </>
                 )}
             </Row>
-
-            {/* {toggle ===1? "tab2" :"tab1"} */}
-            {tab === "tab2" && (
-              <Col md={12} xl={12} style={{ marginTop: 20, height: 400 }}>
-                <h1>Medical Acts</h1>
-                <Select
-                  isMulti
-                  className="basic-single"
-                  options={acts}
-                  value={medicalActs}
-                  onChange={(e) => setMedicalActs(e)}
-                  classNamePrefix="Select2"
-                  placeholder="Select..."
-                  required
-                />
-              </Col>
-            )}
           </>
         )}
       </Row>
@@ -2472,107 +3432,126 @@ export default function VisitDetails() {
         </Form>
       </Modal>
 
-      <Modal show={show7} onHide={()=>setShow7(false)}>
+      <Modal show={show7} onHide={() => setShow7(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Select Options</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Row>
-              <Col md={2}>
-                <h5>Sphere</h5>
-                {['-20.00', '-19.75', '-19.50', '-19.25', '-19.00', '-18.75', '-18.50', '-18.25', '-18.00', '-17.75', '-17.50', '-17.25', 
-                  '-17.00', '-16.75', '-16.50', '-16.25', '-16.00', '-15.75', '-15.50', '-15.25', '-15.00', '-14.75', '-14.50', '-14.25', 
-                  '-14.00', '-13.75', '-13.50', '-13.25', '-13.00', '-12.75', '-12.50', '-12.25', '-12.00', '-11.75', '-11.50', '-11.25', 
-                  '-11.00', '-10.75', '-10.50', '-10.25', '-10.00', '-9.75', '-9.50', '-9.25', '-9.00', '-8.75', '-8.50', '-8.25', '-8.00', 
-                  '-7.75', '-7.50', '-7.25', '-7.00', '-6.75', '-6.50', '-6.25', '-6.00', '-5.75', '-5.50', '-5.25', '-5.00', '-4.75', 
-                  '-4.50', '-4.25', '-4.00', '-3.75', '-3.50', '-3.25', '-3.00', '-2.75', '-2.50', '-2.25', '-2.00', '-1.75', '-1.50', 
-                  '-1.25', '-1.00', '-0.75', '-0.50', '-0.25', '0.00', '0.25', '0.50', '0.75', '1.00', '1.25', '1.50', '1.75', '2.00', 
-                  '2.25', '2.50', '2.75', '3.00', '3.25', '3.50', '3.75', '4.00', '4.25', '4.50', '4.75', '5.00', '5.25', '5.50', 
-                  '5.75', '6.00', '6.25', '6.50', '6.75', '7.00', '7.25', '7.50', '7.75', '8.00', '8.25', '8.50', '8.75', '9.00', 
-                  '9.25', '9.50', '9.75', '10.00', '10.25', '10.50', '10.75', '11.00', '11.25', '11.50', '11.75', '12.00', '12.25', 
-                  '12.50', '12.75', '13.00', '13.25', '13.50', '13.75', '14.00', '14.25', '14.50', '14.75', '15.00', '15.25', '15.50', 
-                  '15.75', '16.00', '16.25', '16.50', '16.75', '17.00', '17.25', '17.50', '17.75', '18.00', '18.25', '18.50', '18.75', 
-                  '19.00', '19.25', '19.50', '19.75', '20.00']
-                  .map((value) => (
-                  <Form.Check
-                    key={value}
-                    type="checkbox"
-                    label={value}
-                    onChange={() => handleChange('sphere', value, button)}
-                    checked={(button === 'first' ? firstButtonValues:secondButtonValues).sphere === value}
-                  />
+            <Col sm={12}>
+              <h5
+                style={{
+                  textAlign: "center",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                Sphere
+              </h5>
+              <Row>
+                {sphereArray.map((value) => (
+                  <Col lg={1}>
+                    <Form.Check
+                      key={value}
+                      type="checkbox"
+                      label={value}
+                      onChange={() => handleChange("sphere", value, button)}
+                      checked={
+                        (button === "first"
+                          ? firstButtonValues
+                          : secondButtonValues
+                        ).sphere === value
+                      }
+                    />
+                  </Col>
                 ))}
-              </Col>
-
-              <Col md={1} className="border-right"></Col> {/* Vertical line */}
-
-              <Col md={2}>
-                <h5>Cylinder</h5>
-                {['-20.00', '-19.75', '-19.50', '-19.25', '-19.00', '-18.75', '-18.50', '-18.25', '-18.00', '-17.75', '-17.50', '-17.25', 
-                  '-17.00', '-16.75', '-16.50', '-16.25', '-16.00', '-15.75', '-15.50', '-15.25', '-15.00', '-14.75', '-14.50', '-14.25', 
-                  '-14.00', '-13.75', '-13.50', '-13.25', '-13.00', '-12.75', '-12.50', '-12.25', '-12.00', '-11.75', '-11.50', '-11.25', 
-                  '-11.00', '-10.75', '-10.50', '-10.25', '-10.00', '-9.75', '-9.50', '-9.25', '-9.00', '-8.75', '-8.50', '-8.25', '-8.00', 
-                  '-7.75', '-7.50', '-7.25', '-7.00', '-6.75', '-6.50', '-6.25', '-6.00', '-5.75', '-5.50', '-5.25', '-5.00', '-4.75', 
-                  '-4.50', '-4.25', '-4.00', '-3.75', '-3.50', '-3.25', '-3.00', '-2.75', '-2.50', '-2.25', '-2.00', '-1.75', '-1.50', 
-                  '-1.25', '-1.00', '-0.75', '-0.50', '-0.25', '0.00', '0.25', '0.50', '0.75', '1.00', '1.25', '1.50', '1.75', '2.00', 
-                  '2.25', '2.50', '2.75', '3.00', '3.25', '3.50', '3.75', '4.00', '4.25', '4.50', '4.75', '5.00', '5.25', '5.50', 
-                  '5.75', '6.00', '6.25', '6.50', '6.75', '7.00', '7.25', '7.50', '7.75', '8.00', '8.25', '8.50', '8.75', '9.00', 
-                  '9.25', '9.50', '9.75', '10.00', '10.25', '10.50', '10.75', '11.00', '11.25', '11.50', '11.75', '12.00', '12.25', 
-                  '12.50', '12.75', '13.00', '13.25', '13.50', '13.75', '14.00', '14.25', '14.50', '14.75', '15.00', '15.25', '15.50', 
-                  '15.75', '16.00', '16.25', '16.50', '16.75', '17.00', '17.25', '17.50', '17.75', '18.00', '18.25', '18.50', '18.75', 
-                  '19.00', '19.25', '19.50', '19.75', '20.00']
-                  .map((value) => (
-                  <Form.Check
-                    key={value}
-                    type="checkbox"
-                    label={value}
-                    onChange={() => handleChange('cylinder', value, button)}
-                    checked={(button === 'first' ? firstButtonValues:secondButtonValues).cylinder === value}
-                  />
+              </Row>
+              <h5
+                style={{
+                  textAlign: "center",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                Cylinder
+              </h5>
+              <Row>
+                {cylinderArray.map((value) => (
+                  <Col lg={1}>
+                    <Form.Check
+                      key={value}
+                      type="checkbox"
+                      label={value}
+                      onChange={() => handleChange("cylinder", value, button)}
+                      checked={
+                        (button === "first"
+                          ? firstButtonValues
+                          : secondButtonValues
+                        ).cylinder === value
+                      }
+                    />
+                  </Col>
                 ))}
-              </Col>
-
-              <Col md={1} className="border-right"></Col> {/* Vertical line */}
-
-              <Col md={2}>
-                <h5>Axis</h5>
-                {['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100', '110', '120', '130', '140', '150', '160', '170', '180'].map((value) => (
-                  <Form.Check
-                    key={value}
-                    type="checkbox"
-                    label={value}
-                    onChange={() => handleChange('axis', value, button)}
-                    checked={(button === 'first' ? firstButtonValues:secondButtonValues).axis === value}
-                  />
+              </Row>
+              <h5
+                style={{
+                  textAlign: "center",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                Axis
+              </h5>
+              <Row>
+                {axisArray.map((value) => (
+                  <Col lg={1}>
+                    <Form.Check
+                      key={value}
+                      type="checkbox"
+                      label={value}
+                      onChange={() => handleChange("axis", value, button)}
+                      checked={
+                        (button === "first"
+                          ? firstButtonValues
+                          : secondButtonValues
+                        ).axis === value
+                      }
+                    />
+                  </Col>
                 ))}
-              </Col>
-
-              <Col md={1} className="border-right"></Col> {/* Vertical line */}
-
-              <Col md={2}>
-                <h5>Addition</h5>
-                {['0.00', '0.25', '0.50', '0.75', '1.00', '1.25', '1.50', '1.75', '2.00', 
-                  '2.25', '2.50', '2.75', '3.00', '3.25', '3.50', '3.75', '4.00', '4.25', '4.50', '4.75', '5.00', '5.25', '5.50', 
-                  '5.75', '6.00', '6.25', '6.50', '6.75', '7.00', '7.25', '7.50', '7.75', '8.00', '8.25', '8.50', '8.75', '9.00', 
-                  '9.25', '9.50', '9.75', '10.00', '10.25', '10.50', '10.75', '11.00', '11.25', '11.50', '11.75', '12.00', '12.25', 
-                  '12.50', '12.75', '13.00', '13.25', '13.50', '13.75', '14.00', '14.25', '14.50', '14.75', '15.00', '15.25', '15.50', 
-                  '15.75', '16.00', '16.25', '16.50', '16.75', '17.00', '17.25', '17.50', '17.75', '18.00', '18.25', '18.50', '18.75', 
-                  '19.00', '19.25', '19.50', '19.75', '20.00'].map((value) => (
-                  <Form.Check
-                    key={value}
-                    type="checkbox"
-                    label={value}
-                    onChange={() => handleChange('addition', value, button)}
-                    checked={(button === 'first' ? firstButtonValues:secondButtonValues).addition === value}
-                  />
+              </Row>
+              <h5
+                style={{
+                  textAlign: "center",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                Addition
+              </h5>
+              <Row>
+                {additionsArray.map((value) => (
+                  <Col lg={1}>
+                    <Form.Check
+                      key={value}
+                      type="checkbox"
+                      label={value}
+                      onChange={() => handleChange("addition", value, button)}
+                      checked={
+                        (button === "first"
+                          ? firstButtonValues
+                          : secondButtonValues
+                        ).addition === value
+                      }
+                    />
+                  </Col>
                 ))}
-              </Col>
-            </Row>
+              </Row>
+            </Col>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={()=>setShow7(false)}>
+          <Button variant="secondary" onClick={() => setShow7(false)}>
             Close
           </Button>
         </Modal.Footer>
@@ -2580,18 +3559,19 @@ export default function VisitDetails() {
 
       <Modal show={show8} onHide={() => setShow8(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>
-            All previous visits
-          </Modal.Title>
+          <Modal.Title>All previous visits</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {previousVisits2.length>0 && previousVisits2.map(visit=><Visit visitId={null} visit={visit} />)}
+          {previousVisits2.length > 0 &&
+            previousVisits2.map((visit) => (
+              <Visit visitId={null} visit={visit} />
+            ))}
           <Pagination
-          currentPage={currentPage2}
-          totalItems={totalRows2 ? totalRows2 : previousVisits2.length}
-          itemsPerPage={5}
-          onPageChange={handlePageChange}
-        />
+            currentPage={currentPage2}
+            totalItems={totalRows2 ? totalRows2 : previousVisits2.length}
+            itemsPerPage={5}
+            onPageChange={handlePageChange}
+          />
         </Modal.Body>
       </Modal>
     </Fragment>

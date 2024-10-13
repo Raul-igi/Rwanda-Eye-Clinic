@@ -27,7 +27,7 @@ function App(props) {
           <div className="page-main">
             <Header {...props}/>
             <Sidebar />
-            <div className="main-content app-content" onClick={() => Togglefuction()}>
+            <div className="main-content app-content" style={{marginBlockStart:20}} onClick={() => Togglefuction()}>
               <div className="side-app">
                 <div className="main-container container-fluid">
                   <Outlet />

@@ -2391,7 +2391,7 @@ export default function VisitDetails() {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        size: 5,
+        size: 1,
         page: currentPage2,
         patientId: location.state?.data?.patient?.id,
       },
@@ -3663,7 +3663,7 @@ export default function VisitDetails() {
           <Pagination
             currentPage={currentPage2}
             totalItems={totalRows2 ? totalRows2 : previousVisits2.length}
-            itemsPerPage={5}
+            itemsPerPage={1}
             onPageChange={handlePageChange}
           />
         </Modal.Body>

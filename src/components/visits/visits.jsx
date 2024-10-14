@@ -23,7 +23,7 @@ const columns = [
   },
   {
     name: "DoB",
-    selector: (row) => [row.patient?.dob || '-'],
+    selector: (row) => [row.patient?.dob || "-"],
     sortable: true,
   },
   {
@@ -70,9 +70,9 @@ const columns = [
 
 const conditionalRowStyles = [
   {
-    when: row => row.status === "DONE", // Define your condition here
+    when: (row) => row.status === "DONE", // Define your condition here
     style: {
-      backgroundColor: '#b5e48c', // Your custom background color
+      backgroundColor: "#b5e48c", // Your custom background color
     },
   },
 ];
@@ -91,7 +91,7 @@ const columns2 = [
   },
   {
     name: "DoB",
-    selector: (row) => [row.patient?.dob  || '-'],
+    selector: (row) => [row.patient?.dob || "-"],
     sortable: true,
   },
   {
@@ -139,8 +139,10 @@ function Visits() {
   const [patientsInsurances, setPatientsInsurances] = useState([]);
   const [status, setStatus] = useState("");
 
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [tab, setTab] = useState('tab1');
+  const [tab, setTab] = useState("tab1");
   const [totalRows, setTotalRows] = useState(0);
 
   const [patientInsuranceId, setPatientInsuranceId] = useState("");
@@ -151,8 +153,8 @@ function Visits() {
   const [roles, setRoles] = useState([]);
   const [visits_, setVisits_] = useState([]);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedTerm, setDebouncedTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedTerm, setDebouncedTerm] = useState("");
   const [isMounted, setIsMounted] = useState(false); // Track if component has mounted
 
   useEffect(() => {
@@ -167,7 +169,7 @@ function Visits() {
 
   useEffect(() => {
     // Perform the search only if the component has mounted and the debounced term is not empty
-    if (isMounted && debouncedTerm && tab == 'tab2') {
+    if (isMounted && debouncedTerm && tab == "tab2") {
       fetchVisitsDiagnostics();
     } else {
       setIsMounted(true); // Set the flag after the first mount
@@ -198,14 +200,14 @@ function Visits() {
   };
 
   const statuses = [
-    {label:"No paid private",value:"NO_PAID_PRIVATE"},
-    {label:"No paid with insurance",value:"NO_PAID_WITH_INSURANCE"},
-    {label:"Follow up private",value:"FOLLOW_UP_PRIVATE"},
-    {label:"Follow up result",value:"FOLLOW_UP_RESULT"},
-    {label:"Follow up private act",value:"FOLLOW_UP_PRIVATE_ACT"},
-    {label:"Follow up medicine",value:"FOLLOW_UP_MEDECINE"},
-    {label:"Follow up glasses",value:"FOLLOW_UP_GLASSES"}
-  ]
+    { label: "No paid private", value: "NO_PAID_PRIVATE" },
+    { label: "No paid with insurance", value: "NO_PAID_WITH_INSURANCE" },
+    { label: "Follow up private", value: "FOLLOW_UP_PRIVATE" },
+    { label: "Follow up result", value: "FOLLOW_UP_RESULT" },
+    { label: "Follow up private act", value: "FOLLOW_UP_PRIVATE_ACT" },
+    { label: "Follow up medicine", value: "FOLLOW_UP_MEDECINE" },
+    { label: "Follow up glasses", value: "FOLLOW_UP_GLASSES" },
+  ];
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -221,7 +223,7 @@ function Visits() {
       voucherNumber: voucherNumber,
       caseType: caseType,
       doctorId: doctorId,
-      patientStatus: status
+      patientStatus: status,
     });
     console.log(postObj);
     let my_token = await localStorage.getItem("token");
@@ -290,7 +292,7 @@ function Visits() {
     }; //incase you have to deal with ID or Options
     axios
       .get(
-        userRoles.includes("Nurse")||userRoles.includes("Optometrist")
+        userRoles.includes("Nurse") || userRoles.includes("Optometrist")
           ? `http://www.ubuzima.rw/rec/visit/nurse`
           : userRoles.includes("Doctor")
           ? `http://www.ubuzima.rw/rec/visit/doctor`
@@ -397,10 +399,10 @@ function Visits() {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        "query": searchTerm,
-        "page": currentPage,
-        "size": 10,
+        Authorization: `Bearer ${my_token}`,
+        query: searchTerm,
+        page: currentPage,
+        size: 10,
       },
     }; //incase you have to deal with ID or Options
     axios
@@ -419,25 +421,30 @@ function Visits() {
       });
   };
 
-  const fetchTodaysVisits = async (id) => {
+  const fetchVisitsPerDay = async (newDate) => {
     let my_token = await localStorage.getItem("token");
     let user = await localStorage.getItem("user");
     let roles = await localStorage.getItem("role");
-    let userRoles = JSON.parse(roles)
-    let userObj = JSON.parse(user)
+    let userRoles = JSON.parse(roles);
+    let userObj = JSON.parse(user);
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${my_token}`,
-        "selectedDate": new Date().toISOString().slice(0, 10),
-        "page": currentPage,
-        "status":userRoles.includes('Receptionist')?"DONE":null,
-        "doctorId": userRoles.includes('Doctor')?userObj.id:"",
-        "size": 10,
+        Authorization: `Bearer ${my_token}`,
+        selectedDate: newDate || date,
+        page: currentPage,
+        status: userRoles.includes("Receptionist") ? "DONE" : null,
+        doctorId: userRoles.includes("Doctor") ? userObj.id : "",
+        size: 10,
       },
     }; //incase you have to deal with ID or Options
     axios
-      .get(userRoles.includes('Receptionist')?`http://www.ubuzima.rw/rec/visit/by-day-status`:`http://www.ubuzima.rw/rec/visit/by-day`, config)
+      .get(
+        userRoles.includes("Receptionist")
+          ? `http://www.ubuzima.rw/rec/visit/by-day-status`
+          : `http://www.ubuzima.rw/rec/visit/by-day`,
+        config
+      )
       .then((res) => {
         console.log(res.data);
         setVisits(res.data.response.patientVisits);
@@ -453,9 +460,9 @@ function Visits() {
   };
 
   useEffect(() => {
-    if(tab === 'tab1'){
+    if (tab === "tab1") {
       fetchVisits();
-    }else{
+    } else {
       fetchVisitsDiagnostics();
     }
   }, [currentPage]);
@@ -476,79 +483,104 @@ function Visits() {
             <Card.Header className="d-flex justify-content-between align-items-center">
               <Card.Title>Visits</Card.Title>
 
-              {(roles.includes('Nurse') || roles.includes('Receptionist') || roles.includes('Administrator') || roles.includes('Doctor'))&&(
+              {(roles.includes("Nurse") ||
+                roles.includes("Receptionist") ||
+                roles.includes("Administrator") ||
+                roles.includes("Doctor")) && (
                 <div
-                class="tabs"
-                style={{ display: "flex", borderBottom: " 1px solid #ccc" }}
-              >
-                <div
-                  class="tab"
-                  onClick={()=>{setVisits([]); setTotalRows(0); setTab('tab1');fetchVisits()}}
-                  style={{
-                    padding: "10px 20px",
-                    cursor: "pointer",
-                    border: "1px solid #ccc",
-                    borderBottom: tab === 'tab1'?"3px solid #467FCF":"none",
-                    backgroundColor: tab === 'tab1'?'white':"#f1f1f1",
-                    fontWeight: tab === 'tab1'?'bold':"normal",
-                  }}
-                  id="tab1"
+                  class="tabs"
+                  style={{ display: "flex", borderBottom: " 1px solid #ccc" }}
                 >
-                  
-                  All Visits
-                </div>
-
-                {roles.includes('Nurse') && (
                   <div
                     class="tab"
-                    onClick={()=>{setVisits([]);  setTotalRows(0); setTab('tab2');fetchVisitsDiagnostics()}}
+                    onClick={() => {
+                      setVisits([]);
+                      setTotalRows(0);
+                      setTab("tab1");
+                      fetchVisits();
+                    }}
                     style={{
                       padding: "10px 20px",
                       cursor: "pointer",
                       border: "1px solid #ccc",
-                      borderBottom: tab === 'tab2'?"3px solid #467FCF":"none",
-                      backgroundColor: tab === 'tab2'?'white':"#f1f1f1",
-                      fontWeight: tab === 'tab2'?'bold':"normal",
+                      borderBottom:
+                        tab === "tab1" ? "3px solid #467FCF" : "none",
+                      backgroundColor: tab === "tab1" ? "white" : "#f1f1f1",
+                      fontWeight: tab === "tab1" ? "bold" : "normal",
                     }}
-                    id="tab2"
+                    id="tab1"
                   >
-                  Visits without diagnostics
+                    All Visits
                   </div>
-                )}
 
-                {!roles.includes('Nurse') && (
+                  {roles.includes("Nurse") && (
+                    <div
+                      class="tab"
+                      onClick={() => {
+                        setVisits([]);
+                        setTotalRows(0);
+                        setTab("tab2");
+                        fetchVisitsDiagnostics();
+                      }}
+                      style={{
+                        padding: "10px 20px",
+                        cursor: "pointer",
+                        border: "1px solid #ccc",
+                        borderBottom:
+                          tab === "tab2" ? "3px solid #467FCF" : "none",
+                        backgroundColor: tab === "tab2" ? "white" : "#f1f1f1",
+                        fontWeight: tab === "tab2" ? "bold" : "normal",
+                      }}
+                      id="tab2"
+                    >
+                      Visits without diagnostics
+                    </div>
+                  )}
 
-                <div
-                  class="tab"
-                  onClick={()=>{setVisits([]); setTotalRows(0) ;setTab('tab3');fetchTodaysVisits()}}
-                  style={{
-                    padding: "10px 20px",
-                    cursor: "pointer",
-                    border: "1px solid #ccc",
-                    borderBottom: tab === 'tab3'?"3px solid #467FCF":"none",
-                    backgroundColor: tab === 'tab3'?'white':"#f1f1f1",
-                    fontWeight: tab === 'tab3'?'bold':"normal",
-                  }}
-                  id="tab3"
-                >
-                 {roles.includes('Receptionist')?'Processed visits':`Today's visits`}
+                  {!roles.includes("Nurse") && (
+                    <div
+                      class="tab"
+                      onClick={() => {
+                        setVisits([]);
+                        setTotalRows(0);
+                        setTab("tab3");
+                        fetchVisitsPerDay();
+                      }}
+                      style={{
+                        padding: "10px 20px",
+                        cursor: "pointer",
+                        border: "1px solid #ccc",
+                        borderBottom:
+                          tab === "tab3" ? "3px solid #467FCF" : "none",
+                        backgroundColor: tab === "tab3" ? "white" : "#f1f1f1",
+                        fontWeight: tab === "tab3" ? "bold" : "normal",
+                      }}
+                      id="tab3"
+                    >
+                      {roles.includes("Receptionist")
+                        ? "Processed visits"
+                        : `Today's visits`}
+                    </div>
+                  )}
                 </div>
-                )}
-
-              </div>
               )}
 
-              {/* <Button variant="primary" onClick={fetchVisitsDiagnostics}>
-                Visit Without Diagnostics
-              </Button>
+              {(tab==='tab3' && roles.includes("Receptionist"))&&(
+              <Col lg={2}>
+                <Form.Group>
+                  <Form.Control
+                    type="date"
+                    className="form-control"
+                    name="example-text-input"
+                    placeholder="Start Date"
+                    value={date}
+                    onChange={(e) => {fetchVisitsPerDay(e.target.value);setDate(e.target.value)}}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              )}
 
-              <Button
-                variant="primary"
-                onClick={fetchVisits}
-                
-              >
-                All visits
-              </Button> */}
 
               <Row>
                 <Col>
@@ -567,11 +599,11 @@ function Visits() {
               </Row>
             </Card.Header>
             <Card.Body>
-              {tab==='tab3'&&(
+              {tab === "tab3" && (
                 <p>Today's visits: {totalRows || visits.length} </p>
               )}
               <DataTable
-                columns={roles.includes('Doctor')?columns2:columns}
+                columns={roles.includes("Doctor") ? columns2 : columns}
                 paginationPerPage={10}
                 paginationRowsPerPageOptions={[10]}
                 paginationTotalRows={totalRows ? totalRows : visits.length}

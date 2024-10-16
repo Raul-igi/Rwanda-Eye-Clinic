@@ -37,6 +37,8 @@ export default function Visit({ visitId, visit }) {
   const [savedTreatment, setSavedTreatment] = useState([]);
   const [rightExams, setRightExams] = useState([]);
   const [labs, setLabs] = useState([]);
+  const [lensType, setLensType] = useState("");
+  const [lensAttribute, setLensAttribute] = useState([]);
   const [procedures, setProcedures] = useState([]);
 
   const [refraction, setRefraction] = useState([
@@ -276,36 +278,13 @@ export default function Visit({ visitId, visit }) {
     }
   };
 
-  const fetchDiagnostic = async () => {
+  const fetchData = async () => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
-        patientVisitId: "081926e7-5a73-4c75-abb3-b27a94986e20",
-      },
-    };
-
-    try {
-      const response = await axios.get(
-        `http://www.ubuzima.rw/rec/visit/nurse/diagnostic/visit-id`,
-        config
-      );
-      if (response.data.status) {
-        setSavedDiagnostic(response.data.response?.diagnostic);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchMedicalActs = async () => {
-    let my_token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
-        id: location.state?.data?.visitId,
+        id: visitId,
       },
     };
 
@@ -314,156 +293,119 @@ export default function Visit({ visitId, visit }) {
         `http://www.ubuzima.rw/rec/visit/id`,
         config
       );
-      setMedicalActs(response.data.response.medicalAct);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchVisualAcuity = async () => {
-    let my_token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
-        patientVisitId: visitId,
-      },
-    };
-
-    try {
-      const response = await axios.get(
-        `http://www.ubuzima.rw/rec/visit/nurse/va/visit-id`,
-        config
-      );
-      if (response.data.response) {
-        const visualAcuity_ = [
-          {
-            name: "Right Eye",
-            sc: response.data.response.scRightEye,
-            ac: response.data.response.acRightEye,
-            ph: response.data.response.phRightEye,
-          },
-          {
-            name: "Left Eye",
-            sc: response.data.response.scLeftEye,
-            ac: response.data.response.acLeftEye,
-            ph: response.data.response.phLeftEye,
-          },
-        ];
-        const currentGlasses_ = [
-          {
-            name: "Right Eye",
-            sphere: response.data.response.glassSphereRightEye,
-            cylinder: response.data.response.glassCylindreRightEye,
-            axis: response.data.response.glassAxeRightEye,
-          },
-          {
-            name: "Left Eye",
-            sphere: response.data.response.glassSphereLeftEye,
-            cylinder: response.data.response.glassCylindreLeftEye,
-            axis: response.data.response.glassAxeLeftEye,
-          },
-        ];
-        setVisualAcuity(visualAcuity_);
-        setCurrentGlasses(currentGlasses_);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchRefraction = async () => {
-    let my_token = localStorage.getItem("token");
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
-        patientVisitId: visitId,
-      },
-    };
-
-    try {
-      const response = await axios.get(
-        `http://www.ubuzima.rw/rec/visit/doctor/refraction/visit-id`,
-        config
-      );
-      if (response.data.status && response.data.response) {
-        const refraction_ = [
-          {
-            name: "Right Eye",
-            sphere: response.data.response[0].sphereRightEye || "",
-            cylinder: response.data.response[0].cylindreRightEye || "",
-            axis: response.data.response[0].axeRightEye || "",
-            addition: response.data.response[0].additionRightEye || "",
-          },
-          {
-            name: "Left Eye",
-            sphere: response.data.response[0].sphereLeftEye || "",
-            cylinder: response.data.response[0].cylindreLeftEye || "",
-            axis: response.data.response[0].axeLeftEye || "",
-            addition: response.data.response[0].additionLeftEye || "",
-          },
-        ];
-        setRefraction(refraction_);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    if (visitId) {
-      fetchVisualAcuity();
-      fetchMedicalActs();
-      fetchDiagnostic();
-      fetchRefraction();
-      fetchTreatment();
-    } else {
-      console.log(visit);
+      const myVisit = response.data.response
       const visualAcuity_ = [
         {
           name: "Right Eye",
-          sc: visit.scRightEye,
-          ac: visit.acRightEye,
-          ph: visit.phRightEye,
+          sc: myVisit.visualAcuity?.scRightEye,
+          ac: myVisit.visualAcuity?.acRightEye,
+          ph: myVisit.visualAcuity?.phRightEye,
         },
         {
           name: "Left Eye",
-          sc: visit.scLeftEye,
-          ac: visit.acLeftEye,
-          ph: visit.phLeftEye,
+          sc: myVisit.visualAcuity?.scLeftEye,
+          ac: myVisit.visualAcuity?.acLeftEye,
+          ph: myVisit.visualAcuity?.phLeftEye,
         },
       ];
       const currentGlasses_ = [
         {
           name: "Right Eye",
-          sphere: visit.glassSphereRightEye,
-          cylinder: visit.glassCylindreRightEye,
-          axis: visit.glassAxeRightEye,
+          sphere: myVisit.visualAcuity?.glassSphereRightEye,
+          cylinder: myVisit.visualAcuity?.glassCylindreRightEye,
+          axis: myVisit.visualAcuity?.glassAxeRightEye,
         },
         {
           name: "Left Eye",
-          sphere: visit.glassSphereLeftEye,
-          cylinder: visit.glassCylindreLeftEye,
-          axis: visit.glassAxeLeftEye,
+          sphere: myVisit.visualAcuity?.glassSphereLeftEye,
+          cylinder: myVisit.visualAcuity?.glassCylindreLeftEye,
+          axis: myVisit.visualAcuity?.glassAxeLeftEye,
         },
       ];
       const refraction_ = [
         {
           name: "Right Eye",
-          sphere: visit.sphereRightEye || "",
-          cylinder: visit.cylindreRightEye || "",
-          axis: visit.axeRightEye || "",
-          addition: visit.additionRightEye || "",
+          sphere: myVisit.refraction?.sphereRightEye || "",
+          cylinder: myVisit.refraction?.cylindreRightEye || "",
+          axis: myVisit.refraction?.axeRightEye || "",
+          addition: myVisit.refraction?.additionRightEye || "",
         },
         {
           name: "Left Eye",
-          sphere: visit.sphereLeftEye || "",
-          cylinder: visit.cylindreLeftEye || "",
-          axis: visit.axeLeftEye || "",
-          addition: visit.additionLeftEye || "",
+          sphere: myVisit.refraction?.sphereLeftEye || "",
+          cylinder: myVisit.refraction?.cylindreLeftEye || "",
+          axis: myVisit.refraction?.axeLeftEye || "",
+          addition: myVisit.refraction?.additionLeftEye || "",
         },
       ];
+      setLensAttribute(myVisit.refraction?.lensAttribute)
+      setLensType(myVisit.refraction?.lensType)
+      setRefraction(refraction_);
+      setVisualAcuity(visualAcuity_);
+      setCurrentGlasses(currentGlasses_);
+      setMedicalActs(myVisit.medicalAct || []);
+      setRightExams(myVisit.exams || []);
+      setProcedures(myVisit.procedures || []);
+      setLabs(myVisit.labs || []);
+      setSavedTreatment(myVisit.treatments?.map(t=>t.name))
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+
+  useEffect(() => {
+    if (visitId) {
+      fetchData();
+      fetchOptRefraction();
+    } else {
+      const visualAcuity_ = [
+        {
+          name: "Right Eye",
+          sc: visit.visualAcuity?.scRightEye,
+          ac: visit.visualAcuity?.acRightEye,
+          ph: visit.visualAcuity?.phRightEye,
+        },
+        {
+          name: "Left Eye",
+          sc: visit.visualAcuity?.scLeftEye,
+          ac: visit.visualAcuity?.acLeftEye,
+          ph: visit.visualAcuity?.phLeftEye,
+        },
+      ];
+      const currentGlasses_ = [
+        {
+          name: "Right Eye",
+          sphere: visit.visualAcuity?.glassSphereRightEye,
+          cylinder: visit.visualAcuity?.glassCylindreRightEye,
+          axis: visit.visualAcuity?.glassAxeRightEye,
+        },
+        {
+          name: "Left Eye",
+          sphere: visit.visualAcuity?.glassSphereLeftEye,
+          cylinder: visit.visualAcuity?.glassCylindreLeftEye,
+          axis: visit.visualAcuity?.glassAxeLeftEye,
+        },
+      ];
+      const refraction_ = [
+        {
+          name: "Right Eye",
+          sphere: visit.refraction?.sphereRightEye || "",
+          cylinder: visit.refraction?.cylindreRightEye || "",
+          axis: visit.refraction?.axeRightEye || "",
+          addition: visit.refraction?.additionRightEye || "",
+        },
+        {
+          name: "Left Eye",
+          sphere: visit.refraction?.sphereLeftEye || "",
+          cylinder: visit.refraction?.cylindreLeftEye || "",
+          axis: visit.refraction?.axeLeftEye || "",
+          addition: visit.refraction?.additionLeftEye || "",
+        },
+      ];
+      setLensAttribute(visit.refraction?.lensAttribute)
+      setLensType(visit.refraction?.lensType)
       setRefraction(refraction_);
       setVisualAcuity(visualAcuity_);
       setCurrentGlasses(currentGlasses_);
@@ -557,7 +499,7 @@ export default function Visit({ visitId, visit }) {
         </Col>
 
         <div style={{ marginTop: 40 }}>
-          <h1 style={{ marginBottom: 0 }}>Dr Exams</h1>
+          <h1 style={{ marginBottom: 0 }}>Patient's symptoms and signs</h1>
           <Card style={{ padding: 0 }}>
             <Card.Body style={{ margin: 0, padding: 0 }}>
               <Row style={{ paddingRight: 20 }}>
@@ -616,6 +558,39 @@ export default function Visit({ visitId, visit }) {
                 >
                   <h1>Labs</h1>
                   <p>{labs.join(', ') || 'No labs yet...'}</p>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </div>
+
+        <div style={{ marginTop: 40 }}>
+          <h1 style={{ marginBottom: 0 }}>Lens Details</h1>
+          <Card style={{ padding: 0 }}>
+            <Card.Body style={{ margin: 0, padding: 0 }}>
+              <Row style={{ paddingRight: 20 }}>
+              <Col
+                  lg={6}
+                  style={{
+                    marginBottom: 50,
+                    marginTop: 20,
+                    paddingLeft: 18,
+                  }}
+                >
+                  <h1>Lens type</h1>
+                  <p>{lensType || 'Not selected yet...'}</p>
+                </Col>
+
+                <Col
+                  lg={6}
+                  style={{
+                    marginBottom: 50,
+                    marginTop: 20,
+                    paddingLeft: 18,
+                  }}
+                >
+                  <h1>Lens attributes</h1>
+                  <p>{lensAttribute?.join(', ') || 'Not selected yet...'}</p>
                 </Col>
               </Row>
             </Card.Body>

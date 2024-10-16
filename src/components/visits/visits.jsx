@@ -278,11 +278,11 @@ function Visits() {
     }
   };
 
-  const fetchVisits = async () => {
+  const fetchVisits = async (date=null) => {
     let my_token = await localStorage.getItem("token");
     let roles = await localStorage.getItem("role");
     let userRoles = JSON.parse(roles);
-    const config = {
+    var config = {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${my_token}`,
@@ -290,6 +290,9 @@ function Visits() {
         size: 10,
       },
     }; //incase you have to deal with ID or Options
+    if(userRoles.includes("Receptionist")){
+      config.headers.selectedDate = date || new Date().toISOString().slice(0,10)
+    }
     axios
       .get(
         userRoles.includes("Nurse") || userRoles.includes("Optometrist")
@@ -298,7 +301,7 @@ function Visits() {
           ? `http://www.ubuzima.rw/rec/visit/doctor`
           : userRoles.includes("Administrator")
           ? `http://www.ubuzima.rw/rec/visit/all`
-          : `http://www.ubuzima.rw/rec/visit/receptionist`,
+          : `http://www.ubuzima.rw/rec/visit/by-day-not-paid`,
         config
       )
       .then((res) => {
@@ -565,7 +568,7 @@ function Visits() {
                 </div>
               )}
 
-              {(tab==='tab3' && roles.includes("Receptionist"))&&(
+              {(roles.includes("Receptionist"))&&(
               <Col lg={2}>
                 <Form.Group>
                   <Form.Control
@@ -574,7 +577,14 @@ function Visits() {
                     name="example-text-input"
                     placeholder="Start Date"
                     value={date}
-                    onChange={(e) => {fetchVisitsPerDay(e.target.value);setDate(e.target.value)}}
+                    onChange={(e)=>{
+                      setDate(e.target.value);
+                      if(tab==="tab3"){
+                        fetchVisitsPerDay(e.target.value);
+                      }else{
+                        fetchVisits(e.target.value);
+                      }
+                    }}
                     required
                   />
                 </Form.Group>

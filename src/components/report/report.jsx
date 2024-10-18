@@ -79,6 +79,11 @@ const columns3 = [
     sortable: true,
   },
   {
+    name: "Total Amount",
+    selector: (row) => [Math.round(row.totalAmount)],
+    sortable: true,
+  },
+  {
     name: "Insurance Amount",
     selector: (row) => [Math.round(row.insuranceAmount)],
     sortable: true,

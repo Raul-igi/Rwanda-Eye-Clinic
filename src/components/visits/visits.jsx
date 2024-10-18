@@ -10,41 +10,137 @@ const columns = [
     name: "Patient's names",
     selector: (row) => [row.patient?.names],
     sortable: true,
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "DONE",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
   {
     name: "Patient's phone",
     selector: (row) => [row.patient?.phoneNumber],
     sortable: true,
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "DONE",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
   {
     name: "Gender",
     selector: (row) => [row.patient?.gender],
     sortable: true,
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "DONE",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
   {
     name: "DoB",
     selector: (row) => [row.patient?.dob || "-"],
     sortable: true,
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "DONE",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
   {
     name: "Doctor's names",
     selector: (row) => [`${row.doctor?.firstName} ${row.doctor?.lastName}`],
     sortable: true,
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "DONE",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
   {
     name: "Insurance",
     selector: (row) => [row.patientInsurance?.insuranceName || "-"],
     sortable: true,
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "DONE",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
   {
     name: "Case Type",
     selector: (row) => [row.caseType],
     sortable: true,
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "DONE",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
   {
     name: "Visit Type",
     selector: (row) => [row.visitType],
     sortable: true,
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "DONE",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
   {
     name: "Actions",
@@ -65,17 +161,21 @@ const columns = [
         View Details
       </Link>
     ),
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "DONE",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'white',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
 ];
 
-const conditionalRowStyles = [
-  {
-    when: (row) => row.status === "DONE", // Define your condition here
-    style: {
-      backgroundColor: "#b5e48c", // Your custom background color
-    },
-  },
-];
 
 const columns2 = [
   {
@@ -513,7 +613,9 @@ function Visits() {
                     }}
                     id="tab1"
                   >
-                    All Visits
+                    {roles.includes("Receptionist")
+                        ? "Today's visits"
+                        : `All visits`}
                   </div>
 
                   {roles.includes("Nurse") && (
@@ -561,7 +663,7 @@ function Visits() {
                       id="tab3"
                     >
                       {roles.includes("Receptionist")
-                        ? "Processed visits"
+                        ? "All visits"
                         : `Today's visits`}
                     </div>
                   )}
@@ -615,11 +717,11 @@ function Visits() {
               <DataTable
                 columns={roles.includes("Doctor") ? columns2 : columns}
                 paginationPerPage={10}
+                highlightOnHover={true}
                 paginationRowsPerPageOptions={[10]}
                 paginationTotalRows={totalRows ? totalRows : visits.length}
                 onChangePage={(page) => setCurrentPage(page)}
                 data={visits}
-                conditionalRowStyles={conditionalRowStyles}
                 pagination
                 paginationServer
               />

@@ -180,31 +180,31 @@ const sphereArray = [
 ];
 
 const cylinderArray = [
-  "-6.00",
-  "-5.75",
-  "-5.50",
-  "-5.25",
-  "-5.00",
-  "-4.75",
-  "-4.50",
-  "-4.25",
-  "-4.00",
-  "-3.75",
-  "-3.50",
-  "-3.25",
-  "-3.00",
-  "-2.75",
-  "-2.50",
-  "-2.25",
-  "-2.00",
-  "-1.75",
-  "-1.50",
-  "-1.25",
-  "-1.00",
-  "-0.75",
-  "-0.50",
+  "Plano",
   "-0.25",
-  "0.00",
+  "-0.50",
+  "-0.75",
+  "-1.00",
+  "-1.25",
+  "-1.50",
+  "-1.75",
+  "-2.00",
+  "-2.25",
+  "-2.50",
+  "-2.75",
+  "-3.00",
+  "-3.25",
+  "-3.50",
+  "-3.75",
+  "-4.00",
+  "-4.25",
+  "-4.50",
+  "-4.75",
+  "-5.00",
+  "-5.25",
+  "-5.50",
+  "-5.75",
+  "-6.00",
 ];
 
 const axisArray = [
@@ -447,7 +447,6 @@ export default function VisitDetails() {
 
   const [newSign, setNewSign] = useState("");
   const [newSign2, setNewSign2] = useState("");
-  const [newOption, setNewOption] = useState("");
 
   const [button, setButton] = useState(false);
 
@@ -1170,83 +1169,17 @@ export default function VisitDetails() {
       },
     };
 
-    const config2 = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${my_token}`,
-        id: location.state?.data?.visitId,
-      },
-    };
-
     try {
       const response = await axios.get(
         `http://www.ubuzima.rw/rec/visit/doctor/exams`,
         config
       );
-      const response2 = await axios.get(
-        `http://www.ubuzima.rw/rec/visit/id`,
-        config2
-      );
-      if (response.data.status && response2.data.status) {
-        const exams_ = response.data.response
-          .filter((item) => !response2.data.response.exams.filter(e=>e.eyeSide === "RIGHT").map(e=>e.exam).includes(item.name))
-          .map((el) => {
-            return { id: el.id, text: el.name, selected: false };
-          });
-
-        const results = response2.data.response.exams.filter(e=>e.eyeSide === "RIGHT").map((el) =>
-          response.data.response.find((obj) => obj.name === el.exam)
-        );
-
-        console.log(results)
-
-        const specificSigns = response2.data.response.exams.filter(e=>e.eyeSide === "RIGHT").filter(
-          (item) => !response.data.response.map((i) => i.name).includes(item.exam)
-        );
-
-        setChosenSigns([
-          ...results?.map((el) => ({
-            id: el.id,
-            text: el.name,
-            selected: true,
-          })),
-          ...specificSigns?.map((el) => ({
-            id: new Date().toISOString(),
-            text: el,
-            selected: false,
-          })),
-        ]);
-
-        setAvailableSigns(exams_);
-        //===========================
-        const exams_2 = response.data.response
-          .filter((item) => !response2.data.response.exams.filter(e=>e.eyeSide === "LEFT").map(e=>e.exam).includes(item.name))
-          .map((el) => {
-            return { id: el.id, text: el.name, selected: false };
-          });
-
-        const results2 = response2.data.response.exams.filter(e=>e.eyeSide === "LEFT").map((el) =>
-          response.data.response.find((obj) => obj.name === el.exam)
-        );
-
-        const specificSigns2 = response2.data.response.exams.filter(e=>e.eyeSide === "LEFT").filter(
-          (item) => !response.data.response.map((i) => i.name).includes(item.exam)
-        );
-
-        setChosenSigns2([
-          ...results2.map((el) => ({
-            id: el.id,
-            text: el.name,
-            selected: true,
-          })),
-          ...specificSigns2.map((el) => ({
-            id: new Date().toISOString(),
-            text: el,
-            selected: false,
-          })),
-        ]);
-
-        setAvailableSigns2(exams_2);
+      if (response.data.status) {
+        const exams_ = response.data.response.map((el) => {
+          return { label: el.name, value: el.name };
+        });
+        setRightOptions(exams_);
+        setLeftOptions(exams_);
       }
     } catch (error) {
       console.error(error);
@@ -1379,10 +1312,20 @@ export default function VisitDetails() {
         }))
       );
       setRightValues(
-        response.data.response.exams.map((el) => ({
-          value: el,
-          label: el,
-        }))
+        response.data.response.exams
+          .filter((e) => e.eyeSide === "RIGHT")
+          .map((el) => ({
+            value: el.exam,
+            label: el.exam,
+          }))
+      );
+      setLeftValues(
+        response.data.response.exams
+          .filter((e) => e.eyeSide === "LEFT")
+          .map((el) => ({
+            value: el.exam,
+            label: el.exam,
+          }))
       );
       setProceduresValues(
         response.data.response.procedures.map((el) => ({
@@ -1881,7 +1824,7 @@ export default function VisitDetails() {
     const postObj = JSON.stringify({
       patientVisitId: location.state?.data?.visitId,
       eyeSide: "RIGHT",
-      exams: chosenSigns.map((el) => el.text),
+      exams: rightValues.map((el) => el.text),
     });
     try {
       const response = await axios.post(
@@ -1911,7 +1854,7 @@ export default function VisitDetails() {
     const postObj = JSON.stringify({
       patientVisitId: location.state?.data?.visitId,
       eyeSide: "LEFT",
-      exams: chosenSigns2.map((el) => el.value),
+      exams: leftValues.map((el) => el.value),
     });
     try {
       const response = await axios.post(
@@ -2020,11 +1963,13 @@ export default function VisitDetails() {
   const handleCreateOD = (inputValue) => {
     const newOption = { value: inputValue.toLowerCase(), label: inputValue };
     setRightOptions([...rightOptions, newOption]);
+    setRightValues([...rightValues, newOption]);
   };
 
   const handleCreateOS = (inputValue) => {
     const newOption = { value: inputValue.toLowerCase(), label: inputValue };
     setLeftOptions([...leftOptions, newOption]);
+    setLeftValues([...leftValues, newOption]);
   };
 
   const handleCreateProcedure = (inputValue) => {
@@ -2325,89 +2270,6 @@ export default function VisitDetails() {
   useEffect(() => {
     fetchPreviousVisits2();
   }, [currentPage2]);
-
-
-
-  // Updating the handleSelect function to compare by `id`
-  const handleSelect = (sign, type) => {
-    if (type === "available") {
-      setAvailableSigns((prevSigns) =>
-        prevSigns.map((item) =>
-          item.id === sign.id ? { ...item, selected: !item.selected } : item
-        )
-      );
-    } else {
-      setChosenSigns((prevSigns) =>
-        prevSigns.map((item) =>
-          item.id === sign.id ? { ...item, selected: !item.selected } : item
-        )
-      );
-    }
-  };
-
-
-  // Move selected items from available to chosen
-  const handleAdd = () => {
-    const selected = availableSigns.filter((sign) => sign.selected);
-    setChosenSigns([...chosenSigns, ...selected]);
-    setAvailableSigns(availableSigns.filter((sign) => !sign.selected));
-  };
-
-  // Move selected items from chosen to available
-  const handleRemove = (id) => {
-    const selected = chosenSigns.filter((sign) => sign.id === id);
-    setChosenSigns(chosenSigns.filter((sign) => sign.id !== id));
-    if (selected[0].selected) {
-      setAvailableSigns([
-        ...availableSigns,
-        { ...selected[0], selected: false },
-      ]);
-    }
-  };
-
-  //=======================================================================================
-
-  // Updating the handleSelect function to compare by `id`
-  const handleSelect2 = (sign, type) => {
-    if (type === "available") {
-      setAvailableSigns2((prevSigns) =>
-        prevSigns.map((item) =>
-          item.id === sign.id ? { ...item, selected: !item.selected } : item
-        )
-      );
-    } else {
-      setChosenSigns2((prevSigns) =>
-        prevSigns.map((item) =>
-          item.id === sign.id ? { ...item, selected: !item.selected } : item
-        )
-      );
-    }
-  };
-
-  const [availableSigns, setAvailableSigns] = useState([]);
-  const [chosenSigns, setChosenSigns] = useState([]);
-
-  const [availableSigns2, setAvailableSigns2] = useState([]);
-  const [chosenSigns2, setChosenSigns2] = useState([]);
-
-  // Move selected items from available to chosen
-  const handleAdd2 = () => {
-    const selected = availableSigns2.filter((sign) => sign.selected);
-    setChosenSigns2([...chosenSigns2, ...selected]);
-    setAvailableSigns2(availableSigns2.filter((sign) => !sign.selected));
-  };
-
-  // Move selected items from chosen to available
-  const handleRemove2 = (id) => {
-    const selected = chosenSigns2.filter((sign) => sign.id === id);
-    setChosenSigns2(chosenSigns2.filter((sign) => sign.id !== id));
-    if (selected[0].selected) {
-      setAvailableSigns2([
-        ...availableSigns2,
-        { ...selected[0], selected: false },
-      ]);
-    }
-  };
 
   return (
     <Fragment>
@@ -2785,179 +2647,77 @@ export default function VisitDetails() {
                     <Card.Body style={{ margin: 0, padding: 0 }}>
                       <Row style={{ paddingRight: 20 }}>
                         <Col
-                          lg={12}
+                          lg={6}
                           style={{
                             marginBottom: "100px",
                             marginTop: 20,
                             paddingLeft: 18,
+                            borderRightColor: '#adb5bd',
+                            borderRightWidth: 0.2,
+                            borderRightStyle: 'solid'
                           }}
                         >
                           {(roles.includes("Doctor") ||
                             roles.includes("Administrator")) && (
                             <>
-                              <h3>Right eye (OD)</h3>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  alignItems: "flex-start",
-                                  borderRadius: 20,
-                                  padding: 10,
-                                  border: "0.5px solid black",
-                                }}
-                              >
-                                <div style={{ marginRight: "20px" }}>
-                                  <Row>
-                                    <Col>
-                                      <h3>Choose symptoms</h3>
-                                      <ul>
-                                        {availableSigns.map((sign, index) => (
-                                          <li
-                                            key={index}
-                                            onClick={() =>
-                                              handleSelect(sign, "available")
-                                            }
-                                          >
-                                            <input
-                                              type="checkbox"
-                                              checked={!!sign.selected}
-                                              readOnly
-                                            />
-                                            {sign.text}
-                                          </li>
-                                        ))}
-                                      </ul>
-                                      <Row>
-                                        <Col sm={9}>
-                                          <input
-                                            className="form-control"
-                                            value={newOption}
-                                            onChange={(e) =>
-                                              setNewOption(e.target.value)
-                                            }
-                                          />
-                                        </Col>
-                                        <Col sm={3}>
-                                          <button
-                                            onClick={() => {
-                                              if (newOption) {
-                                                setNewOption("");
-                                                setAvailableSigns([
-                                                  ...availableSigns,
-                                                  {
-                                                    id: new Date().toISOString(),
-                                                    text: newOption,
-                                                    selected: false,
-                                                  },
-                                                ]);
-                                              } else {
-                                                alert("Enter a symptom/sign");
-                                              }
-                                            }}
-                                            className="btn btn-primary"
-                                          >
-                                            Add
-                                          </button>
-                                        </Col>
-                                      </Row>
-                                    </Col>
+                              <Form.Group className="form-group">
+                                <Form.Label>Right Eye (OD)</Form.Label>
+                                <CreatableSelect
+                                  isMulti
+                                  options={rightOptions}
+                                  value={rightValues}
+                                  onChange={(e) => setRightValues(e)}
+                                  onCreateOption={handleCreateOD}
+                                  placeholder="Select or create"
+                                />
+                              </Form.Group>
 
-                                    <Col sm={2}>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          height: "100%",
-                                          padding: "0px 15px",
-                                          flexDirection: "column",
-                                          justifyContent: "center",
-                                          alignSelf: "center",
-                                          borderLeftWidth: 0.3,
-                                          borderLeftStyle: "solid",
-                                          borderLeftColor: "gray",
-                                          borderRightWidth: 0.3,
-                                          borderRightStyle: "solid",
-                                          borderRightColor: "gray",
-                                        }}
-                                      >
-                                        <button
-                                          className="btn btn-primary"
-                                          onClick={handleAdd}
-                                        >
-                                          →
-                                        </button>
-                                      </div>
-                                    </Col>
-                                    <Col>
-                                      <div style={{ marginLeft: "20px" }}>
-                                        <h3>Chosen symptoms</h3>
-                                        <ul>
-                                          {chosenSigns.map((sign, index) => (
-                                            <li
-                                              key={index}
-                                              onClick={() =>
-                                                handleSelect(sign, "chosen")
-                                              }
-                                            >
-                                              {sign.text}
-                                              <i
-                                                className="fa fa-trash"
-                                                onClick={() =>
-                                                  handleRemove(sign.id)
-                                                }
-                                                style={{
-                                                  marginLeft: 8,
-                                                  fontSize: 12,
-                                                  color: "red",
-                                                }}
-                                              ></i>
-                                            </li>
-                                          ))}
-                                        </ul>
-                                        <Row>
-                                          <Col sm={9}>
-                                            <input
-                                              className="form-control"
-                                              value={newSign}
-                                              onChange={(e) =>
-                                                setNewSign(e.target.value)
-                                              }
-                                            />
-                                          </Col>
-                                          <Col sm={3}>
-                                            <button
-                                              onClick={() => {
-                                                if (newSign) {
-                                                  setNewSign("");
-                                                  setChosenSigns([
-                                                    ...chosenSigns,
-                                                    {
-                                                      id: new Date().toISOString(),
-                                                      text: newSign,
-                                                      selected: false,
-                                                    },
-                                                  ]);
-                                                } else {
-                                                  alert("Enter a symptom/sign");
-                                                }
-                                              }}
-                                              className="btn btn-primary"
-                                            >
-                                              Add
-                                            </button>
-                                          </Col>
-                                        </Row>
-                                      </div>
-                                    </Col>
-                                  </Row>
-                                </div>
-                              </div>
+                              {rightValues.length > 0 ? (
+                                rightValues.map((v) => <p>&#9679; {v.value}</p>)
+                              ) : (
+                                <p>
+                                  No symptoms <yet className=""></yet>
+                                </p>
+                              )}
+
+                              <Row>
+                                <Col sm={9}>
+                                  <input
+                                    className="form-control"
+                                    placeholder="Add specific symptom/sign"
+                                    value={newSign}
+                                    onChange={(e) =>
+                                      setNewSign(e.target.value)
+                                    }
+                                  />
+                                </Col>
+                                <Col sm={3}>
+                                  <button
+                                    onClick={() => {
+                                      if (newSign) {
+                                        setNewSign("");
+                                        setRightValues([
+                                          ...rightValues,
+                                          {
+                                            label: newSign,
+                                            value: newSign,
+                                          },
+                                        ]);
+                                      } else {
+                                        alert("Enter a symptom/sign");
+                                      }
+                                    }}
+                                    className="btn btn-primary"
+                                  >
+                                    Add
+                                  </button>
+                                </Col>
+                              </Row>
 
                               <Button
                                 onClick={(e) => {
-                                  if (chosenSigns.length > 0) {
+                                  if (rightValues.length > 0) {
                                     addOd(e);
-                                  } else {
-                                    alert("Choose symptoms!");
                                   }
                                 }}
                                 style={{ marginTop: 20, width: 100 }}
@@ -2969,7 +2729,7 @@ export default function VisitDetails() {
                         </Col>
 
                         <Col
-                          lg={12}
+                          lg={6}
                           style={{
                             marginBottom: "100px",
                             marginTop: 20,
@@ -2979,169 +2739,64 @@ export default function VisitDetails() {
                           {(roles.includes("Doctor") ||
                             roles.includes("Administrator")) && (
                             <>
-                              <h3>Left eye (OS)</h3>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  alignItems: "flex-start",
-                                  borderRadius: 20,
-                                  padding: 10,
-                                  border: "0.5px solid black",
-                                }}
-                              >
-                                <div style={{ marginRight: "20px" }}>
-                                  <Row>
-                                    <Col>
-                                      <h3>Choose symptoms</h3>
-                                      <ul>
-                                        {availableSigns2.map((sign, index) => (
-                                          <li
-                                            key={index}
-                                            onClick={() =>
-                                              handleSelect2(sign, "available")
-                                            }
-                                          >
-                                            <input
-                                              type="checkbox"
-                                              checked={!!sign.selected}
-                                              readOnly
-                                            />
-                                            {sign.text}
-                                          </li>
-                                        ))}
-                                      </ul>
-                                      <Row>
-                                        <Col sm={9}>
-                                          <input
-                                            className="form-control"
-                                            value={newOption}
-                                            onChange={(e) =>
-                                              setNewOption(e.target.value)
-                                            }
-                                          />
-                                        </Col>
-                                        <Col sm={3}>
-                                          <button
-                                            onClick={() => {
-                                              if (newOption) {
-                                                setNewOption("");
-                                                setAvailableSigns2([
-                                                  ...availableSigns2,
-                                                  {
-                                                    id: new Date().toISOString(),
-                                                    text: newOption,
-                                                    selected: false,
-                                                  },
-                                                ]);
-                                              } else {
-                                                alert("Enter a symptom/sign");
-                                              }
-                                            }}
-                                            className="btn btn-primary"
-                                          >
-                                            Add
-                                          </button>
-                                        </Col>
-                                      </Row>
-                                    </Col>
+                              <Form.Group className="form-group">
+                                <Form.Label>Left Eye (OS)</Form.Label>
+                                <CreatableSelect
+                                  isMulti
+                                  options={leftOptions}
+                                  value={leftValues}
+                                  onChange={(e) => setLeftValues(e)}
+                                  onCreateOption={handleCreateOS}
+                                  placeholder="Select or create"
+                                />
+                              </Form.Group>
 
-                                    <Col sm={2}>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          height: "100%",
-                                          padding: "0px 15px",
-                                          flexDirection: "column",
-                                          justifyContent: "center",
-                                          alignSelf: "center",
-                                          borderLeftWidth: 0.3,
-                                          borderLeftStyle: "solid",
-                                          borderLeftColor: "gray",
-                                          borderRightWidth: 0.3,
-                                          borderRightStyle: "solid",
-                                          borderRightColor: "gray",
-                                        }}
-                                      >
-                                        <button
-                                          className="btn btn-primary"
-                                          onClick={handleAdd2}
-                                        >
-                                          →
-                                        </button>
-                                      </div>
-                                    </Col>
-                                    <Col>
-                                      <div style={{ marginLeft: "20px" }}>
-                                        <h3>Chosen symptoms</h3>
-                                        <ul>
-                                          {chosenSigns2.map((sign, index) => (
-                                            <li
-                                              key={index}
-                                              onClick={() =>
-                                                handleSelect2(sign, "chosen")
-                                              }
-                                            >
-                                              {sign.text}
-                                              <i
-                                                className="fa fa-trash"
-                                                onClick={() =>
-                                                  handleRemove2(sign.id)
-                                                }
-                                                style={{
-                                                  marginLeft: 8,
-                                                  fontSize: 12,
-                                                  color: "red",
-                                                }}
-                                              ></i>
-                                            </li>
-                                          ))}
-                                        </ul>
-                                        <Row>
-                                          <Col sm={9}>
-                                            <input
-                                              className="form-control"
-                                              value={newSign2}
-                                              onChange={(e) =>
-                                                setNewSign2(e.target.value)
-                                              }
-                                            />
-                                          </Col>
-                                          <Col sm={3}>
-                                            <button
-                                              onClick={() => {
-                                                if (newSign2) {
-                                                  setNewSign2("");
-                                                  setChosenSigns2([
-                                                    ...chosenSigns2,
-                                                    {
-                                                      id: new Date().toISOString(),
-                                                      text: newSign2,
-                                                      selected: false,
-                                                    },
-                                                  ]);
-                                                } else {
-                                                  alert("Enter a symptom/sign");
-                                                }
-                                              }}
-                                              className="btn btn-primary"
-                                            >
-                                              Add
-                                            </button>
-                                          </Col>
-                                        </Row>
-                                      </div>
-                                    </Col>
-                                  </Row>
-                                </div>
-                              </div>
+                              {leftValues.length > 0 ? (
+                                leftValues.map((v) => <p>&#9679; {v.value}</p>)
+                              ) : (
+                                <p>
+                                  No symptoms <yet className=""></yet>
+                                </p>
+                              )}
+
+                              <Row>
+                                <Col sm={9}>
+                                  <input
+                                    className="form-control"
+                                    placeholder="Add specific symptom/sign"
+                                    value={newSign2}
+                                    onChange={(e) =>
+                                      setNewSign2(e.target.value)
+                                    }
+                                  />
+                                </Col>
+                                <Col sm={3}>
+                                  <button
+                                    onClick={() => {
+                                      if (newSign) {
+                                        setNewSign2("");
+                                        setLeftValues([
+                                          ...leftValues,
+                                          {
+                                            label: newSign2,
+                                            value: newSign2,
+                                          },
+                                        ]);
+                                      } else {
+                                        alert("Enter a symptom/sign");
+                                      }
+                                    }}
+                                    className="btn btn-primary"
+                                  >
+                                    Add
+                                  </button>
+                                </Col>
+                              </Row>
 
                               <Button
                                 onClick={(e) => {
-                                  if (chosenSigns.length > 0) {
+                                  if (leftValues.length > 0) {
                                     addOs(e);
-                                  } else {
-                                    alert("Choose symptoms!");
                                   }
                                 }}
                                 style={{ marginTop: 20, width: 100 }}
@@ -3947,7 +3602,7 @@ export default function VisitDetails() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShow7(false)}>
-            Close
+            Validate
           </Button>
         </Modal.Footer>
       </Modal>
@@ -4127,8 +3782,8 @@ export default function VisitDetails() {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShow7(false)}>
-            Close
+          <Button variant="secondary" onClick={() => setShow9(false)}>
+            Validate
           </Button>
         </Modal.Footer>
       </Modal>

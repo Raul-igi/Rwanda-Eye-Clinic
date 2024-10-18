@@ -323,7 +323,7 @@ function Visits() {
       voucherNumber: voucherNumber,
       caseType: caseType,
       doctorId: doctorId,
-      patientStatus: status,
+      patientStatus: status?status:null,
     });
     console.log(postObj);
     let my_token = await localStorage.getItem("token");

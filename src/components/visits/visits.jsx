@@ -182,27 +182,87 @@ const columns2 = [
     name: "Patient's names",
     selector: (row) => [row.patient?.names],
     sortable: true,
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "TRANSFER_TO_RECEPTIONIST",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
 
   {
     name: "Gender",
     selector: (row) => [row.patient?.gender],
     sortable: true,
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "TRANSFER_TO_RECEPTIONIST",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
   {
     name: "DoB",
     selector: (row) => [row.patient?.dob || "-"],
     sortable: true,
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "TRANSFER_TO_RECEPTIONIST",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
   {
     name: "Insurance",
     selector: (row) => [row.patientInsurance?.insuranceName || "-"],
     sortable: true,
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "TRANSFER_TO_RECEPTIONIST",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
   {
     name: "Patient status",
     selector: (row) => [row.patientStatus || "-"],
     sortable: true,
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "TRANSFER_TO_RECEPTIONIST",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
   {
     name: "Actions",
@@ -223,6 +283,18 @@ const columns2 = [
         View Details
       </Link>
     ),
+    conditionalCellStyles: [
+      {
+				when:(row) => row.status === "TRANSFER_TO_RECEPTIONIST",
+				style: {
+					backgroundColor: '#b5e48c',
+					color: 'black',
+					'&:hover': {
+						cursor: 'pointer',
+					},
+				},
+			},
+    ]
   },
 ];
 
@@ -549,11 +621,15 @@ function Visits() {
         config
       )
       .then((res) => {
-        console.log(res.data);
-        setVisits(res.data.response.patientVisits);
-        setVisits_(res.data.response.patientVisits);
-        if (res.data.response.totalElements) {
-          setTotalRows(res.data.response.totalElements);
+        if(res.data.status){
+          setVisits(res.data.response.patientVisits);
+          setVisits_(res.data.response.patientVisits);
+          if (res.data.response.totalElements) {
+            setTotalRows(res.data.response.totalElements);
+          }
+        }else{
+          setVisits([])
+          setVisits_([])
         }
       })
       .catch((error) => {
@@ -588,8 +664,7 @@ function Visits() {
 
               {(roles.includes("Nurse") ||
                 roles.includes("Receptionist") ||
-                roles.includes("Administrator") ||
-                roles.includes("Doctor")) && (
+                roles.includes("Administrator") ) && (
                 <div
                   class="tabs"
                   style={{ display: "flex", borderBottom: " 1px solid #ccc" }}
@@ -642,7 +717,7 @@ function Visits() {
                     </div>
                   )}
 
-                  {!roles.includes("Nurse") && (
+                  {!roles.includes("Nurse")  && (
                     <div
                       class="tab"
                       onClick={() => {
@@ -664,34 +739,53 @@ function Visits() {
                     >
                       {roles.includes("Receptionist")
                         ? "All visits"
-                        : `Today's visits`}
+                        : (
+                          roles.includes("Doctor")
+                        ? "Processed visits"
+                        : `Today's visits`
+                        )}
                     </div>
                   )}
                 </div>
               )}
 
-              {(roles.includes("Receptionist"))&&(
-              <Col lg={2}>
-                <Form.Group>
-                  <Form.Control
-                    type="date"
-                    className="form-control"
-                    name="example-text-input"
-                    placeholder="Start Date"
-                    value={date}
-                    onChange={(e)=>{
-                      setDate(e.target.value);
-                      if(tab==="tab3"){
-                        fetchVisitsPerDay(e.target.value);
-                      }else{
-                        fetchVisits(e.target.value);
-                      }
-                    }}
-                    required
-                  />
-                </Form.Group>
+              {(roles.includes("Receptionist") || roles.includes("Doctor"))&&(
+              <Col lg={3}>
+                <Row>
+                  <Col>
+                  <Form.Group>
+                    <Form.Control
+                      type="date"
+                      className="form-control"
+                      name="example-text-input"
+                      placeholder="Start Date"
+                      value={date}
+                      onChange={(e)=>{
+                        setDate(e.target.value);
+                        if(tab==="tab3"){
+                          fetchVisitsPerDay(e.target.value);
+                        }else{
+                          if(roles.includes("Doctor")){
+                            fetchVisitsPerDay(e.target.value);
+                          }else{
+                            fetchVisits(e.target.value);
+                          }
+                        }
+                      }}
+                      required
+                    />
+                  </Form.Group>
+                  </Col>
+                  {roles.includes('Doctor')&&(
+                    <Col>
+                      <button className="btn btn-primary" onClick={()=>{setDate("") ;fetchVisits()}}>Reset</button>
+                    </Col>
+                  )}
+                </Row>
+                
               </Col>
               )}
+
 
 
               <Row>

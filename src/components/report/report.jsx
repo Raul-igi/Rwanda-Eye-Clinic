@@ -18,28 +18,13 @@ import "./report.css";
 
 const columns = [
   {
-    name: "Doctor names",
-    selector: (row) => [row.doctorNames],
-    sortable: true,
-  },
-  {
-    name: "Doctor Phone ",
-    selector: (row) => [row.doctorPhone],
-    sortable: true,
-  },
-  {
-    name: "Payment Method",
-    selector: (row) => [row.paymentMethod],
-    sortable: true,
-  },
-  {
-    name: "Paid Amaount",
-    selector: (row) => [row.paidAmaount],
-    sortable: true,
-  },
-  {
-    name: "Payment Date",
+    name: "Date",
     selector: (row) => [row.paymentDate],
+    sortable: true,
+  },
+  {
+    name: "Names",
+    selector: (row) => [row.patient?.names],
     sortable: true,
   },
   {
@@ -48,8 +33,23 @@ const columns = [
     sortable: true,
   },
   {
-    name: "Top Up Amount",
-    selector: (row) => [row.topUpAmount],
+    name: "Card number",
+    selector: (row) => [row.patientInsurance?.cardNumber],
+    sortable: true,
+  },
+  {
+    name: "Total Amount",
+    selector: (row) => [row.totalAmount],
+    sortable: true,
+  },
+  {
+    name: "Copay",
+    selector: (row) => [row.amount],
+    sortable: true,
+  },
+  {
+    name: "Insurance Amount",
+    selector: (row) => [row.insuranceAmount],
     sortable: true,
   },
 ];

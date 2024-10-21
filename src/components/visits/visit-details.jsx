@@ -2773,7 +2773,7 @@ export default function VisitDetails() {
                                 <Col sm={3}>
                                   <button
                                     onClick={() => {
-                                      if (newSign) {
+                                      if (newSign2) {
                                         setNewSign2("");
                                         setLeftValues([
                                           ...leftValues,

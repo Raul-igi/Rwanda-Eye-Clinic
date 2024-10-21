@@ -464,6 +464,7 @@ function Visits() {
     }; //incase you have to deal with ID or Options
     if(userRoles.includes("Receptionist")){
       config.headers.selectedDate = date || new Date().toISOString().slice(0,10)
+      config.headers.status = "TRANSFER_TO_RECEPTIONIST"
     }
     axios
       .get(
@@ -473,7 +474,7 @@ function Visits() {
           ? `http://www.ubuzima.rw/rec/visit/doctor`
           : userRoles.includes("Administrator")
           ? `http://www.ubuzima.rw/rec/visit/all`
-          : `http://www.ubuzima.rw/rec/visit/by-day-not-paid`,
+          : `http://www.ubuzima.rw/rec/visit/by-day-status`,
         config
       )
       .then((res) => {
@@ -614,10 +615,7 @@ function Visits() {
       },
     }; //incase you have to deal with ID or Options
     axios
-      .get(
-        userRoles.includes("Receptionist")
-          ? `http://www.ubuzima.rw/rec/visit/by-day-status`
-          : `http://www.ubuzima.rw/rec/visit/by-day`,
+      .get(`http://www.ubuzima.rw/rec/visit/by-day`,
         config
       )
       .then((res) => {
@@ -689,7 +687,7 @@ function Visits() {
                     id="tab1"
                   >
                     {roles.includes("Receptionist")
-                        ? "Today's visits"
+                        ? "Billing"
                         : `All visits`}
                   </div>
 

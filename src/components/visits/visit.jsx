@@ -36,6 +36,7 @@ export default function Visit({ visitId, visit }) {
 
   const [savedTreatment, setSavedTreatment] = useState([]);
   const [rightExams, setRightExams] = useState([]);
+  const [leftExams, setLeftExams] = useState([]);
   const [labs, setLabs] = useState([]);
   const [lensType, setLensType] = useState("");
   const [lensAttribute, setLensAttribute] = useState([]);
@@ -344,7 +345,8 @@ export default function Visit({ visitId, visit }) {
       setVisualAcuity(visualAcuity_);
       setCurrentGlasses(currentGlasses_);
       setMedicalActs(myVisit.medicalAct || []);
-      setRightExams(myVisit.exams || []);
+      setRightExams(myVisit.exams.filter(e=> e.eyeSide==='RIGHT') || []);
+      setLeftExams(myVisit.exams.filter(e=> e.eyeSide==='LEFT') || []);
       setProcedures(myVisit.procedures || []);
       setLabs(myVisit.labs || []);
       setSavedTreatment(myVisit.treatments?.map(t=>t.name))
@@ -410,7 +412,8 @@ export default function Visit({ visitId, visit }) {
       setVisualAcuity(visualAcuity_);
       setCurrentGlasses(currentGlasses_);
       setMedicalActs(visit.medicalAct || []);
-      setRightExams(visit.exams || []);
+      setRightExams(visit.exams.filter(e=> e.eyeSide==='RIGHT') || []);
+      setLeftExams(visit.exams.filter(e=> e.eyeSide==='LEFT') || []);
       setProcedures(visit.procedures || []);
       setLabs(visit.labs || []);
       setSavedTreatment(visit.treatments?.map(t=>t.name))
@@ -512,7 +515,7 @@ export default function Visit({ visitId, visit }) {
                   }}
                 >
                   <h1>Right eye (OD)</h1>
-                  <p>{rightExams.join(', ') || 'No exam yet...'}</p>
+                  <p>{rightExams.filter(e=>e.exam).map(e=>e.exam).join(', ') || 'No exam yet...'}</p>
                 </Col>
 
                 <Col
@@ -524,7 +527,7 @@ export default function Visit({ visitId, visit }) {
                   }}
                 >
                   <h1>Left eye (OS)</h1>
-                  <p>{rightExams.join(', ') || 'No exam yet...'}</p>
+                  <p>{leftExams.filter(e=>e.exam).map(e=>e.exam).join(', ') || 'No exam yet...'}</p>
                 </Col>
               </Row>
             </Card.Body>

@@ -772,49 +772,49 @@ function Report() {
             <View style={styles.table}>
               <View style={styles.tableRow}>
                 <View style={styles.tableHeader}>
-                  <Text style={styles.heading}>Doctor Name</Text>
+                  <Text style={styles.heading}>Dates</Text>
                 </View>
                 <View style={styles.tableHeader}>
-                  <Text style={styles.heading}>Doctor Phone</Text>
-                </View>
-                <View style={styles.tableHeader}>
-                  <Text style={styles.heading}>Payment Method</Text>
-                </View>
-                <View style={styles.tableHeader}>
-                  <Text style={styles.heading}>Paid Amount</Text>
-                </View>
-                <View style={styles.tableHeader}>
-                  <Text style={styles.heading}>Payment Date</Text>
+                  <Text style={styles.heading}>Names</Text>
                 </View>
                 <View style={styles.tableHeader}>
                   <Text style={styles.heading}>Insurance</Text>
                 </View>
                 <View style={styles.tableHeader}>
-                  <Text style={styles.heading}>Top-Up Amount</Text>
+                  <Text style={styles.heading}>Card number</Text>
+                </View>
+                <View style={styles.tableHeader}>
+                  <Text style={styles.heading}>Total amount</Text>
+                </View>
+                <View style={styles.tableHeader}>
+                  <Text style={styles.heading}>Copay</Text>
+                </View>
+                <View style={styles.tableHeader}>
+                  <Text style={styles.heading}>Insurance</Text>
                 </View>
               </View>
               {reports.map((report, index) => (
                 <View key={index} style={styles.tableRow}>
                   <View style={styles.tableCell}>
-                    <Text style={styles.heading}>{report.doctorNames}</Text>
-                  </View>
-                  <View style={styles.tableCell}>
-                    <Text style={styles.heading}>{report.doctorPhone}</Text>
-                  </View>
-                  <View style={styles.tableCell}>
-                    <Text style={styles.heading}>{report.paymentMethod}</Text>
-                  </View>
-                  <View style={styles.tableCell}>
-                    <Text style={styles.heading}>{report.paidAmaount}</Text>
-                  </View>
-                  <View style={styles.tableCell}>
                     <Text style={styles.heading}>{report.paymentDate}</Text>
+                  </View>
+                  <View style={styles.tableCell}>
+                    <Text style={styles.heading}>{report.patient?.names}</Text>
                   </View>
                   <View style={styles.tableCell}>
                     <Text style={styles.heading}>{report.insurance}</Text>
                   </View>
                   <View style={styles.tableCell}>
-                    <Text style={styles.heading}>{report.topUpAmount}</Text>
+                    <Text style={styles.heading}>{report.patientInsurance?.cardNumber}</Text>
+                  </View>
+                  <View style={styles.tableCell}>
+                    <Text style={styles.heading}>{report.totalAmount}</Text>
+                  </View>
+                  <View style={styles.tableCell}>
+                    <Text style={styles.heading}>{report.amount}</Text>
+                  </View>
+                  <View style={styles.tableCell}>
+                    <Text style={styles.heading}>{report.insuranceAmount}</Text>
                   </View>
                 </View>
               ))}

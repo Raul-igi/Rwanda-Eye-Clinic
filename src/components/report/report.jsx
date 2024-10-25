@@ -289,6 +289,7 @@ function Report() {
     value: "CASH",
     label: "Cash",
   });
+  const [roles, setRoles] = useState([]);
   const [date, setDate] = useState("");
   const [startDate, setStartDate] = useState(formatDate(new Date()));
   const [endDate, setEndDate] = useState(formatDate(new Date()));
@@ -345,6 +346,11 @@ function Report() {
         `http://www.ubuzima.rw/rec/patient/insurances`,
         config
       );
+      if (response.data.response.length > 0) {
+        response.data.response.forEach((el) => {
+          el.insuranceAmount = el.totalAmount - el.amount;
+        });
+      }
       const insurances_ = response.data.response.map((el) => {
         return {
           label: el.name,
@@ -372,6 +378,12 @@ function Report() {
         `http://www.ubuzima.rw/rec/report/date`,
         config
       );
+
+      if (response.data.response.length > 0) {
+        response.data.response.forEach((el) => {
+          el.insuranceAmount = el.totalAmount - el.amount;
+        });
+      }
 
       var paymentTotals = {
         CASH: 0,
@@ -502,6 +514,11 @@ function Report() {
 
       try {
         const response = await axios.get(url, config);
+        if (response.data.response.length > 0) {
+          response.data.response.forEach((el) => {
+            el.insuranceAmount = el.totalAmount - el.amount;
+          });
+        }
         const paymentTotals = {
           CASH: 0,
           MOMO: 0,
@@ -513,7 +530,6 @@ function Report() {
         let totalTopUpAmount = 0;
         let totalInsuranceAmount = 0;
 
-        console.log(JSON.stringify(response.data.response));
 
         const reports_ = response.data.response.map((el) => {
           const totalAmount_ = parseFloat(el.totalAmount) || 0;
@@ -754,7 +770,9 @@ function Report() {
                   <Text style={styles.heading}>{report.totalAmount}</Text>
                 </View>
                 <View style={styles.tableCell}>
-                  <Text style={styles.heading}>{report.totalAmount * 0.85}</Text>
+                  <Text style={styles.heading}>
+                    {report.totalAmount * 0.85}
+                  </Text>
                 </View>
                 <View style={styles.tableCell}>
                   <Text style={styles.heading}>{report.paymentDate}</Text>
@@ -764,7 +782,7 @@ function Report() {
           </View>
         </Page>
       )}
-  
+
       {reportType?.value === "INSURANCE" &&
         insurance.label !== "RSSB" &&
         insurance.label !== "MMI" && (
@@ -805,7 +823,9 @@ function Report() {
                     <Text style={styles.heading}>{report.insurance}</Text>
                   </View>
                   <View style={styles.tableCell}>
-                    <Text style={styles.heading}>{report.patientInsurance?.cardNumber}</Text>
+                    <Text style={styles.heading}>
+                      {report.patientInsurance?.cardNumber}
+                    </Text>
                   </View>
                   <View style={styles.tableCell}>
                     <Text style={styles.heading}>{report.totalAmount}</Text>
@@ -821,7 +841,7 @@ function Report() {
             </View>
           </Page>
         )}
-  
+
       {reportType?.value !== "INSURANCE" && (
         <Page style={styles.page}>
           <View style={styles.table}>
@@ -882,6 +902,9 @@ function Report() {
   );
 
   useEffect(() => {
+    const roles_ = localStorage.getItem("role");
+    const userRoles = JSON.parse(roles_);
+    setRoles(userRoles);
     fetchInsurances();
     fetchAllDoctors();
     fetchDailyReport();
@@ -961,50 +984,54 @@ function Report() {
                   </Col>
                 )}
 
-                <Col lg={2}>
-                  <Form.Group>
-                    <Form.Control
-                      type="date"
-                      className="form-control"
-                      name="example-text-input"
-                      placeholder="Start Date"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
-                </Col>
+                {!roles.includes("Receptionist") && (
+                  <>
+                    <Col lg={2}>
+                      <Form.Group>
+                        <Form.Control
+                          type="date"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="Start Date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          required
+                        />
+                      </Form.Group>
+                    </Col>
 
-                <Col lg={2}>
-                  <Form.Group>
-                    <Form.Control
-                      type="date"
-                      className="form-control"
-                      name="example-text-input"
-                      placeholder="End Date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
-                </Col>
+                    <Col lg={2}>
+                      <Form.Group>
+                        <Form.Control
+                          type="date"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="End Date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          required
+                        />
+                      </Form.Group>
+                    </Col>
 
-                <Col>
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      fetchReports(null, null, null, false);
-                    }}
-                  >
-                    Filter
-                  </Button>
-                </Col>
+                    <Col>
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          fetchReports(null, null, null, false);
+                        }}
+                      >
+                        Filter
+                      </Button>
+                    </Col>
 
-                <Col>
-                  <Button variant="primary" onClick={reset}>
-                    Reset
-                  </Button>
-                </Col>
+                    <Col>
+                      <Button variant="primary" onClick={reset}>
+                        Reset
+                      </Button>
+                    </Col>
+                  </>
+                )}
 
                 <Col>
                   <div>
@@ -1077,8 +1104,6 @@ function Report() {
     </div>
   );
 }
-
-
 
 const styles = StyleSheet.create({
   page: {

@@ -112,7 +112,7 @@ const MenuItems = [
     color: "",
     badgetxt: "",
     path: `${import.meta.env.BASE_URL}report`,
-    roles: ['Administrator', 'Doctor'],
+    roles: ['Administrator', 'Doctor', 'Receptionist'],
     condition: false,
   },
 

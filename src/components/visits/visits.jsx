@@ -12,16 +12,20 @@ const columns = [
     sortable: true,
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "DONE",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) =>
+          row.status === "DONE" ||
+          ((row.status === "TRANSFER_TO_DOCTOR" ||
+            row.status === "TRANSFER_TO_RECEPTIONIST") &&
+            JSON.parse(localStorage.getItem("role").includes("Nurse"))),
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
   {
     name: "Patient's phone",
@@ -29,16 +33,20 @@ const columns = [
     sortable: true,
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "DONE",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) =>
+          row.status === "DONE" ||
+          ((row.status === "TRANSFER_TO_DOCTOR" ||
+            row.status === "TRANSFER_TO_RECEPTIONIST") &&
+            JSON.parse(localStorage.getItem("role").includes("Nurse"))),
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
   {
     name: "Gender",
@@ -46,16 +54,20 @@ const columns = [
     sortable: true,
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "DONE",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) =>
+          row.status === "DONE" ||
+          ((row.status === "TRANSFER_TO_DOCTOR" ||
+            row.status === "TRANSFER_TO_RECEPTIONIST") &&
+            JSON.parse(localStorage.getItem("role").includes("Nurse"))),
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
   {
     name: "DoB",
@@ -63,16 +75,20 @@ const columns = [
     sortable: true,
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "DONE",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) =>
+          row.status === "DONE" ||
+          ((row.status === "TRANSFER_TO_DOCTOR" ||
+            row.status === "TRANSFER_TO_RECEPTIONIST") &&
+            JSON.parse(localStorage.getItem("role").includes("Nurse"))),
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
   {
     name: "Doctor's names",
@@ -80,16 +96,20 @@ const columns = [
     sortable: true,
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "DONE",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) =>
+          row.status === "DONE" ||
+          ((row.status === "TRANSFER_TO_DOCTOR" ||
+            row.status === "TRANSFER_TO_RECEPTIONIST") &&
+            JSON.parse(localStorage.getItem("role").includes("Nurse"))),
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
   {
     name: "Insurance",
@@ -97,16 +117,20 @@ const columns = [
     sortable: true,
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "DONE",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) =>
+          row.status === "DONE" ||
+          ((row.status === "TRANSFER_TO_DOCTOR" ||
+            row.status === "TRANSFER_TO_RECEPTIONIST") &&
+            JSON.parse(localStorage.getItem("role").includes("Nurse"))),
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
   {
     name: "Case Type",
@@ -114,16 +138,20 @@ const columns = [
     sortable: true,
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "DONE",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) =>
+          row.status === "DONE" ||
+          ((row.status === "TRANSFER_TO_DOCTOR" ||
+            row.status === "TRANSFER_TO_RECEPTIONIST") &&
+            JSON.parse(localStorage.getItem("role").includes("Nurse"))),
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
   {
     name: "Visit Type",
@@ -131,16 +159,20 @@ const columns = [
     sortable: true,
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "DONE",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) =>
+          row.status === "DONE" ||
+          ((row.status === "TRANSFER_TO_DOCTOR" ||
+            row.status === "TRANSFER_TO_RECEPTIONIST") &&
+            JSON.parse(localStorage.getItem("role").includes("Nurse"))),
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
   {
     name: "Actions",
@@ -163,19 +195,22 @@ const columns = [
     ),
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "DONE",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'white',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) =>
+          row.status === "DONE" ||
+          ((row.status === "TRANSFER_TO_DOCTOR" ||
+            row.status === "TRANSFER_TO_RECEPTIONIST") &&
+            JSON.parse(localStorage.getItem("role").includes("Nurse"))),
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "white",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
 ];
-
 
 const columns2 = [
   {
@@ -184,16 +219,16 @@ const columns2 = [
     sortable: true,
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "TRANSFER_TO_RECEPTIONIST",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) => row.status === "TRANSFER_TO_RECEPTIONIST",
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
 
   {
@@ -202,16 +237,16 @@ const columns2 = [
     sortable: true,
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "TRANSFER_TO_RECEPTIONIST",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) => row.status === "TRANSFER_TO_RECEPTIONIST",
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
   {
     name: "DoB",
@@ -219,16 +254,16 @@ const columns2 = [
     sortable: true,
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "TRANSFER_TO_RECEPTIONIST",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) => row.status === "TRANSFER_TO_RECEPTIONIST",
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
   {
     name: "Insurance",
@@ -236,16 +271,16 @@ const columns2 = [
     sortable: true,
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "TRANSFER_TO_RECEPTIONIST",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) => row.status === "TRANSFER_TO_RECEPTIONIST",
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
   {
     name: "Patient status",
@@ -253,16 +288,16 @@ const columns2 = [
     sortable: true,
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "TRANSFER_TO_RECEPTIONIST",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) => row.status === "TRANSFER_TO_RECEPTIONIST",
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
   {
     name: "Actions",
@@ -285,16 +320,16 @@ const columns2 = [
     ),
     conditionalCellStyles: [
       {
-				when:(row) => row.status === "TRANSFER_TO_RECEPTIONIST",
-				style: {
-					backgroundColor: '#b5e48c',
-					color: 'black',
-					'&:hover': {
-						cursor: 'pointer',
-					},
-				},
-			},
-    ]
+        when: (row) => row.status === "TRANSFER_TO_RECEPTIONIST",
+        style: {
+          backgroundColor: "#b5e48c",
+          color: "black",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        },
+      },
+    ],
   },
 ];
 
@@ -305,6 +340,7 @@ function Visits() {
   const [patients, setPatients] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [doctorCounts, setDoctorCounts] = useState([]);
   const [department, setDepartment] = useState("");
   const [patientId, setPatientId] = useState("");
   const [voucherNumber, setVoucherNumber] = useState("");
@@ -395,7 +431,7 @@ function Visits() {
       voucherNumber: voucherNumber,
       caseType: caseType,
       doctorId: doctorId,
-      patientStatus: status?status:null,
+      patientStatus: status ? status : null,
     });
     console.log(postObj);
     let my_token = await localStorage.getItem("token");
@@ -450,9 +486,11 @@ function Visits() {
     }
   };
 
-  const fetchVisits = async (date=null) => {
+  const fetchVisits = async (date = null) => {
     let my_token = await localStorage.getItem("token");
     let roles = await localStorage.getItem("role");
+    let user = await localStorage.getItem("user");
+    let userObj = JSON.parse(user);
     let userRoles = JSON.parse(roles);
     var config = {
       headers: {
@@ -462,14 +500,23 @@ function Visits() {
         size: 10,
       },
     }; //incase you have to deal with ID or Options
-    if(userRoles.includes("Receptionist")){
-      config.headers.selectedDate = date || new Date().toISOString().slice(0,10)
-      config.headers.status = "TRANSFER_TO_RECEPTIONIST"
+    if (userRoles.includes("Receptionist")) {
+      config.headers.selectedDate =
+        date || new Date().toISOString().slice(0, 10);
+      config.headers.status = "TRANSFER_TO_RECEPTIONIST";
+    }
+    if (userRoles.includes("Nurse")) {
+      config.headers.selectedDate =
+        date || new Date().toISOString().slice(0, 10);
+    }
+    if (userRoles.includes("Doctor")) {
+      config.headers.selectedDate =
+        date || new Date().toISOString().slice(0, 10);
     }
     axios
       .get(
         userRoles.includes("Nurse") || userRoles.includes("Optometrist")
-          ? `http://www.ubuzima.rw/rec/visit/nurse`
+          ? `http://www.ubuzima.rw/rec/visit/by-day`
           : userRoles.includes("Doctor")
           ? `http://www.ubuzima.rw/rec/visit/doctor`
           : userRoles.includes("Administrator")
@@ -515,6 +562,25 @@ function Visits() {
       .catch((error) => {
         setLoading(false);
         setShow(false);
+        console.log(error.message);
+      });
+  };
+
+  const fetchDoctorCount = async (date = null) => {
+    let my_token = await localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        selectedDate: date || new Date().toISOString().slice(0, 10),
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+    axios
+      .get(`http://www.ubuzima.rw/rec/visit/doctor-count`, config)
+      .then((res) => {
+        setDoctorCounts(res.data.response);
+      })
+      .catch((error) => {
         console.log(error.message);
       });
   };
@@ -615,19 +681,17 @@ function Visits() {
       },
     }; //incase you have to deal with ID or Options
     axios
-      .get(`http://www.ubuzima.rw/rec/visit/by-day`,
-        config
-      )
+      .get(`http://www.ubuzima.rw/rec/visit/by-day`, config)
       .then((res) => {
-        if(res.data.status){
+        if (res.data.status) {
           setVisits(res.data.response.patientVisits);
           setVisits_(res.data.response.patientVisits);
           if (res.data.response.totalElements) {
             setTotalRows(res.data.response.totalElements);
           }
-        }else{
-          setVisits([])
-          setVisits_([])
+        } else {
+          setVisits([]);
+          setVisits_([]);
         }
       })
       .catch((error) => {
@@ -662,7 +726,7 @@ function Visits() {
 
               {(roles.includes("Nurse") ||
                 roles.includes("Receptionist") ||
-                roles.includes("Administrator") ) && (
+                roles.includes("Administrator")) && (
                 <div
                   class="tabs"
                   style={{ display: "flex", borderBottom: " 1px solid #ccc" }}
@@ -686,9 +750,7 @@ function Visits() {
                     }}
                     id="tab1"
                   >
-                    {roles.includes("Receptionist")
-                        ? "Billing"
-                        : `All visits`}
+                    {roles.includes("Receptionist") ? "Billing" : `All visits`}
                   </div>
 
                   {roles.includes("Nurse") && (
@@ -715,7 +777,7 @@ function Visits() {
                     </div>
                   )}
 
-                  {!roles.includes("Nurse")  && (
+                  {!roles.includes("Nurse") && (
                     <div
                       class="tab"
                       onClick={() => {
@@ -723,6 +785,9 @@ function Visits() {
                         setTotalRows(0);
                         setTab("tab3");
                         fetchVisitsPerDay();
+                        if (roles.includes("Receptionist")) {
+                          fetchDoctorCount();
+                        }
                       }}
                       style={{
                         padding: "10px 20px",
@@ -737,54 +802,62 @@ function Visits() {
                     >
                       {roles.includes("Receptionist")
                         ? "All visits"
-                        : (
-                          roles.includes("Doctor")
+                        : roles.includes("Doctor")
                         ? "Processed visits"
-                        : `Today's visits`
-                        )}
+                        : `Today's visits`}
                     </div>
                   )}
                 </div>
               )}
 
-              {(roles.includes("Receptionist") || roles.includes("Doctor"))&&(
-              <Col lg={3}>
-                <Row>
-                  <Col>
-                  <Form.Group>
-                    <Form.Control
-                      type="date"
-                      className="form-control"
-                      name="example-text-input"
-                      placeholder="Start Date"
-                      value={date}
-                      onChange={(e)=>{
-                        setDate(e.target.value);
-                        if(tab==="tab3"){
-                          fetchVisitsPerDay(e.target.value);
-                        }else{
-                          if(roles.includes("Doctor")){
-                            fetchVisitsPerDay(e.target.value);
-                          }else{
-                            fetchVisits(e.target.value);
-                          }
-                        }
-                      }}
-                      required
-                    />
-                  </Form.Group>
-                  </Col>
-                  {roles.includes('Doctor')&&(
+              {(roles.includes("Receptionist") ||
+                roles.includes("Doctor") ||
+                (roles.includes("Nurse") && tab === "tab1")) && (
+                <Col lg={3}>
+                  <Row>
                     <Col>
-                      <button className="btn btn-primary" onClick={()=>{setDate("") ;fetchVisits()}}>Reset</button>
+                      <Form.Group>
+                        <Form.Control
+                          type="date"
+                          className="form-control"
+                          name="example-text-input"
+                          placeholder="Start Date"
+                          value={date}
+                          onChange={(e) => {
+                            setDate(e.target.value);
+                            if (tab === "tab3") {
+                              fetchVisitsPerDay(e.target.value);
+                              if (roles.includes("Receptionist")) {
+                                fetchDoctorCount(e.target.value);
+                              }
+                            } else {
+                              if (roles.includes("Doctor")) {
+                                fetchVisitsPerDay(e.target.value);
+                              } else {
+                                fetchVisits(e.target.value);
+                              }
+                            }
+                          }}
+                          required
+                        />
+                      </Form.Group>
                     </Col>
-                  )}
-                </Row>
-                
-              </Col>
+                    {roles.includes("Doctor") && (
+                      <Col>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => {
+                            setDate("");
+                            fetchVisits();
+                          }}
+                        >
+                          Reset
+                        </button>
+                      </Col>
+                    )}
+                  </Row>
+                </Col>
               )}
-
-
 
               <Row>
                 <Col>
@@ -804,8 +877,32 @@ function Visits() {
             </Card.Header>
             <Card.Body>
               {tab === "tab3" && (
-                <p>Today's visits: {totalRows || visits.length} </p>
+                <>
+                  <p>Today's visits: {totalRows || visits.length} </p>
+
+                  {(doctorCounts.length>0)&&(
+                    <div className="mt-1">
+                    <table className="table table-bordered">
+                      <thead className="thead-dark">
+                        <tr>
+                          <th>Doctor Names</th>
+                          <th>Count</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {doctorCounts.map((doctor) => (
+                          <tr key={doctor.doctorId}>
+                            <td>{doctor.names}</td>
+                            <td>{doctor.count}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  )}
+                </>
               )}
+
               <DataTable
                 columns={roles.includes("Doctor") ? columns2 : columns}
                 paginationPerPage={10}

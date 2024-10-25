@@ -444,6 +444,7 @@ export default function VisitDetails() {
   const [show7, setShow7] = useState(false);
   const [show8, setShow8] = useState(false);
   const [show9, setShow9] = useState(false);
+  const [show10, setShow10] = useState(false);
 
   const [newSign, setNewSign] = useState("");
   const [newSign2, setNewSign2] = useState("");
@@ -458,6 +459,20 @@ export default function VisitDetails() {
   });
 
   const [optSecondButtonValues, setOptSecondButtonValues] = useState({
+    sphere: "",
+    cylinder: "",
+    axis: "",
+    addition: "",
+  });
+
+  const [curFirstButtonValues, setCurFirstButtonValues] = useState({
+    sphere: "",
+    cylinder: "",
+    axis: "",
+    addition: "",
+  });
+
+  const [curSecondButtonValues, setCurSecondButtonValues] = useState({
     sphere: "",
     cylinder: "",
     axis: "",
@@ -638,6 +653,8 @@ export default function VisitDetails() {
   const [rightValues, setRightValues] = useState([]);
   const [leftValues, setLeftValues] = useState([]);
 
+  const [specSymptoms, setSpecSymptoms] = useState([]);
+
   const [proceduresOptions, setProceduresOptions] = useState([]);
   const [labsOptions, setLabsOptions] = useState([]);
 
@@ -798,6 +815,10 @@ export default function VisitDetails() {
           type="text"
           readOnly={isVaSaved}
           value={row.sphere}
+          onClick={() => {
+            setShow10(true);
+            setButton(row.name === "Right Eye" ? "first" : "second");
+          }}
           onChange={(e) => handleInputChange4(e, row.name, "sphere")}
         />
       ),
@@ -811,6 +832,10 @@ export default function VisitDetails() {
           type="text"
           readOnly={isVaSaved}
           value={row.cylinder}
+          onClick={() => {
+            setShow10(true);
+            setButton(row.name === "Right Eye" ? "first" : "second");
+          }}
           onChange={(e) => handleInputChange4(e, row.name, "cylinder")}
         />
       ),
@@ -825,6 +850,10 @@ export default function VisitDetails() {
           type="text"
           readOnly={isVaSaved}
           value={row.axis}
+          onClick={() => {
+            setShow10(true);
+            setButton(row.name === "Right Eye" ? "first" : "second");
+          }}
           onChange={(e) => handleInputChange4(e, row.name, "axis")}
         />
       ),
@@ -839,6 +868,10 @@ export default function VisitDetails() {
           type="text"
           readOnly={isVaSaved}
           value={row.addition}
+          onClick={() => {
+            setShow10(true);
+            setButton(row.name === "Right Eye" ? "first" : "second");
+          }}
           onChange={(e) => handleInputChange4(e, row.name, "addition")}
         />
       ),
@@ -1327,6 +1360,11 @@ export default function VisitDetails() {
             label: el.exam,
           }))
       );
+      setSpecSymptoms(
+        response.data.response.exams
+          .filter((e) => e.eyeSide === null)
+          .map((el) => el.exam)
+      );
       setProceduresValues(
         response.data.response.procedures.map((el) => ({
           value: el,
@@ -1549,6 +1587,52 @@ export default function VisitDetails() {
         optRefraction[0],
         {
           ...optRefraction[1],
+          cylinder: data.cylinder,
+          sphere: data.sphere,
+          axis: data.axis,
+          addition: data.addition,
+        },
+      ]);
+    }
+
+    setValues((prev) => ({
+      ...prev,
+      [column]: prev[column] === value ? "" : value, // Toggle the value
+    }));
+  };
+
+  const handleChange3 = (column, value, buttonType) => {
+    const setValues =
+      buttonType === "first"
+        ? setCurFirstButtonValues
+        : setCurSecondButtonValues;
+    const currentValues =
+      buttonType === "first" ? curFirstButtonValues : curSecondButtonValues;
+
+    if (buttonType === "first") {
+      var data = {
+        ...curFirstButtonValues,
+        [column]: curFirstButtonValues[column] === value ? "" : value,
+      };
+      setCurrentGlasses([
+        {
+          ...currentGlasses[0],
+          cylinder: data.cylinder,
+          sphere: data.sphere,
+          axis: data.axis,
+          addition: data.addition,
+        },
+        currentGlasses[1],
+      ]);
+    } else {
+      var data = {
+        ...curSecondButtonValues,
+        [column]: curSecondButtonValues[column] === value ? "" : value,
+      };
+      setCurrentGlasses([
+        currentGlasses[0],
+        {
+          ...currentGlasses[1],
           cylinder: data.cylinder,
           sphere: data.sphere,
           axis: data.axis,
@@ -1824,7 +1908,7 @@ export default function VisitDetails() {
     const postObj = JSON.stringify({
       patientVisitId: location.state?.data?.visitId,
       eyeSide: "RIGHT",
-      exams: rightValues.map((el) => el.text),
+      exams: rightValues.map((el) => el.value),
     });
     try {
       const response = await axios.post(
@@ -1855,6 +1939,36 @@ export default function VisitDetails() {
       patientVisitId: location.state?.data?.visitId,
       eyeSide: "LEFT",
       exams: leftValues.map((el) => el.value),
+    });
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/visit/doctor/add-exams`,
+        postObj,
+        config
+      );
+      // setShow3(false);
+      if (response.data.status) {
+        alert("Exams added successfully!");
+        // fetchOd(treatments);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const addSpecSymptoms = async (e) => {
+    e.preventDefault();
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+    const postObj = JSON.stringify({
+      patientVisitId: location.state?.data?.visitId,
+      eyeSide: null,
+      exams: specSymptoms.map((el) => el),
     });
     try {
       const response = await axios.post(
@@ -2647,14 +2761,14 @@ export default function VisitDetails() {
                     <Card.Body style={{ margin: 0, padding: 0 }}>
                       <Row style={{ paddingRight: 20 }}>
                         <Col
-                          lg={6}
+                          lg={4}
                           style={{
                             marginBottom: "100px",
                             marginTop: 20,
                             paddingLeft: 18,
-                            borderRightColor: '#adb5bd',
+                            borderRightColor: "#adb5bd",
                             borderRightWidth: 0.2,
-                            borderRightStyle: 'solid'
+                            borderRightStyle: "solid",
                           }}
                         >
                           {(roles.includes("Doctor") ||
@@ -2680,40 +2794,6 @@ export default function VisitDetails() {
                                 </p>
                               )}
 
-                              <Row>
-                                <Col sm={9}>
-                                  <input
-                                    className="form-control"
-                                    placeholder="Add specific symptom/sign"
-                                    value={newSign}
-                                    onChange={(e) =>
-                                      setNewSign(e.target.value)
-                                    }
-                                  />
-                                </Col>
-                                <Col sm={3}>
-                                  <button
-                                    onClick={() => {
-                                      if (newSign) {
-                                        setNewSign("");
-                                        setRightValues([
-                                          ...rightValues,
-                                          {
-                                            label: newSign,
-                                            value: newSign,
-                                          },
-                                        ]);
-                                      } else {
-                                        alert("Enter a symptom/sign");
-                                      }
-                                    }}
-                                    className="btn btn-primary"
-                                  >
-                                    Add
-                                  </button>
-                                </Col>
-                              </Row>
-
                               <Button
                                 onClick={(e) => {
                                   if (rightValues.length > 0) {
@@ -2729,11 +2809,14 @@ export default function VisitDetails() {
                         </Col>
 
                         <Col
-                          lg={6}
+                          lg={4}
                           style={{
                             marginBottom: "100px",
                             marginTop: 20,
                             paddingLeft: 18,
+                            borderRightColor: "#adb5bd",
+                            borderRightWidth: 0.2,
+                            borderRightStyle: "solid",
                           }}
                         >
                           {(roles.includes("Doctor") ||
@@ -2759,44 +2842,77 @@ export default function VisitDetails() {
                                 </p>
                               )}
 
-                              <Row>
-                                <Col sm={9}>
-                                  <input
-                                    className="form-control"
-                                    placeholder="Add specific symptom/sign"
-                                    value={newSign2}
-                                    onChange={(e) =>
-                                      setNewSign2(e.target.value)
-                                    }
-                                  />
-                                </Col>
-                                <Col sm={3}>
-                                  <button
-                                    onClick={() => {
-                                      if (newSign2) {
-                                        setNewSign2("");
-                                        setLeftValues([
-                                          ...leftValues,
-                                          {
-                                            label: newSign2,
-                                            value: newSign2,
-                                          },
-                                        ]);
-                                      } else {
-                                        alert("Enter a symptom/sign");
-                                      }
-                                    }}
-                                    className="btn btn-primary"
-                                  >
-                                    Add
-                                  </button>
-                                </Col>
-                              </Row>
-
                               <Button
                                 onClick={(e) => {
                                   if (leftValues.length > 0) {
                                     addOs(e);
+                                  }
+                                }}
+                                style={{ marginTop: 20, width: 100 }}
+                              >
+                                Save
+                              </Button>
+                            </>
+                          )}
+                        </Col>
+
+                        <Col
+                          lg={4}
+                          style={{
+                            marginBottom: "100px",
+                            marginTop: 20,
+                            paddingLeft: 18,
+                          }}
+                        >
+                          {(roles.includes("Doctor") ||
+                            roles.includes("Administrator")) && (
+                            <>
+                              <Form.Group className="form-group">
+                                <Form.Label>Specific symptoms</Form.Label>
+                                <Row>
+                                  <Col sm={9}>
+                                    <input
+                                      className="form-control"
+                                      placeholder="Add specific symptom/sign"
+                                      value={newSign}
+                                      onChange={(e) =>
+                                        setNewSign(e.target.value)
+                                      }
+                                    />
+                                  </Col>
+                                  <Col sm={3}>
+                                    <button
+                                      onClick={() => {
+                                        if (newSign) {
+                                          setNewSign("");
+                                          setSpecSymptoms([
+                                            ...specSymptoms,
+                                            newSign
+                                          ]);
+                                        } else {
+                                          alert("Enter a symptom/sign");
+                                        }
+                                      }}
+                                      className="btn btn-primary"
+                                    >
+                                      Add
+                                    </button>
+                                  </Col>
+                                </Row>
+                              </Form.Group>
+
+                              {specSymptoms.length > 0 ? (
+                                specSymptoms.map((s) => <p>&#9679; {s}</p>)
+                              ) : (
+                                <p>
+                                  No symptoms <yet className=""></yet>
+                                </p>
+                              )}
+
+                              <Button
+                                onClick={(e) => {
+                                  if (specSymptoms.length > 0) {
+                                    addSpecSymptoms(e);
                                   }
                                 }}
                                 style={{ marginTop: 20, width: 100 }}
@@ -3451,7 +3567,7 @@ export default function VisitDetails() {
         <Modal.Body>
           <Form>
             <Row>
-              <Col md={3}>
+              <Col md={12}>
                 <h2 style={{ textAlign: "center" }}>Sphere</h2>
                 <Form.Check
                   key={"Plano"}
@@ -3515,7 +3631,7 @@ export default function VisitDetails() {
                   </Col>
                 </Row>
               </Col>
-              <Col md={2} style={{ marginLeft: 30 }}>
+              <Col md={12}>
                 <h2 style={{ textAlign: "center" }}>Cylinder</h2>
                 {cylinderArray.map((value) => (
                   <Form.Check
@@ -3533,7 +3649,7 @@ export default function VisitDetails() {
                   />
                 ))}
               </Col>
-              <Col md={3} style={{ marginLeft: 30 }}>
+              <Col md={12}>
                 <h2 style={{ textAlign: "center" }}>Axis</h2>
                 <Row>
                   <Col
@@ -3579,7 +3695,7 @@ export default function VisitDetails() {
                 </Row>
               </Col>
 
-              <Col md={2} style={{ marginLeft: 30 }}>
+              <Col md={12}>
                 <h2 style={{ textAlign: "center" }}>Addition</h2>
                 {additionsArray.map((value) => (
                   <Form.Check
@@ -3783,6 +3899,169 @@ export default function VisitDetails() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShow9(false)}>
+            Validate
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={show10} onHide={() => setShow10(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Select Options</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Col>
+              <Col md={12}>
+                <h2 style={{ textAlign: "center" }}>Sphere</h2>
+                <Form.Check
+                  key={"Plano"}
+                  type="checkbox"
+                  style={{ textAlign: "center" }}
+                  label={"Plano"}
+                  onChange={() => handleChange3("sphere", "Plano", button)}
+                  checked={
+                    (button === "first"
+                      ? curFirstButtonValues
+                      : curSecondButtonValues
+                    ).sphere === "Plano"
+                  }
+                />
+                <Row>
+                  <Col
+                    style={{
+                      borderRightColor: "black",
+                      borderRightWidth: 0.3,
+                      borderRightStyle: "solid",
+                    }}
+                  >
+                    {sphereArray.slice(0, 80).map((value) => (
+                      <Form.Check
+                        key={value}
+                        type="checkbox"
+                        style={{ textAlign: "right" }}
+                        label={value}
+                        onChange={() => handleChange3("sphere", value, button)}
+                        checked={
+                          (button === "first"
+                            ? curFirstButtonValues
+                            : curSecondButtonValues
+                          ).sphere === value
+                        }
+                      />
+                    ))}
+                  </Col>
+                  <Col
+                    style={{
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    {sphereArray.slice(80, 180).map((value) => (
+                      <Form.Check
+                        key={value}
+                        type="checkbox"
+                        style={{ textAlign: "left" }}
+                        label={value}
+                        onChange={() => handleChange3("sphere", value, button)}
+                        checked={
+                          (button === "first"
+                            ? curFirstButtonValues
+                            : curSecondButtonValues
+                          ).sphere === value
+                        }
+                      />
+                    ))}
+                  </Col>
+                </Row>
+              </Col>
+              <Col md={12}>
+                <h2 style={{ textAlign: "center" }}>Cylinder</h2>
+                {cylinderArray.map((value) => (
+                  <Form.Check
+                    key={value}
+                    type="checkbox"
+                    style={{ textAlign: "center" }}
+                    label={value}
+                    onChange={() => handleChange3("cylinder", value, button)}
+                    checked={
+                      (button === "first"
+                        ? curFirstButtonValues
+                        : curSecondButtonValues
+                      ).cylinder === value
+                    }
+                  />
+                ))}
+              </Col>
+              <Col md={12}>
+                <h2 style={{ textAlign: "center" }}>Axis</h2>
+                <Row>
+                  <Col
+                    style={{
+                      borderRightColor: "black",
+                      borderRightWidth: 0.3,
+                      borderRightStyle: "solid",
+                    }}
+                  >
+                    {axisArray.slice(0, 91).map((value) => (
+                      <Form.Check
+                        key={value}
+                        type="checkbox"
+                        style={{ textAlign: "right" }}
+                        label={value}
+                        onChange={() => handleChange3("axis", value, button)}
+                        checked={
+                          (button === "first"
+                            ? curFirstButtonValues
+                            : curSecondButtonValues
+                          ).axis === value
+                        }
+                      />
+                    ))}
+                  </Col>
+                  <Col>
+                    {axisArray.slice(91, 181).map((value) => (
+                      <Form.Check
+                        key={value}
+                        type="checkbox"
+                        style={{ textAlign: "left" }}
+                        label={value}
+                        onChange={() => handleChange3("axis", value, button)}
+                        checked={
+                          (button === "first"
+                            ? curFirstButtonValues
+                            : curSecondButtonValues
+                          ).axis === value
+                        }
+                      />
+                    ))}
+                  </Col>
+                </Row>
+              </Col>
+
+              <Col md={12}>
+                <h2 style={{ textAlign: "center" }}>Addition</h2>
+                {additionsArray.map((value) => (
+                  <Form.Check
+                    key={value}
+                    type="checkbox"
+                    label={value}
+                    style={{ textAlign: "center" }}
+                    onChange={() => handleChange3("addition", value, button)}
+                    checked={
+                      (button === "first"
+                        ? curFirstButtonValues
+                        : curSecondButtonValues
+                      ).addition === value
+                    }
+                  />
+                ))}
+              </Col>
+            </Col>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShow10(false)}>
             Validate
           </Button>
         </Modal.Footer>

@@ -19,7 +19,7 @@ import Ordonance from '../components/ordonance/ordonance'
 export const Routingdata=[
 
 {path:`${import.meta.env.BASE_URL}appointments` ,element:<Appointments />, roles:['Administrator','Nurse','Doctor','Optometrist']},
-{path:`${import.meta.env.BASE_URL}report` ,element:<Report />, roles:['Administrator', 'Nurse','Doctor','Optometrist']},
+{path:`${import.meta.env.BASE_URL}report` ,element:<Report />, roles:['Administrator', 'Nurse','Doctor','Optometrist','Receptionist']},
 {path:`${import.meta.env.BASE_URL}chat` ,element:<Chat />, roles:['Administrator', 'Nurse','Doctor','Receptionist','Optometrist']},
 {path:`${import.meta.env.BASE_URL}ordonance` ,element:<Ordonance />, roles:['Administrator', 'Optic']},
 

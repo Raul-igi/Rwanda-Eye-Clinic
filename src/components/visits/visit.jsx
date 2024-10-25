@@ -37,6 +37,7 @@ export default function Visit({ visitId, visit }) {
   const [savedTreatment, setSavedTreatment] = useState([]);
   const [rightExams, setRightExams] = useState([]);
   const [leftExams, setLeftExams] = useState([]);
+  const [specSymptoms, setSpecSymptoms] = useState([]);
   const [labs, setLabs] = useState([]);
   const [lensType, setLensType] = useState("");
   const [lensAttribute, setLensAttribute] = useState([]);
@@ -294,7 +295,7 @@ export default function Visit({ visitId, visit }) {
         `http://www.ubuzima.rw/rec/visit/id`,
         config
       );
-      const myVisit = response.data.response
+      const myVisit = response.data.response;
       const visualAcuity_ = [
         {
           name: "Right Eye",
@@ -339,23 +340,22 @@ export default function Visit({ visitId, visit }) {
           addition: myVisit.refraction?.additionLeftEye || "",
         },
       ];
-      setLensAttribute(myVisit.refraction?.lensAttribute)
-      setLensType(myVisit.refraction?.lensType)
+      setLensAttribute(myVisit.refraction?.lensAttribute);
+      setLensType(myVisit.refraction?.lensType);
       setRefraction(refraction_);
       setVisualAcuity(visualAcuity_);
       setCurrentGlasses(currentGlasses_);
       setMedicalActs(myVisit.medicalAct || []);
-      setRightExams(myVisit.exams.filter(e=> e.eyeSide==='RIGHT') || []);
-      setLeftExams(myVisit.exams.filter(e=> e.eyeSide==='LEFT') || []);
+      setRightExams(myVisit.exams.filter((e) => e.eyeSide === "RIGHT") || []);
+      setLeftExams(myVisit.exams.filter((e) => e.eyeSide === "LEFT") || []);
+      setSpecSymptoms(myVisit.exams.filter((e) => e.eyeSide === null) || []);
       setProcedures(myVisit.procedures || []);
       setLabs(myVisit.labs || []);
-      setSavedTreatment(myVisit.treatments?.map(t=>t.name))
+      setSavedTreatment(myVisit.treatments?.map((t) => t.name));
     } catch (error) {
       console.error(error);
     }
   };
-
-
 
   useEffect(() => {
     if (visitId) {
@@ -406,17 +406,18 @@ export default function Visit({ visitId, visit }) {
           addition: visit.refraction?.additionLeftEye || "",
         },
       ];
-      setLensAttribute(visit.refraction?.lensAttribute)
-      setLensType(visit.refraction?.lensType)
+      setLensAttribute(visit.refraction?.lensAttribute);
+      setLensType(visit.refraction?.lensType);
       setRefraction(refraction_);
       setVisualAcuity(visualAcuity_);
       setCurrentGlasses(currentGlasses_);
       setMedicalActs(visit.medicalAct || []);
-      setRightExams(visit.exams.filter(e=> e.eyeSide==='RIGHT') || []);
-      setLeftExams(visit.exams.filter(e=> e.eyeSide==='LEFT') || []);
+      setRightExams(visit.exams.filter((e) => e.eyeSide === "RIGHT") || []);
+      setLeftExams(visit.exams.filter((e) => e.eyeSide === "LEFT") || []);
+      setSpecSymptoms(visit.exams.filter((e) => e.eyeSide === null) || []);
       setProcedures(visit.procedures || []);
       setLabs(visit.labs || []);
-      setSavedTreatment(visit.treatments?.map(t=>t.name))
+      setSavedTreatment(visit.treatments?.map((t) => t.name));
     }
   }, []);
 
@@ -483,22 +484,27 @@ export default function Visit({ visitId, visit }) {
         </Col>
 
         <Col
-          md={6}
-          xl={6}
-          style={{ marginTop: 20, paddingRight: 0, paddingLeft: 20 }}
+          lg={3}
+          style={{
+            marginBottom: 50,
+            marginTop: 20,
+            paddingLeft: 18,
+          }}
         >
-          <h1>Medical Acts</h1>
-          {medicalActs.length > 0 ? (
-            medicalActs.map((act, index) => {
-              return (
-                <p>
-                  {index + 1}. {act.name}
-                </p>
-              );
-            })
-          ) : (
-            <p>No act...</p>
-          )}
+          <h1>Lens type</h1>
+          <p>{lensType || "Not selected yet..."}</p>
+        </Col>
+
+        <Col
+          lg={3}
+          style={{
+            marginBottom: 50,
+            marginTop: 20,
+            paddingLeft: 18,
+          }}
+        >
+          <h1>Lens attributes</h1>
+          <p>{lensAttribute?.join(", ") || "Not selected yet..."}</p>
         </Col>
 
         <div style={{ marginTop: 40 }}>
@@ -506,8 +512,8 @@ export default function Visit({ visitId, visit }) {
           <Card style={{ padding: 0 }}>
             <Card.Body style={{ margin: 0, padding: 0 }}>
               <Row style={{ paddingRight: 20 }}>
-              <Col
-                  lg={6}
+                <Col
+                  lg={4}
                   style={{
                     marginBottom: 50,
                     marginTop: 20,
@@ -515,11 +521,16 @@ export default function Visit({ visitId, visit }) {
                   }}
                 >
                   <h1>Right eye (OD)</h1>
-                  <p>{rightExams.filter(e=>e.exam).map(e=>e.exam).join(', ') || 'No exam yet...'}</p>
+                  <p>
+                    {rightExams
+                      .filter((e) => e.exam)
+                      .map((e) => e.exam)
+                      .join(", ") || "No exam yet..."}
+                  </p>
                 </Col>
 
                 <Col
-                  lg={6}
+                  lg={4}
                   style={{
                     marginBottom: 50,
                     marginTop: 20,
@@ -527,7 +538,29 @@ export default function Visit({ visitId, visit }) {
                   }}
                 >
                   <h1>Left eye (OS)</h1>
-                  <p>{leftExams.filter(e=>e.exam).map(e=>e.exam).join(', ') || 'No exam yet...'}</p>
+                  <p>
+                    {leftExams
+                      .filter((e) => e.exam)
+                      .map((e) => e.exam)
+                      .join(", ") || "No exam yet..."}
+                  </p>
+                </Col>
+
+                <Col
+                  lg={4}
+                  style={{
+                    marginBottom: 50,
+                    marginTop: 20,
+                    paddingLeft: 18,
+                  }}
+                >
+                  <h1>Specific symptoms</h1>
+                  <p>
+                    {specSymptoms
+                      .filter((e) => e.exam)
+                      .map((e) => e.exam)
+                      .join(", ") || "No exam yet..."}
+                  </p>
                 </Col>
               </Row>
             </Card.Body>
@@ -539,7 +572,7 @@ export default function Visit({ visitId, visit }) {
           <Card style={{ padding: 0 }}>
             <Card.Body style={{ margin: 0, padding: 0 }}>
               <Row style={{ paddingRight: 20 }}>
-              <Col
+                <Col
                   lg={6}
                   style={{
                     marginBottom: 50,
@@ -548,7 +581,7 @@ export default function Visit({ visitId, visit }) {
                   }}
                 >
                   <h1>Procedures</h1>
-                  <p>{procedures.join(', ') || 'No procedure yet...'}</p>
+                  <p>{procedures.join(", ") || "No procedure yet..."}</p>
                 </Col>
 
                 <Col
@@ -560,30 +593,19 @@ export default function Visit({ visitId, visit }) {
                   }}
                 >
                   <h1>Labs</h1>
-                  <p>{labs.join(', ') || 'No labs yet...'}</p>
+                  <p>{labs.join(", ") || "No labs yet..."}</p>
                 </Col>
               </Row>
             </Card.Body>
           </Card>
         </div>
 
+
         <div style={{ marginTop: 40 }}>
-          <h1 style={{ marginBottom: 0 }}>Lens Details</h1>
+          <h1 style={{ marginBottom: 0 }}>Dr Treatments/Notes</h1>
           <Card style={{ padding: 0 }}>
             <Card.Body style={{ margin: 0, padding: 0 }}>
               <Row style={{ paddingRight: 20 }}>
-              <Col
-                  lg={6}
-                  style={{
-                    marginBottom: 50,
-                    marginTop: 20,
-                    paddingLeft: 18,
-                  }}
-                >
-                  <h1>Lens type</h1>
-                  <p>{lensType || 'Not selected yet...'}</p>
-                </Col>
-
                 <Col
                   lg={6}
                   style={{
@@ -592,29 +614,8 @@ export default function Visit({ visitId, visit }) {
                     paddingLeft: 18,
                   }}
                 >
-                  <h1>Lens attributes</h1>
-                  <p>{lensAttribute?.join(', ') || 'Not selected yet...'}</p>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
-        </div>
-
-        <div style={{ marginTop: 40 }}>
-          <h1 style={{ marginBottom: 0 }}>Dr Treatments/Notes</h1>
-          <Card style={{ padding: 0 }}>
-            <Card.Body style={{ margin: 0, padding: 0 }}>
-              <Row style={{ paddingRight: 20 }}>
-              <Col
-                  lg={6}
-                  style={{
-                    marginBottom: 50,
-                    marginTop: 20,
-                    paddingLeft: 18,
-                  }}
-                >
                   <h1>Treatments</h1>
-                  <p>{savedTreatment?.join(', ') || 'No treatment yet...'}</p>
+                  <p>{savedTreatment?.join(", ") || "No treatment yet..."}</p>
                 </Col>
 
                 <Col
@@ -632,6 +633,25 @@ export default function Visit({ visitId, visit }) {
             </Card.Body>
           </Card>
         </div>
+
+        <Col
+          md={6}
+          xl={6}
+          style={{ marginTop: 20, marginBottom: 60, paddingRight: 0, paddingLeft: 20 }}
+        >
+          <h1>Medical Acts</h1>
+          {medicalActs.length > 0 ? (
+            medicalActs.map((act, index) => {
+              return (
+                <p>
+                  {index + 1}. {act.name}
+                </p>
+              );
+            })
+          ) : (
+            <p>No act...</p>
+          )}
+        </Col>
       </Row>
     </Fragment>
   );

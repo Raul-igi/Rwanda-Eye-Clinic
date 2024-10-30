@@ -35,7 +35,7 @@ export default function Visit({ visitId, visit }) {
   const location = useLocation();
 
   const [savedTreatment, setSavedTreatment] = useState([]);
-  const [rightExams, setRightExams] = useState([]);
+  const [exams, setExams] = useState([]);
   const [leftExams, setLeftExams] = useState([]);
   const [specSymptoms, setSpecSymptoms] = useState([]);
   const [labs, setLabs] = useState([]);
@@ -49,7 +49,7 @@ export default function Visit({ visitId, visit }) {
       sphere: "",
       cylinder: "",
       axis: "",
-      addition: "",
+      va: "",
     },
 
     {
@@ -57,7 +57,15 @@ export default function Visit({ visitId, visit }) {
       sphere: "",
       cylinder: "",
       axis: "",
-      addition: "",
+      va: "",
+    },
+
+    {
+      name: "Addition",
+      sphere: "",
+      cylinder: "",
+      axis: "",
+      va: "",
     },
   ]);
 
@@ -67,7 +75,7 @@ export default function Visit({ visitId, visit }) {
       sphere: "",
       cylinder: "",
       axis: "",
-      addition: "",
+      va: "",
     },
 
     {
@@ -75,7 +83,15 @@ export default function Visit({ visitId, visit }) {
       sphere: "",
       cylinder: "",
       axis: "",
-      addition: "",
+      va: "",
+    },
+
+    {
+      name: "Addition",
+      sphere: "",
+      cylinder: "",
+      axis: "",
+      va: "",
     },
   ]);
 
@@ -204,9 +220,9 @@ export default function Visit({ visitId, visit }) {
     },
 
     {
-      name: "Addition",
+      name: "VA",
       sortable: true,
-      selector: (row) => [row.addition],
+      selector: (row) => [row.va],
     },
   ];
 
@@ -233,9 +249,9 @@ export default function Visit({ visitId, visit }) {
     },
 
     {
-      name: "Addition",
+      name: "VA",
       sortable: true,
-      selector: (row) => [row.addition],
+      selector: (row) => [row.va],
     },
   ];
 
@@ -261,13 +277,17 @@ export default function Visit({ visitId, visit }) {
             sphere: response.data.response[0].sphereRightEye || "",
             cylinder: response.data.response[0].cylindreRightEye || "",
             axis: response.data.response[0].axeRightEye || "",
-            addition: response.data.response[0].additionRightEye || "",
+            va: response.data.response[0].vaRightEye || "",
           },
           {
             name: "Left Eye",
             sphere: response.data.response[0].sphereLeftEye || "",
             cylinder: response.data.response[0].cylindreLeftEye || "",
             axis: response.data.response[0].axeLeftEye || "",
+            va: response.data.response[0].vaLeftEye || "",
+          },
+          {
+            name: "Addition",
             addition: response.data.response[0].additionLeftEye || "",
           },
         ];
@@ -330,13 +350,17 @@ export default function Visit({ visitId, visit }) {
           sphere: myVisit.refraction?.sphereRightEye || "",
           cylinder: myVisit.refraction?.cylindreRightEye || "",
           axis: myVisit.refraction?.axeRightEye || "",
-          addition: myVisit.refraction?.additionRightEye || "",
+          va: myVisit.refraction?.vaRightEye || "",
         },
         {
           name: "Left Eye",
           sphere: myVisit.refraction?.sphereLeftEye || "",
           cylinder: myVisit.refraction?.cylindreLeftEye || "",
           axis: myVisit.refraction?.axeLeftEye || "",
+          va: myVisit.refraction?.vaLeftEye || "",
+        },
+        {
+          name: "Addition",
           addition: myVisit.refraction?.additionLeftEye || "",
         },
       ];
@@ -346,12 +370,10 @@ export default function Visit({ visitId, visit }) {
       setVisualAcuity(visualAcuity_);
       setCurrentGlasses(currentGlasses_);
       setMedicalActs(myVisit.medicalAct || []);
-      setRightExams(myVisit.exams.filter((e) => e.eyeSide === "RIGHT") || []);
-      setLeftExams(myVisit.exams.filter((e) => e.eyeSide === "LEFT") || []);
-      setSpecSymptoms(myVisit.exams.filter((e) => e.eyeSide === null) || []);
+      setExams(myVisit.exams.filter((e) => e.eyeSide === null) || []);
       setProcedures(myVisit.procedures || []);
       setLabs(myVisit.labs || []);
-      setSavedTreatment(myVisit.treatments?.map((t) => t.name));
+      setSavedTreatment(myVisit.treatment?.map((t) => t.name));
     } catch (error) {
       console.error(error);
     }
@@ -396,13 +418,17 @@ export default function Visit({ visitId, visit }) {
           sphere: visit.refraction?.sphereRightEye || "",
           cylinder: visit.refraction?.cylindreRightEye || "",
           axis: visit.refraction?.axeRightEye || "",
-          addition: visit.refraction?.additionRightEye || "",
+          va: visit.refraction?.vaRightEye || "",
         },
         {
           name: "Left Eye",
           sphere: visit.refraction?.sphereLeftEye || "",
           cylinder: visit.refraction?.cylindreLeftEye || "",
           axis: visit.refraction?.axeLeftEye || "",
+          va: visit.refraction?.vaLeftEye || "",
+        },
+        {
+          name: "Addition",
           addition: visit.refraction?.additionLeftEye || "",
         },
       ];
@@ -412,12 +438,10 @@ export default function Visit({ visitId, visit }) {
       setVisualAcuity(visualAcuity_);
       setCurrentGlasses(currentGlasses_);
       setMedicalActs(visit.medicalAct || []);
-      setRightExams(visit.exams.filter((e) => e.eyeSide === "RIGHT") || []);
-      setLeftExams(visit.exams.filter((e) => e.eyeSide === "LEFT") || []);
-      setSpecSymptoms(visit.exams.filter((e) => e.eyeSide === null) || []);
+      setExams(myVisit.exams.filter((e) => e.eyeSide === null) || []);
       setProcedures(visit.procedures || []);
       setLabs(visit.labs || []);
-      setSavedTreatment(visit.treatments?.map((t) => t.name));
+      setSavedTreatment(visit.treatment?.map((t) => t.name));
     }
   }, []);
 
@@ -504,7 +528,15 @@ export default function Visit({ visitId, visit }) {
           }}
         >
           <h1>Lens attributes</h1>
-          <p>{lensAttribute?.join(", ") || "Not selected yet..."}</p>
+          {lensAttribute?.length > 0 ? (
+            lensAttribute.map((a, index) => (
+              <p>
+                {index + 1}. {a}
+              </p>
+            ))
+          ) : (
+            <p>Not selected yet...</p>
+          )}
         </Col>
 
         <div style={{ marginTop: 40 }}>
@@ -520,48 +552,22 @@ export default function Visit({ visitId, visit }) {
                     paddingLeft: 18,
                   }}
                 >
-                  <h1>Right eye (OD)</h1>
-                  <p>
-                    {rightExams
+                  <h1>Exams</h1>
+                  {exams.filter((e) => e.exam).map((e) => e.exam).length >
+                  0 ? (
+                    exams
                       .filter((e) => e.exam)
                       .map((e) => e.exam)
-                      .join(", ") || "No exam yet..."}
-                  </p>
+                      .map((a, index) => (
+                        <p>
+                          {index + 1}. {a}
+                        </p>
+                      ))
+                  ) : (
+                    <p>No exam yet...</p>
+                  )}
                 </Col>
 
-                <Col
-                  lg={4}
-                  style={{
-                    marginBottom: 50,
-                    marginTop: 20,
-                    paddingLeft: 18,
-                  }}
-                >
-                  <h1>Left eye (OS)</h1>
-                  <p>
-                    {leftExams
-                      .filter((e) => e.exam)
-                      .map((e) => e.exam)
-                      .join(", ") || "No exam yet..."}
-                  </p>
-                </Col>
-
-                <Col
-                  lg={4}
-                  style={{
-                    marginBottom: 50,
-                    marginTop: 20,
-                    paddingLeft: 18,
-                  }}
-                >
-                  <h1>Specific symptoms</h1>
-                  <p>
-                    {specSymptoms
-                      .filter((e) => e.exam)
-                      .map((e) => e.exam)
-                      .join(", ") || "No exam yet..."}
-                  </p>
-                </Col>
               </Row>
             </Card.Body>
           </Card>
@@ -581,7 +587,15 @@ export default function Visit({ visitId, visit }) {
                   }}
                 >
                   <h1>Procedures</h1>
-                  <p>{procedures.join(", ") || "No procedure yet..."}</p>
+                  {procedures?.length > 0 ? (
+                    procedures.map((p, index) => (
+                      <p>
+                        {index + 1}. {p}
+                      </p>
+                    ))
+                  ) : (
+                    <p>No procedure yet...</p>
+                  )}
                 </Col>
 
                 <Col
@@ -593,13 +607,20 @@ export default function Visit({ visitId, visit }) {
                   }}
                 >
                   <h1>Labs</h1>
-                  <p>{labs.join(", ") || "No labs yet..."}</p>
+                  {labs?.length > 0 ? (
+                    labs.map((l, index) => (
+                      <p>
+                        {index + 1}. {l}
+                      </p>
+                    ))
+                  ) : (
+                    <p>No labs yet...</p>
+                  )}
                 </Col>
               </Row>
             </Card.Body>
           </Card>
         </div>
-
 
         <div style={{ marginTop: 40 }}>
           <h1 style={{ marginBottom: 0 }}>Dr Treatments/Notes</h1>
@@ -615,7 +636,15 @@ export default function Visit({ visitId, visit }) {
                   }}
                 >
                   <h1>Treatments</h1>
-                  <p>{savedTreatment?.join(", ") || "No treatment yet..."}</p>
+                  {savedTreatment?.length > 0 ? (
+                    savedTreatment.map((t, index) => (
+                      <p>
+                        {index + 1}. {t}
+                      </p>
+                    ))
+                  ) : (
+                    <p>No treatment yet...</p>
+                  )}
                 </Col>
 
                 <Col
@@ -637,7 +666,12 @@ export default function Visit({ visitId, visit }) {
         <Col
           md={6}
           xl={6}
-          style={{ marginTop: 20, marginBottom: 60, paddingRight: 0, paddingLeft: 20 }}
+          style={{
+            marginTop: 20,
+            marginBottom: 60,
+            paddingRight: 0,
+            paddingLeft: 20,
+          }}
         >
           <h1>Medical Acts</h1>
           {medicalActs.length > 0 ? (

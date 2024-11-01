@@ -464,7 +464,7 @@ function Schedules() {
       .then((res) => {
         setShow(false);
         if (res.data.status === true) {
-          alert("Department Added successfully");
+          alert("Schedule Added successfully");
           fetchSchedules();
         } else {
           alert(res.data.message);

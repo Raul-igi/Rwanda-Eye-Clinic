@@ -374,9 +374,9 @@ export default function Visit({ visitId, visit }) {
   };
 
   useEffect(() => {
+    fetchOptRefraction();
     if (visitId) {
       fetchData();
-      fetchOptRefraction();
     } else {
       const visualAcuity_ = [
         {

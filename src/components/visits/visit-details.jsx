@@ -3313,7 +3313,7 @@ export default function VisitDetails() {
                       <Form.Control
                         type="number"
                         value={
-                          (insuranceAmount * parseInt(invoice?.ticket)) / 100
+                          Math.round((insuranceAmount * parseInt(invoice?.ticket)) / 100)
                         }
                         className="form-control"
                         name="example-text-input"
@@ -3328,7 +3328,7 @@ export default function VisitDetails() {
                         <Form.Label>Top Up Amount</Form.Label>
                         <Form.Control
                           type="number"
-                          value={topUpAmount}
+                          value={Math.round(topUpAmount)}
                           className="form-control"
                           name="example-text-input"
                           // placeholder="names"
@@ -3343,11 +3343,11 @@ export default function VisitDetails() {
                       <Form.Control
                         type="number"
                         value={
-                          parseFloat(invoice?.totalAmount) -
+                          Math.round(parseFloat(invoice?.totalAmount) -
                           parseFloat(insuranceAmount) +
                           parseFloat(
                             (insuranceAmount * parseInt(invoice?.ticket)) / 100
-                          )
+                          ))
                         }
                         className="form-control"
                         name="example-text-input"

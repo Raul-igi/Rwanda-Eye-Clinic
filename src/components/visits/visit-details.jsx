@@ -19,6 +19,7 @@ import Pagination from "./components/Pagination";
 const vaArray = [
   "NLP",
   "LP",
+  "HM",
   "CF",
   "1/10",
   "2/10",
@@ -29,7 +30,7 @@ const vaArray = [
   "7/10",
   "8/10",
   "9/10",
-  "10/10"
+  "10/10",
 ];
 
 const sphereArray = [
@@ -462,8 +463,11 @@ export default function VisitDetails() {
   const [show9, setShow9] = useState(false);
   const [show10, setShow10] = useState(false);
   const [show11, setShow11] = useState(false);
+  const [show12, setShow12] = useState(false);
 
   const [refType, setRefType] = useState("");
+  const [vaEye, setVaEye] = useState("");
+  const [vaType, setVaType] = useState("");
 
   const [button, setButton] = useState(false);
 
@@ -522,7 +526,7 @@ export default function VisitDetails() {
   const [roles, setRoles] = useState([]);
   const [invoice, setInvoice] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
-  const [paymentMode, setPaymentMode] = useState(null);
+  const [paymentMode, setPaymentMode] = useState([]);
 
   const [insuranceAmount, setInsuranceAmount] = useState(0);
   const [topUpAmount, setTopUpAmount] = useState(0);
@@ -544,6 +548,8 @@ export default function VisitDetails() {
   const [billingDetails, setBillingDetails] = useState("");
   const [insuranceId, setInsuranceId] = useState("");
 
+  const [amounts, setAmounts] = useState({});
+
   const [generatePrescription, setGeneratePrescription] = useState(false);
 
   const [tab, setTab] = useState("tab1");
@@ -552,6 +558,30 @@ export default function VisitDetails() {
   const handlePageChange = (page) => {
     setCurrentPage2(page);
     console.log(`Page changed to ${page}`); // You can use this to detect page changes
+  };
+
+  const handlePaymentModeChange = (selectedOptions) => {
+    setPaymentMode(selectedOptions || []);
+    // Reset amounts for any deselected options
+    const selectedValues = selectedOptions
+      ? selectedOptions.map((opt) => opt.value)
+      : [];
+    setAmounts((prevAmounts) =>
+      Object.keys(prevAmounts)
+        .filter((key) => selectedValues.includes(key))
+        .reduce((obj, key) => {
+          obj[key] = prevAmounts[key];
+          return obj;
+        }, {})
+    );
+  };
+
+  const handleAmountChange = (e, mode) => {
+    const value = e.target.value;
+    setAmounts((prevAmounts) => ({
+      ...prevAmounts,
+      [mode]: value,
+    }));
   };
 
   const billingDetailsColumn = [
@@ -646,7 +676,7 @@ export default function VisitDetails() {
 
     {
       name: "Addition",
-      addition: ""
+      addition: "",
     },
   ]);
 
@@ -669,7 +699,7 @@ export default function VisitDetails() {
 
     {
       name: "Addition",
-      addition: ""
+      addition: "",
     },
   ]);
 
@@ -728,7 +758,7 @@ export default function VisitDetails() {
     // Update the corresponding data item with the new value
     const newData = visualAcuity.map((item) => {
       if (item.name === name) {
-        return { ...item, [field]: e.target.value };
+        return { ...item, [field]: e };
       }
       return item;
     });
@@ -789,7 +819,11 @@ export default function VisitDetails() {
           type="text"
           readOnly={isVaSaved}
           value={row.sc}
-          onChange={(e) => handleInputChange(e, row.name, "sc")}
+          onClick={() => {
+            setShow12(true);
+            setVaEye(row.name);
+            setVaType("sc");
+          }}
         />
       ),
     },
@@ -802,7 +836,11 @@ export default function VisitDetails() {
           type="text"
           readOnly={isVaSaved}
           value={row.ac}
-          onChange={(e) => handleInputChange(e, row.name, "ac")}
+          onClick={() => {
+            setShow12(true);
+            setVaEye(row.name);
+            setVaType("ac");
+          }}
         />
       ),
     },
@@ -816,7 +854,11 @@ export default function VisitDetails() {
           type="text"
           readOnly={isVaSaved}
           value={row.ph}
-          onChange={(e) => handleInputChange(e, row.name, "ph")}
+          onClick={() => {
+            setShow12(true);
+            setVaEye(row.name);
+            setVaType("ph");
+          }}
         />
       ),
     },
@@ -933,30 +975,30 @@ export default function VisitDetails() {
     {
       name: "Sphere",
       sortable: true,
-      cell: (row) => (
-        row.sphere !== undefined ?
-        <input
-          className="form-control"
-          type="text"
-          readOnly={isReSaved}
-          value={row.sphere}
-          onClick={() => {
-            setShow7(true);
-            setButton(row.name === "Right Eye" ? "first" : "second");
-          }}
-        />
-        :
-        <input
-          className="form-control"
-          type="text"
-          readOnly={isReSaved}
-          value={row.addition}
-          onClick={() => {
-            setShow11(true);
-            setRefType('doctor');
-          }}
-        />
-      ),
+      cell: (row) =>
+        row.sphere !== undefined ? (
+          <input
+            className="form-control"
+            type="text"
+            readOnly={isReSaved}
+            value={row.sphere}
+            onClick={() => {
+              setShow7(true);
+              setButton(row.name === "Right Eye" ? "first" : "second");
+            }}
+          />
+        ) : (
+          <input
+            className="form-control"
+            type="text"
+            readOnly={isReSaved}
+            value={row.addition}
+            onClick={() => {
+              setShow11(true);
+              setRefType("doctor");
+            }}
+          />
+        ),
     },
     {
       name: "Cylinder",
@@ -1013,9 +1055,7 @@ export default function VisitDetails() {
               setShow7(true);
               setButton(row.name === "Right Eye" ? "first" : "second");
             }}
-            onChange={(e) =>
-              handleInputChange2(e.target.value, row.name, "va")
-            }
+            onChange={(e) => handleInputChange2(e.target.value, row.name, "va")}
           />
         ),
     },
@@ -1030,30 +1070,30 @@ export default function VisitDetails() {
     {
       name: "Sphere",
       sortable: true,
-      cell: (row) => (
-        row.sphere !== undefined ?
-        <input
-          className="form-control"
-          type="text"
-          readOnly={isReSaved}
-          value={row.sphere}
-          onClick={() => {
-            setShow9(true);
-            setButton(row.name === "Right Eye" ? "first" : "second");
-          }}
-        />
-        :
-        <input
-          className="form-control"
-          type="text"
-          readOnly={isReSaved}
-          value={row.addition}
-          onClick={() => {
-            setShow11(true);
-            setRefType('optometrist')
-          }}
-        />
-      ),
+      cell: (row) =>
+        row.sphere !== undefined ? (
+          <input
+            className="form-control"
+            type="text"
+            readOnly={isReSaved}
+            value={row.sphere}
+            onClick={() => {
+              setShow9(true);
+              setButton(row.name === "Right Eye" ? "first" : "second");
+            }}
+          />
+        ) : (
+          <input
+            className="form-control"
+            type="text"
+            readOnly={isReSaved}
+            value={row.addition}
+            onClick={() => {
+              setShow11(true);
+              setRefType("optometrist");
+            }}
+          />
+        ),
     },
     {
       name: "Cylinder",
@@ -1110,9 +1150,7 @@ export default function VisitDetails() {
               setShow7(true);
               setButton(row.name === "Right Eye" ? "first" : "second");
             }}
-            onChange={(e) =>
-              handleInputChange3(e.target.value, row.name, "va")
-            }
+            onChange={(e) => handleInputChange3(e.target.value, row.name, "va")}
           />
         ),
     },
@@ -1622,7 +1660,7 @@ export default function VisitDetails() {
           axis: data.axis,
           va: data.va,
         },
-        optRefraction[2]
+        optRefraction[2],
       ]);
     }
 
@@ -1722,6 +1760,9 @@ export default function VisitDetails() {
   };
 
   const pay = async () => {
+    var amountToPay = parseFloat(invoice?.totalAmount) - parseFloat(insuranceAmount) + parseFloat((insuranceAmount * parseInt(invoice?.ticket)) / 100);
+    const amountsSum = Object.values(amounts).reduce((acc, val) => acc + parseFloat(val), 0);
+    console.log(amountsSum)
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -1729,34 +1770,49 @@ export default function VisitDetails() {
         Authorization: `Bearer ${my_token}`,
       },
     };
+    var paymentDtos = paymentMode.map(m=>{
+      var dto = {
+        invoiceNumber: invoice.invoiceNumber,
+        paymentMethod: paymentMethod ? paymentMethod : "INSURANCE",
+        amount: amounts[m.value],
+        paymentMode: m.value,
+        insuranceAmount: insuranceAmount,
+      }
+      if (topUpAmount > 0) {
+        dto.topUpAmount = topUpAmount;
+      }
+      return dto;
+    })
+
     var paymentDto = {
       invoiceNumber: invoice.invoiceNumber,
       paymentMethod: paymentMethod ? paymentMethod : "INSURANCE",
-      amount:
-        parseFloat(invoice?.totalAmount) -
-        parseFloat(insuranceAmount) +
-        parseFloat((insuranceAmount * parseInt(invoice?.ticket)) / 100),
-      paymentMode: paymentMode,
+      amount: amountToPay,
+      paymentMode: paymentMode[0].value,
       insuranceAmount: insuranceAmount,
-    };
+    }
     if (topUpAmount > 0) {
       paymentDto.topUpAmount = topUpAmount;
     }
-    // console.log(paymentDto);
-    try {
-      const response = await axios.post(
-        `http://www.ubuzima.rw/rec/invoice/pay`,
-        JSON.stringify(paymentDto),
-        config
-      );
-      setShowModal(false);
-      if (response.data.status) {
-        alert("Paid successfully!");
-        fetchInvoice();
+    console.log(JSON.stringify(paymentDtos));
+    if(paymentMode.length<2 || (paymentMode.length>1 && amountToPay===amountsSum)){
+      try {
+        const response = await axios.post(
+          `http://www.ubuzima.rw/rec/invoice/pay`,
+          JSON.stringify(paymentMode.length>1?paymentDtos:[paymentDto]),
+          config
+        );
+        setShowModal(false);
+        if (response.data.status) {
+          alert("Paid successfully!");
+          fetchInvoice();
+        }
+      } catch (error) {
+        setShowModal(false);
+        console.error(error);
       }
-    } catch (error) {
-      setShowModal(false);
-      console.error(error);
+    }else{
+      alert('The sum of the amounts of each payment method should be equal to the amount to pay!')
     }
   };
 
@@ -1926,8 +1982,6 @@ export default function VisitDetails() {
       console.error(error);
     }
   };
-
-
 
   const addSymptoms = async (e) => {
     e.preventDefault();
@@ -2757,9 +2811,7 @@ export default function VisitDetails() {
                                   options={rightOptions}
                                   value={[]}
                                   onCreateOption={handleCreate}
-                                  onChange={(e) =>
-                                    setValues([...values, ...e])
-                                  }
+                                  onChange={(e) => setValues([...values, ...e])}
                                   placeholder="Select"
                                 />
                               </Form.Group>
@@ -2776,30 +2828,47 @@ export default function VisitDetails() {
                         >
                           <h2>Selected symptoms/signs</h2>
                           {values.length > 0 ? (
-                            values.map((v,index) => (
-                            <p>&#9679; 
-                              <input value={v.value} onChange={e=>{
-                                setValues(prevData =>
-                                  prevData.map((item, i) => (i === index ? { ...item, ...{label:e.target.value,value:e.target.value} } : item))
-                                );
-                              }} style={{width:'50%',border:'none',outline:'none'}}/>
-                            </p>
+                            values.map((v, index) => (
+                              <p>
+                                &#9679;
+                                <input
+                                  value={v.value}
+                                  onChange={(e) => {
+                                    setValues((prevData) =>
+                                      prevData.map((item, i) =>
+                                        i === index
+                                          ? {
+                                              ...item,
+                                              ...{
+                                                label: e.target.value,
+                                                value: e.target.value,
+                                              },
+                                            }
+                                          : item
+                                      )
+                                    );
+                                  }}
+                                  style={{
+                                    width: "50%",
+                                    border: "none",
+                                    outline: "none",
+                                  }}
+                                />
+                              </p>
                             ))
                           ) : (
-                            <p>
-                              No symptoms yet...
-                            </p>
+                            <p>No symptoms yet...</p>
                           )}
                           <Button
-                                onClick={(e) => {
-                                  if (values.length > 0) {
-                                    addSymptoms(e);
-                                  }
-                                }}
-                                style={{ marginTop: 20, width: 100 }}
-                              >
-                                Save
-                              </Button>
+                            onClick={(e) => {
+                              if (values.length > 0) {
+                                addSymptoms(e);
+                              }
+                            }}
+                            style={{ marginTop: 20, width: 100 }}
+                          >
+                            Save
+                          </Button>
                         </Col>
                       </Row>
                     </Card.Body>
@@ -3299,13 +3368,28 @@ export default function VisitDetails() {
                         { label: "MoMo", value: "MOMO" },
                         { label: "POS", value: "POS" },
                       ]}
-                      onChange={(e) => setPaymentMode(e.value)}
+                      onChange={(e) => handlePaymentModeChange(e)}
                       classNamePrefix="Select2"
+                      isMulti
                       className="multi-select"
-                      // placeholder="Select them"
                       required
                     />
                   </Form.Group>
+                  {paymentMode.length > 1 && (
+                    <div>
+                      {paymentMode.map((mode) => (
+                        <Form.Group className="form-group" key={mode.value}>
+                          <Form.Label>{mode.label} Amount</Form.Label>
+                          <Form.Control
+                            type="number"
+                            value={amounts[mode.value] || ""}
+                            onChange={(e) => handleAmountChange(e, mode.value)}
+                            placeholder={`Enter ${mode.label} amount`}
+                          />
+                        </Form.Group>
+                      ))}
+                    </div>
+                  )}
                 </Col>
               )}
             </>
@@ -3471,7 +3555,7 @@ export default function VisitDetails() {
 
       <Modal show={show7} onHide={() => setShow7(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Select Options</Modal.Title>
+          <Modal.Title>Enter refraction</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -3652,7 +3736,7 @@ export default function VisitDetails() {
 
       <Modal show={show9} onHide={() => setShow9(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Select Options</Modal.Title>
+          <Modal.Title>Enter optometrist refraction</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -3815,7 +3899,7 @@ export default function VisitDetails() {
 
       <Modal show={show10} onHide={() => setShow10(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Select Options</Modal.Title>
+          <Modal.Title>Enter current glasses info</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -3978,12 +4062,11 @@ export default function VisitDetails() {
 
       <Modal show={show11} onHide={() => setShow11(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Select Options</Modal.Title>
+          <Modal.Title>Select addition</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Col>
-
               <Col md={12}>
                 <h2 style={{ textAlign: "center" }}>Addition</h2>
                 {additionsArray.map((value) => (
@@ -3993,22 +4076,57 @@ export default function VisitDetails() {
                     label={value}
                     style={{ textAlign: "center" }}
                     onChange={() => {
-                      if(refType==="doctor"){
-                        handleInputChange2(value,"Addition", "addition")
-                      }else{
-                        handleInputChange3(value,"Addition", "addition")
+                      if (refType === "doctor") {
+                        handleInputChange2(value, "Addition", "addition");
+                      } else {
+                        handleInputChange3(value, "Addition", "addition");
                       }
                     }}
                     // checked={}
                   />
                 ))}
               </Col>
-
             </Col>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShow9(false)}>
+          <Button variant="secondary" onClick={() => setShow11(false)}>
+            Validate
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={show12} onHide={() => setShow12(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Select Visual Acuity</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Col>
+              <Col md={12}>
+                <h2 style={{ textAlign: "center" }}>VA</h2>
+                {vaArray.map((value) => (
+                  <Form.Check
+                    key={value}
+                    type="checkbox"
+                    label={value}
+                    style={{ textAlign: "center" }}
+                    onChange={() => {
+                      if (vaEye === "Right Eye") {
+                        handleInputChange(value, vaEye, vaType);
+                      } else {
+                        handleInputChange(value, vaEye, vaType);
+                      }
+                    }}
+                    // checked={}
+                  />
+                ))}
+              </Col>
+            </Col>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShow12(false)}>
             Validate
           </Button>
         </Modal.Footer>

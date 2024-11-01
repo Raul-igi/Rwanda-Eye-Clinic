@@ -62,10 +62,7 @@ export default function Visit({ visitId, visit }) {
 
     {
       name: "Addition",
-      sphere: "",
-      cylinder: "",
-      axis: "",
-      va: "",
+      addition: ""
     },
   ]);
 
@@ -88,10 +85,7 @@ export default function Visit({ visitId, visit }) {
 
     {
       name: "Addition",
-      sphere: "",
-      cylinder: "",
-      axis: "",
-      va: "",
+      addition: ""
     },
   ]);
 
@@ -438,7 +432,7 @@ export default function Visit({ visitId, visit }) {
       setVisualAcuity(visualAcuity_);
       setCurrentGlasses(currentGlasses_);
       setMedicalActs(visit.medicalAct || []);
-      setExams(myVisit.exams.filter((e) => e.eyeSide === null) || []);
+      setExams(visit.exams.filter((e) => e.eyeSide === null) || []);
       setProcedures(visit.procedures || []);
       setLabs(visit.labs || []);
       setSavedTreatment(visit.treatment?.map((t) => t.name));

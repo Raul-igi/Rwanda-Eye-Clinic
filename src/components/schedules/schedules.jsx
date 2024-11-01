@@ -342,19 +342,19 @@ function Schedules() {
     var saturdaySchedule = schedules.find(s=>s.day==='Saturday');
     var sundaySchedule = schedules.find(s=>s.day==='Sunday');
     setMondayAvailability(mondaySchedule?.windows?.length>0)
-    setMondayWindows(mondaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setMondayWindows(mondaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))}))||[])
     setTuesdayAvailability(tuesdaySchedule?.windows?.length>0)
-    setTuesdayWindows(tuesdaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setTuesdayWindows(tuesdaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))}))||[])
     setWednesdayAvailability(wednesdaySchedule?.windows?.length>0)
-    setWednesdayWindows(wednesdaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setWednesdayWindows(wednesdaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))}))||[])
     setThursdayAvailability(thursdaySchedule?.windows?.length>0)
-    setThursdayWindows(thursdaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setThursdayWindows(thursdaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))}))||[])
     setFridayAvailability(fridaySchedule?.windows?.length>0)
-    setFridayWindows(fridaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setFridayWindows(fridaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))}))||[])
     setSaturdayAvailability(saturdaySchedule?.windows?.length>0)
-    setSaturdayWindows(saturdaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setSaturdayWindows(saturdaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))}))||[])
     setSundayAvailability(sundaySchedule?.windows?.length>0)
-    setSundayWindows(sundaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))})))
+    setSundayWindows(sundaySchedule?.windows?.map(w=>({start:getDateTimeFromTimeString(w.startingTime.slice(0,5)),end:getDateTimeFromTimeString(w.endingTime.slice(0,5))}))||[])
     setShow(true)
   };
 
@@ -541,7 +541,7 @@ function Schedules() {
                   />
                   {mondayAvailability?(
                   <>
-                  {mondayWindows.map((window, index) => (
+                  {mondayWindows?.map((window, index) => (
                     <Row key={index} style={{marginTop:8}}>
                       <Col md={4}>
                         <div className="input-group time-limit">
@@ -615,7 +615,7 @@ function Schedules() {
                   />
                   {tuesdayAvailability?(
                   <>
-                  {tuesdayWindows.map((window, index) => (
+                  {tuesdayWindows?.map((window, index) => (
                     <Row key={index} style={{marginTop:8}}>
                       <Col md={4}>
                         <div className="input-group time-limit">
@@ -689,7 +689,7 @@ function Schedules() {
                   />
                   {wednesdayAvailability?(
                   <>
-                  {wednesdayWindows.map((window, index) => (
+                  {wednesdayWindows?.map((window, index) => (
                     <Row key={index} style={{marginTop:8}}>
                       <Col md={4}>
                         <div className="input-group time-limit">
@@ -763,7 +763,7 @@ function Schedules() {
                   />
                   {thursdayAvailability?(
                   <>
-                  {thursdayWindows.map((window, index) => (
+                  {thursdayWindows?.map((window, index) => (
                     <Row key={index} style={{marginTop:8}}>
                       <Col md={4}>
                         <div className="input-group time-limit">
@@ -837,7 +837,7 @@ function Schedules() {
                   />
                   {fridayAvailability?(
                   <>
-                  {fridayWindows.map((window, index) => (
+                  {fridayWindows?.map((window, index) => (
                     <Row key={index} style={{marginTop:8}}>
                       <Col md={4}>
                         <div className="input-group time-limit">
@@ -911,7 +911,7 @@ function Schedules() {
                   />
                   {saturdayAvailability?(
                   <>
-                  {saturdayWindows.map((window, index) => (
+                  {saturdayWindows?.map((window, index) => (
                     <Row key={index} style={{marginTop:8}}>
                       <Col md={4}>
                         <div className="input-group time-limit">
@@ -985,7 +985,7 @@ function Schedules() {
                   />
                   {sundayAvailability?(
                   <>
-                  {sundayWindows.map((window, index) => (
+                  {sundayWindows?.map((window, index) => (
                     <Row key={index} style={{marginTop:8}}>
                       <Col md={4}>
                         <div className="input-group time-limit">

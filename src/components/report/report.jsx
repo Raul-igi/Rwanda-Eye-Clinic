@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, Col, Row, Button, Form, Modal } from "react-bootstrap";
 import Select from "react-select";
 import axios from "axios";
+import * as XLSX  from "xlsx";
 import { ECaseType, EVisitType } from "../../data/elementsdata";
 
 import {
@@ -332,6 +333,141 @@ function Report() {
     }
   };
 
+  const generateExcel = (reports, reportType, insurance) => {
+    const wsData = [];
+
+    // Select headers and data based on reportType and insurance label
+    if (reportType?.value === "INSURANCE" && insurance.label === "RSSB") {
+      // Headers for RSSB
+      wsData.push([
+        "Date",
+        "Voucher ID",
+        "Card ID",
+        "Age/DOB",
+        "Beneficiary's Name",
+        "Affiliate's Name",
+        "Consultation",
+        "ORA",
+        "AGI",
+        "ALI",
+        "Procedures",
+        "Total 100%",
+        "Total 85%",
+      ]);
+
+      // Data for RSSB
+      reports.forEach((report) => {
+        wsData.push([
+          report.paymentDate,
+          report.voucherNumber || "N/A",
+          report.patientInsurance?.cardNumber || "N/A",
+          report.patient?.dob || "N/A",
+          report.patientInsurance?.membershipType === "DEPENDENT"
+            ? report.patient?.names
+            : "N/A",
+          report.patientInsurance?.membershipType === "PRINCIPAL"
+            ? report.patient?.names
+            : report.patientInsurance?.principalNames || "N/A",
+          report.acts?.length > 0
+            ? report.acts[0]?.insurerAmount + report.acts[0]?.patientAmount
+            : 0,
+          "N/A",
+          "N/A",
+          "N/A",
+          report.acts?.length > 0
+            ? report.acts[1]?.insurerAmount + report.acts[1]?.patientAmount
+            : 0,
+          report.totalAmount || 0,
+          Math.round(report.totalAmount * 0.85),
+        ]);
+      });
+    } else if (reportType?.value === "INSURANCE" && insurance.label === "MMI") {
+      // Headers for MMI
+      wsData.push([
+        "Customer",
+        "Card Number",
+        "Prescription ID",
+        "Consultation",
+        "Procedures",
+        "Total amount",
+        "Total insurance cover",
+        "Date",
+      ]);
+
+      // Data for MMI
+      reports.forEach((report) => {
+        wsData.push([
+          report.patient?.names || "N/A",
+          report.patientInsurance?.cardNumber || "N/A",
+          report.voucherNumber || "N/A",
+          report.acts?.length > 0
+            ? report.acts[0]?.insurerAmount + report.acts[0]?.patientAmount
+            : 0,
+          report.acts?.length > 1
+            ? report.acts[1]?.insurerAmount + report.acts[1]?.patientAmount
+            : 0,
+          report.totalAmount || 0,
+          report.totalAmount * 0.85,
+          report.paymentDate || "N/A",
+        ]);
+      });
+    } else if (reportType?.value === "INSURANCE") {
+      // Headers for other insurance types
+      wsData.push([
+        "Dates",
+        "Names",
+        "Insurance",
+        "Card number",
+        "Total amount",
+        "Copay",
+        "Insurance",
+      ]);
+
+      // Data for other insurance types
+      reports.forEach((report) => {
+        wsData.push([
+          report.paymentDate || "N/A",
+          report.patient?.names || "N/A",
+          report.insurance || "N/A",
+          report.patientInsurance?.cardNumber || "N/A",
+          report.totalAmount || 0,
+          report.amount || 0,
+          report.insuranceAmount || 0,
+        ]);
+      });
+    } else {
+      // Headers for non-insurance reports
+      wsData.push([
+        "Insurance",
+        "No Of Cases",
+        "Insurance Amount",
+        "Patient Amount",
+        "Top Up Amount",
+        "Paid Amount",
+      ]);
+
+      // Data for non-insurance reports
+      reports.forEach((report) => {
+        wsData.push([
+          report.insurance || "N/A",
+          report.numOfCases || 0,
+          Math.round(report.insuranceAmount || 0),
+          Math.round(report.patientAmount || 0),
+          Math.round(report.topUpAmount || 0),
+          Math.round(report.patientAmount || 0),
+        ]);
+      });
+    }
+
+    // Create workbook and worksheet
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Report");
+
+    // Export to Excel
+    XLSX.writeFile(wb, "report.xlsx");
+  };
+
   const fetchInsurances = async () => {
     let my_token = localStorage.getItem("token");
     const config = {
@@ -529,7 +665,6 @@ function Report() {
         let totalPaidAmount = 0;
         let totalTopUpAmount = 0;
         let totalInsuranceAmount = 0;
-
 
         const reports_ = response.data.response.map((el) => {
           const totalAmount_ = parseFloat(el.totalAmount) || 0;
@@ -1034,24 +1169,18 @@ function Report() {
                 )}
 
                 <Col>
-                  <div>
-                    {reports.length > 0 ? (
-                      <PDFDownloadLink
-                        document={<PDFDocument reports={reports} />}
-                        fileName="data.pdf"
-                      >
-                        {({ blob, url, loading, error }) =>
-                          loading ? (
-                            "Loading document..."
-                          ) : (
-                            <Button>Download PDF</Button>
-                          )
+                  {reports.length > 0 && (
+                    <div>
+                      <button
+                        onClick={() =>
+                          generateExcel(reports, reportType, insurance)
                         }
-                      </PDFDownloadLink>
-                    ) : (
-                      <p></p>
-                    )}
-                  </div>
+                        className="btn btn-primary"
+                      >
+                        download
+                      </button>
+                    </div>
+                  )}
                 </Col>
               </Row>
             </Card.Header>

@@ -975,7 +975,7 @@ function Visits() {
                   <Form.Label>Voucher ID</Form.Label>
                   <input
                     type="text"
-                    placeholder="Search..."
+                    placeholder="Enter voucher ID"
                     className="form-control"
                     onChange={(e) => setVoucherNumber(e.target.value)}
                   />

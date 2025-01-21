@@ -1,11 +1,11 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import CreatableSelect from "react-select/creatable";
-import { debounce } from "lodash";
+import { add, debounce, set } from "lodash";
 import {
   lensType_,
   dip_,
@@ -449,6 +449,30 @@ const customStyles = {
   },
 };
 
+const customStyles2 = {
+  header: {
+    style: {
+      padding: "2px",
+    },
+  },
+  headCells: {
+    style: {
+      backgroundColor: "#c7f9cc", // Set header background color
+    },
+  },
+  rows: {
+    style: {
+      backgroundColor: "#c7f9cc",
+      height: "30px", // override the row height
+      "&:not(:last-of-type)": {
+        borderBottomStyle: "solid",
+        borderBottomWidth: "2px",
+        borderBottomColor: "#ccc",
+      },
+    },
+  },
+};
+
 export default function VisitDetails() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -706,7 +730,9 @@ export default function VisitDetails() {
   const [rightOptions, setRightOptions] = useState([]);
   const [leftOptions, setLeftOptions] = useState([]);
 
-  const [values, setValues] = useState([]);
+  const [rightValues, setRightValues] = useState([]);
+  const [leftValues, setLeftValues] = useState([]);
+  const [selectedValue, setSelectedValue] = useState([]);
   const [proceduresOptions, setProceduresOptions] = useState([]);
   const [labsOptions, setLabsOptions] = useState([]);
 
@@ -749,6 +775,22 @@ export default function VisitDetails() {
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPage2, setCurrentPage2] = useState(1);
+  const debounceTimeout = useRef(null);
+
+  const handleCommentChange = (e) => {
+    const value = e.target.value;
+    setComment([{ name: "", comment: value }]);
+
+    // Clear the previous timeout
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
+    // Set a new timeout
+    debounceTimeout.current = setTimeout(() => {
+      addOptRefraction(optRefraction, [{ name: "", comment: value }]);
+    }, 3000);
+  };
   const handleClose8 = () => setShowModal(false);
   const handleShow8 = () => setShowModal(true);
 
@@ -763,6 +805,7 @@ export default function VisitDetails() {
       return item;
     });
     setVisualAcuity(newData);
+    addVisualAcuity(newData, currentGlasses);
   };
 
   const handleInputChange2 = (e, name, field) => {
@@ -820,9 +863,14 @@ export default function VisitDetails() {
           readOnly={isVaSaved}
           value={row.sc}
           onClick={() => {
-            setShow12(true);
-            setVaEye(row.name);
-            setVaType("sc");
+            if (
+              roles.includes("Nurse") &&
+              location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+            ) {
+              setShow12(true);
+              setVaEye(row.name);
+              setVaType("sc");
+            }
           }}
         />
       ),
@@ -837,9 +885,14 @@ export default function VisitDetails() {
           readOnly={isVaSaved}
           value={row.ac}
           onClick={() => {
-            setShow12(true);
-            setVaEye(row.name);
-            setVaType("ac");
+            if (
+              roles.includes("Nurse") &&
+              location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+            ) {
+              setShow12(true);
+              setVaEye(row.name);
+              setVaType("ac");
+            }
           }}
         />
       ),
@@ -855,9 +908,14 @@ export default function VisitDetails() {
           readOnly={isVaSaved}
           value={row.ph}
           onClick={() => {
-            setShow12(true);
-            setVaEye(row.name);
-            setVaType("ph");
+            if (
+              roles.includes("Nurse") &&
+              location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+            ) {
+              setShow12(true);
+              setVaEye(row.name);
+              setVaType("ph");
+            }
           }}
         />
       ),
@@ -880,10 +938,14 @@ export default function VisitDetails() {
           readOnly={isVaSaved}
           value={row.sphere}
           onClick={() => {
-            setShow10(true);
-            setButton(row.name === "Right Eye" ? "first" : "second");
+            if (
+              roles.includes("Nurse") &&
+              location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+            ) {
+              setShow10(true);
+              setButton(row.name === "Right Eye" ? "first" : "second");
+            }
           }}
-          onChange={(e) => handleInputChange4(e, row.name, "sphere")}
         />
       ),
     },
@@ -897,10 +959,14 @@ export default function VisitDetails() {
           readOnly={isVaSaved}
           value={row.cylinder}
           onClick={() => {
-            setShow10(true);
-            setButton(row.name === "Right Eye" ? "first" : "second");
+            if (
+              roles.includes("Nurse") &&
+              location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+            ) {
+              setShow10(true);
+              setButton(row.name === "Right Eye" ? "first" : "second");
+            }
           }}
-          onChange={(e) => handleInputChange4(e, row.name, "cylinder")}
         />
       ),
     },
@@ -915,10 +981,14 @@ export default function VisitDetails() {
           readOnly={isVaSaved}
           value={row.axis}
           onClick={() => {
-            setShow10(true);
-            setButton(row.name === "Right Eye" ? "first" : "second");
+            if (
+              roles.includes("Nurse") &&
+              location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+            ) {
+              setShow10(true);
+              setButton(row.name === "Right Eye" ? "first" : "second");
+            }
           }}
-          onChange={(e) => handleInputChange4(e, row.name, "axis")}
         />
       ),
     },
@@ -933,10 +1003,14 @@ export default function VisitDetails() {
           readOnly={isVaSaved}
           value={row.addition}
           onClick={() => {
-            setShow10(true);
-            setButton(row.name === "Right Eye" ? "first" : "second");
+            if (
+              roles.includes("Nurse") &&
+              location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+            ) {
+              setShow10(true);
+              setButton(row.name === "Right Eye" ? "first" : "second");
+            }
           }}
-          onChange={(e) => handleInputChange4(e, row.name, "addition")}
         />
       ),
     },
@@ -980,22 +1054,26 @@ export default function VisitDetails() {
           <input
             className="form-control"
             type="text"
-            readOnly={isReSaved}
+            readOnly={!roles.includes("Doctor")}
             value={row.sphere}
             onClick={() => {
-              setShow7(true);
-              setButton(row.name === "Right Eye" ? "first" : "second");
+              if (roles.includes("Doctor")) {
+                setShow7(true);
+                setButton(row.name === "Right Eye" ? "first" : "second");
+              }
             }}
           />
         ) : (
           <input
             className="form-control"
             type="text"
-            readOnly={isReSaved}
+            readOnly={!roles.includes("Doctor")}
             value={row.addition}
             onClick={() => {
-              setShow11(true);
-              setRefType("doctor");
+              if (roles.includes("Doctor")) {
+                setShow11(true);
+                setRefType("doctor");
+              }
             }}
           />
         ),
@@ -1008,10 +1086,12 @@ export default function VisitDetails() {
           <input
             className="form-control"
             type="text"
-            readOnly={isReSaved}
+            readOnly={!roles.includes("Doctor")}
             onClick={() => {
-              setShow7(true);
-              setButton(row.name === "Right Eye" ? "first" : "second");
+              if (roles.includes("Doctor")) {
+                setShow7(true);
+                setButton(row.name === "Right Eye" ? "first" : "second");
+              }
             }}
             value={row.cylinder}
             onChange={(e) =>
@@ -1028,10 +1108,12 @@ export default function VisitDetails() {
           <input
             className="form-control"
             type="text"
-            readOnly={isReSaved}
+            readOnly={!roles.includes("Doctor")}
             onClick={() => {
-              setShow7(true);
-              setButton(row.name === "Right Eye" ? "first" : "second");
+              if (roles.includes("Doctor")) {
+                setShow7(true);
+                setButton(row.name === "Right Eye" ? "first" : "second");
+              }
             }}
             value={row.axis}
             onChange={(e) =>
@@ -1049,11 +1131,13 @@ export default function VisitDetails() {
           <input
             className="form-control"
             type="text"
-            readOnly={isReSaved}
+            readOnly={!roles.includes("Doctor")}
             value={row.va}
             onClick={() => {
-              setShow7(true);
-              setButton(row.name === "Right Eye" ? "first" : "second");
+              if (roles.includes("Doctor")) {
+                setShow7(true);
+                setButton(row.name === "Right Eye" ? "first" : "second");
+              }
             }}
             onChange={(e) => handleInputChange2(e.target.value, row.name, "va")}
           />
@@ -1075,22 +1159,40 @@ export default function VisitDetails() {
           <input
             className="form-control"
             type="text"
-            readOnly={isReSaved}
+            readOnly={
+              isOptReSaved ||
+              (!roles.includes("Nurse") && !roles.includes("Optometrist")) ||
+              location.state?.data?.visitStatus !== "TRANSFER_TO_NURSE"
+            }
             value={row.sphere}
             onClick={() => {
-              setShow9(true);
-              setButton(row.name === "Right Eye" ? "first" : "second");
+              if (
+                (roles.includes("Nurse") || roles.includes("Optometrist")) &&
+                location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+              ) {
+                setShow9(true);
+                setButton(row.name === "Right Eye" ? "first" : "second");
+              }
             }}
           />
         ) : (
           <input
             className="form-control"
             type="text"
-            readOnly={isReSaved}
+            readOnly={
+              isOptReSaved ||
+              (!roles.includes("Nurse") && !roles.includes("Optometrist")) ||
+              location.state?.data?.visitStatus !== "TRANSFER_TO_NURSE"
+            }
             value={row.addition}
             onClick={() => {
-              setShow11(true);
-              setRefType("optometrist");
+              if (
+                (roles.includes("Nurse") || roles.includes("Optometrist")) &&
+                location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+              ) {
+                setShow11(true);
+                setRefType("optometrist");
+              }
             }}
           />
         ),
@@ -1103,10 +1205,19 @@ export default function VisitDetails() {
           <input
             className="form-control"
             type="text"
-            readOnly={isReSaved}
+            readOnly={
+              isOptReSaved ||
+              (!roles.includes("Nurse") && !roles.includes("Optometrist")) ||
+              location.state?.data?.visitStatus !== "TRANSFER_TO_NURSE"
+            }
             onClick={() => {
-              setShow9(true);
-              setButton(row.name === "Right Eye" ? "first" : "second");
+              if (
+                (roles.includes("Nurse") || roles.includes("Optometrist")) &&
+                location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+              ) {
+                setShow9(true);
+                setButton(row.name === "Right Eye" ? "first" : "second");
+              }
             }}
             value={row.cylinder}
             onChange={(e) =>
@@ -1123,10 +1234,19 @@ export default function VisitDetails() {
           <input
             className="form-control"
             type="text"
-            readOnly={isReSaved}
+            readOnly={
+              isOptReSaved ||
+              (!roles.includes("Nurse") && !roles.includes("Optometrist")) ||
+              location.state?.data?.visitStatus !== "TRANSFER_TO_NURSE"
+            }
             onClick={() => {
-              setShow9(true);
-              setButton(row.name === "Right Eye" ? "first" : "second");
+              if (
+                (roles.includes("Nurse") || roles.includes("Optometrist")) &&
+                location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+              ) {
+                setShow9(true);
+                setButton(row.name === "Right Eye" ? "first" : "second");
+              }
             }}
             value={row.axis}
             onChange={(e) =>
@@ -1144,11 +1264,20 @@ export default function VisitDetails() {
           <input
             className="form-control"
             type="text"
-            readOnly={isReSaved}
+            readOnly={
+              isOptReSaved ||
+              (!roles.includes("Nurse") && !roles.includes("Optometrist")) ||
+              location.state?.data?.visitStatus !== "TRANSFER_TO_NURSE"
+            }
             value={row.va}
             onClick={() => {
-              setShow7(true);
-              setButton(row.name === "Right Eye" ? "first" : "second");
+              if (
+                (roles.includes("Nurse") || roles.includes("Optometrist")) &&
+                location.state?.data?.visitStatus === "TRANSFER_TO_NURSE"
+              ) {
+                setShow7(true);
+                setButton(row.name === "Right Eye" ? "first" : "second");
+              }
             }}
             onChange={(e) => handleInputChange3(e.target.value, row.name, "va")}
           />
@@ -1162,10 +1291,13 @@ export default function VisitDetails() {
       sortable: true,
       cell: (row) => (
         <textarea
-          readOnly={isOptReSaved}
+          readOnly={
+            (!roles.includes("Nurse") && !roles.includes("Optometrist")) ||
+            location.state?.data?.visitStatus !== "TRANSFER_TO_NURSE"
+          }
           rows={3}
-          value={row.comment}
-          onChange={(e) => setComment([{ name: "", comment: e.target.value }])}
+          value={comment[0].comment}
+          onChange={handleCommentChange}
           className="form-control"
         />
       ),
@@ -1201,6 +1333,8 @@ export default function VisitDetails() {
 
   const fetchActs = async () => {
     let my_token = localStorage.getItem("token");
+    const roles_ = localStorage.getItem("role");
+    const userRoles = JSON.parse(roles_);
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -1210,7 +1344,9 @@ export default function VisitDetails() {
 
     try {
       const response = await axios.get(
-        `http://www.ubuzima.rw/rec/visit/nurse/acts`,
+        userRoles.includes("Nurse")
+          ? `http://www.ubuzima.rw/rec/visit/nurse/acts`
+          : `http://www.ubuzima.rw/rec/visit/doctor/acts`,
         config
       );
       const acts_ = response.data.response.map((el) => {
@@ -1422,9 +1558,17 @@ export default function VisitDetails() {
           label: el.name,
         }))
       );
-      setValues(
+      setRightValues(
         response.data.response.exams
-          .filter((e) => e.eyeSide === null)
+          .filter((e) => e.eyeSide === "RIGHT")
+          .map((el) => ({
+            value: el.exam,
+            label: el.exam,
+          }))
+      );
+      setLeftValues(
+        response.data.response.exams
+          .filter((e) => e.eyeSide === "LEFT")
           .map((el) => ({
             value: el.exam,
             label: el.exam,
@@ -1598,6 +1742,21 @@ export default function VisitDetails() {
         refraction[1],
         refraction[2],
       ]);
+      addRefraction(
+        [
+          {
+            ...refraction[0],
+            cylinder: data.cylinder,
+            sphere: data.sphere,
+            axis: data.axis,
+            va: data.va,
+          },
+          refraction[1],
+          refraction[2],
+        ],
+        lensType,
+        lensAttribute
+      );
     } else {
       var data = {
         ...secondButtonValues,
@@ -1614,6 +1773,21 @@ export default function VisitDetails() {
         },
         refraction[2],
       ]);
+      addRefraction(
+        [
+          refraction[0],
+          {
+            ...refraction[1],
+            cylinder: data.cylinder,
+            sphere: data.sphere,
+            axis: data.axis,
+            va: data.va,
+          },
+          refraction[2],
+        ],
+        lensType,
+        lensAttribute
+      );
     }
 
     setValues((prev) => ({
@@ -1646,6 +1820,20 @@ export default function VisitDetails() {
         optRefraction[1],
         optRefraction[2],
       ]);
+      addOptRefraction(
+        [
+          {
+            ...optRefraction[0],
+            cylinder: data.cylinder,
+            sphere: data.sphere,
+            axis: data.axis,
+            va: data.va,
+          },
+          optRefraction[1],
+          optRefraction[2],
+        ],
+        comment
+      );
     } else {
       var data = {
         ...optSecondButtonValues,
@@ -1662,6 +1850,20 @@ export default function VisitDetails() {
         },
         optRefraction[2],
       ]);
+      addOptRefraction(
+        [
+          optRefraction[0],
+          {
+            ...optRefraction[1],
+            cylinder: data.cylinder,
+            sphere: data.sphere,
+            axis: data.axis,
+            va: data.va,
+          },
+          optRefraction[2],
+        ],
+        comment
+      );
     }
 
     setValues((prev) => ({
@@ -1693,12 +1895,32 @@ export default function VisitDetails() {
         },
         currentGlasses[1],
       ]);
+      addVisualAcuity(visualAcuity, [
+        {
+          ...currentGlasses[0],
+          cylinder: data.cylinder,
+          sphere: data.sphere,
+          axis: data.axis,
+          addition: data.addition,
+        },
+        currentGlasses[1],
+      ]);
     } else {
       var data = {
         ...curSecondButtonValues,
         [column]: curSecondButtonValues[column] === value ? "" : value,
       };
       setCurrentGlasses([
+        currentGlasses[0],
+        {
+          ...currentGlasses[1],
+          cylinder: data.cylinder,
+          sphere: data.sphere,
+          axis: data.axis,
+          addition: data.addition,
+        },
+      ]);
+      addVisualAcuity(visualAcuity, [
         currentGlasses[0],
         {
           ...currentGlasses[1],
@@ -1716,7 +1938,7 @@ export default function VisitDetails() {
     }));
   };
 
-  const addVisualAcuity = async () => {
+  const addVisualAcuity = async (visualAcuity_, currentGlasses_) => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -1726,20 +1948,20 @@ export default function VisitDetails() {
     };
     const postObj = JSON.stringify({
       patientVisitId: location.state?.data?.visitId,
-      scRightEye: visualAcuity[0].sc,
-      scLeftEye: visualAcuity[1].sc,
-      acRightEye: visualAcuity[0].ac,
-      acLeftEye: visualAcuity[1].ac,
-      phRightEye: visualAcuity[0].ph,
-      phLeftEye: visualAcuity[1].ph,
-      glassSphereRightEye: currentGlasses[0].sphere,
-      glassSphereLeftEye: currentGlasses[1].sphere,
-      glassCylindreRightEye: currentGlasses[0].cylinder,
-      glassCylindreLeftEye: currentGlasses[1].cylinder,
-      glassAxeRightEye: currentGlasses[0].axis,
-      glassAxeLeftEye: currentGlasses[1].axis,
-      glassAdditionRightEye: currentGlasses[0].addition,
-      glassAdditionLeftEye: currentGlasses[1].addition,
+      scRightEye: visualAcuity_[0].sc,
+      scLeftEye: visualAcuity_[1].sc,
+      acRightEye: visualAcuity_[0].ac,
+      acLeftEye: visualAcuity_[1].ac,
+      phRightEye: visualAcuity_[0].ph,
+      phLeftEye: visualAcuity_[1].ph,
+      glassSphereRightEye: currentGlasses_[0].sphere,
+      glassSphereLeftEye: currentGlasses_[1].sphere,
+      glassCylindreRightEye: currentGlasses_[0].cylinder,
+      glassCylindreLeftEye: currentGlasses_[1].cylinder,
+      glassAxeRightEye: currentGlasses_[0].axis,
+      glassAxeLeftEye: currentGlasses_[1].axis,
+      glassAdditionRightEye: currentGlasses_[0].addition,
+      glassAdditionLeftEye: currentGlasses_[1].addition,
     });
     console.log(postObj);
     try {
@@ -1760,9 +1982,16 @@ export default function VisitDetails() {
   };
 
   const pay = async () => {
-    var amountToPay = parseFloat(invoice?.totalAmount) - parseFloat(insuranceAmount) + parseFloat((insuranceAmount * parseInt(invoice?.ticket)) / 100);
-    const amountsSum = Object.values(amounts).reduce((acc, val) => acc + parseFloat(val), 0);
-    console.log(amountsSum)
+    var amountToPay =
+      parseFloat(invoice?.totalAmount) -
+      parseFloat(insuranceAmount) +
+      parseFloat((insuranceAmount * parseInt(invoice?.ticket)) / 100);
+    const amountsSum = Object.values(amounts).reduce(
+      (acc, val) => acc + parseFloat(val),
+      0
+    );
+    console.log(amountsSum);
+    console.log(amountToPay);
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -1770,36 +1999,39 @@ export default function VisitDetails() {
         Authorization: `Bearer ${my_token}`,
       },
     };
-    var paymentDtos = paymentMode.map(m=>{
+    var paymentDtos = paymentMode.map((m) => {
       var dto = {
         invoiceNumber: invoice.invoiceNumber,
         paymentMethod: paymentMethod ? paymentMethod : "INSURANCE",
         amount: amounts[m.value],
         paymentMode: m.value,
         insuranceAmount: insuranceAmount,
-      }
+      };
       if (topUpAmount > 0) {
         dto.topUpAmount = topUpAmount;
       }
       return dto;
-    })
+    });
 
     var paymentDto = {
       invoiceNumber: invoice.invoiceNumber,
       paymentMethod: paymentMethod ? paymentMethod : "INSURANCE",
       amount: amountToPay,
-      paymentMode: paymentMode[0].value,
+      paymentMode: paymentMode[0]?.value,
       insuranceAmount: insuranceAmount,
-    }
+    };
     if (topUpAmount > 0) {
       paymentDto.topUpAmount = topUpAmount;
     }
     console.log(JSON.stringify(paymentDtos));
-    if(paymentMode.length<2 || (paymentMode.length>1 && amountToPay===amountsSum)){
+    if (
+      paymentMode.length < 2 ||
+      (paymentMode.length > 1 && ( (amountToPay - amountsSum) >= -1 || (amountToPay - amountsSum) <= 1 ))
+    ) {
       try {
         const response = await axios.post(
           `http://www.ubuzima.rw/rec/invoice/pay`,
-          JSON.stringify(paymentMode.length>1?paymentDtos:[paymentDto]),
+          JSON.stringify(paymentMode.length > 1 ? paymentDtos : [paymentDto]),
           config
         );
         setShowModal(false);
@@ -1811,8 +2043,10 @@ export default function VisitDetails() {
         setShowModal(false);
         console.error(error);
       }
-    }else{
-      alert('The sum of the amounts of each payment method should be equal to the amount to pay!')
+    } else {
+      alert(
+        "The sum of the amounts of each payment method should be equal to the amount to pay!"
+      );
     }
   };
 
@@ -1829,13 +2063,21 @@ export default function VisitDetails() {
 
   const handleCheckboxChange2 = (event) => {
     const { value, checked } = event.target;
-    setLensAttribute((prev) => {
-      if (checked) {
+    if (checked) {
+      setLensAttribute((prev) => {
         return [...prev, value];
-      } else {
+      });
+      addRefraction(refraction, lensType, [...lensAttribute, value]);
+    } else {
+      setLensAttribute((prev) => {
         return prev.filter((act) => act !== value);
-      }
-    });
+      });
+      addRefraction(
+        refraction,
+        lensType,
+        lensAttribute.filter((act) => act !== value)
+      );
+    }
   };
 
   const handleCheckboxChange3 = (event) => {
@@ -1953,8 +2195,7 @@ export default function VisitDetails() {
     }
   };
 
-  const addTreatment = async (e) => {
-    e.preventDefault();
+  const addTreatment = async (treatment_) => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -1964,7 +2205,7 @@ export default function VisitDetails() {
     };
     const postObj = JSON.stringify({
       patientVisitId: location.state?.data?.visitId,
-      treatmentId: treatment.map((el) => el.value),
+      treatmentId: treatment_.map((el) => el.value),
     });
     try {
       const response = await axios.post(
@@ -1983,8 +2224,7 @@ export default function VisitDetails() {
     }
   };
 
-  const addSymptoms = async (e) => {
-    e.preventDefault();
+  const addOsSymptoms = async (values_) => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -1994,8 +2234,8 @@ export default function VisitDetails() {
     };
     const postObj = JSON.stringify({
       patientVisitId: location.state?.data?.visitId,
-      eyeSide: null,
-      exams: values.map((el) => el.value),
+      eyeSide: "LEFT",
+      exams: [...values_.map((el) => el.value)],
     });
     try {
       const response = await axios.post(
@@ -2013,8 +2253,7 @@ export default function VisitDetails() {
     }
   };
 
-  const addProcedures = async (e) => {
-    e.preventDefault();
+  const addOdSymptoms = async (values_) => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -2024,16 +2263,18 @@ export default function VisitDetails() {
     };
     const postObj = JSON.stringify({
       patientVisitId: location.state?.data?.visitId,
-      labProcedures: proceduresValues.map((el) => el.value),
+      eyeSide: "RIGHT",
+      exams: [...values_.map((el) => el.value)],
     });
     try {
       const response = await axios.post(
-        `http://www.ubuzima.rw/rec/visit/doctor/add-procedures`,
+        `http://www.ubuzima.rw/rec/visit/doctor/add-exams`,
         postObj,
         config
       );
+      // setShow3(false);
       if (response.data.status) {
-        alert("Procedures added successfully!");
+        alert("Exams added successfully!");
         // fetchOd(treatments);
       }
     } catch (error) {
@@ -2041,8 +2282,7 @@ export default function VisitDetails() {
     }
   };
 
-  const addLabs = async (e) => {
-    e.preventDefault();
+  const addProcedures = async (procedures_) => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -2052,7 +2292,30 @@ export default function VisitDetails() {
     };
     const postObj = JSON.stringify({
       patientVisitId: location.state?.data?.visitId,
-      labProcedures: labsValues.map((el) => el.value),
+      labProcedures: procedures_.map((el) => el.value),
+    });
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/visit/doctor/add-procedures`,
+        postObj,
+        config
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const addLabs = async (labs_) => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+      },
+    };
+    const postObj = JSON.stringify({
+      patientVisitId: location.state?.data?.visitId,
+      labProcedures: labs_.map((el) => el.value),
     });
     try {
       const response = await axios.post(
@@ -2060,9 +2323,28 @@ export default function VisitDetails() {
         postObj,
         config
       );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const addProcedure = async (procedure) => {
+    let my_token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${my_token}`,
+        procedureName: procedure,
+      },
+    };
+    try {
+      const response = await axios.post(
+        `http://www.ubuzima.rw/rec/visit//add-procedure`,
+        {},
+        config
+      );
       if (response.data.status) {
-        alert("Labs added successfully!");
-        // fetchOd(treatments);
+        fetchProcedures();
       }
     } catch (error) {
       console.error(error);
@@ -2104,12 +2386,11 @@ export default function VisitDetails() {
   const handleCreate = (inputValue) => {
     const newOption = { value: inputValue.toLowerCase(), label: inputValue };
     setRightOptions([...rightOptions, newOption]);
-    setValues([...values, newOption]);
+    setRightValues([...values, newOption]);
   };
 
   const handleCreateProcedure = (inputValue) => {
-    const newOption = { value: inputValue.toLowerCase(), label: inputValue };
-    setProceduresOptions([...proceduresOptions, newOption]);
+    addProcedure(inputValue);
   };
 
   const handleCreateLab = (inputValue) => {
@@ -2147,7 +2428,8 @@ export default function VisitDetails() {
     }
   };
 
-  const addRefraction = async () => {
+  const addRefraction = async (refraction_, lensType_, lensAttribute_) => {
+    console.log(refraction_)
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -2157,19 +2439,19 @@ export default function VisitDetails() {
     };
     const postObj = JSON.stringify({
       patientVisitId: location.state?.data?.visitId,
-      sphereRightEye: refraction[0].sphere,
-      sphereLeftEye: refraction[1].sphere,
-      cylindreRightEye: refraction[0].cylinder,
-      cylindreLeftEye: refraction[1].cylinder,
-      axeRightEye: refraction[0].axis,
-      axeLeftEye: refraction[1].axis,
-      lensType: lensType,
+      sphereRightEye: refraction_[0].sphere,
+      sphereLeftEye: refraction_[1].sphere,
+      cylindreRightEye: refraction_[0].cylinder,
+      cylindreLeftEye: refraction_[1].cylinder,
+      axeRightEye: refraction_[0].axis,
+      axeLeftEye: refraction_[1].axis,
+      lensType: lensType_ || null,
       dip: "DIP_ON_DISTANCE",
-      lensAttribute: lensAttribute,
-      vaRightEye: refraction[0].va,
-      vaLeftEye: refraction[1].va,
-      additionRightEye: refraction[2].addition,
-      additionLeftEye: refraction[2].addition,
+      lensAttribute: lensAttribute_,
+      vaRightEye: refraction_[0].va,
+      vaLeftEye: refraction_[1].va,
+      additionRightEye: refraction_[2].addition,
+      additionLeftEye: refraction_[2].addition,
       comments: "",
     });
 
@@ -2182,7 +2464,7 @@ export default function VisitDetails() {
       setShow5(false);
       if (response.data.status) {
         alert("Refraction added successfully!");
-        fetchRefraction();
+        // fetchRefraction();
       }
     } catch (error) {
       setShow5(false);
@@ -2191,7 +2473,7 @@ export default function VisitDetails() {
     }
   };
 
-  const addOptRefraction = async () => {
+  const addOptRefraction = async (refraction_, comment_) => {
     let my_token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -2201,20 +2483,20 @@ export default function VisitDetails() {
     };
     const postObj = JSON.stringify({
       patientVisitId: location.state?.data?.visitId,
-      sphereRightEye: optRefraction[0].sphere,
-      sphereLeftEye: optRefraction[1].sphere,
-      cylindreRightEye: optRefraction[0].cylinder,
-      cylindreLeftEye: optRefraction[1].cylinder,
-      axeRightEye: optRefraction[0].axis,
-      axeLeftEye: optRefraction[1].axis,
+      sphereRightEye: refraction_[0].sphere,
+      sphereLeftEye: refraction_[1].sphere,
+      cylindreRightEye: refraction_[0].cylinder,
+      cylindreLeftEye: refraction_[1].cylinder,
+      axeRightEye: refraction_[0].axis,
+      axeLeftEye: refraction_[1].axis,
       lensType: "BIFOCAL",
       dip: "DIP_ON_DISTANCE",
       lensAttribute: [],
-      vaRightEye: optRefraction[0].va,
-      vaLeftEye: optRefraction[1].va,
-      additionRightEye: optRefraction[2].addition,
-      additionLeftEye: optRefraction[2].addition,
-      comments: comment[0].comment,
+      vaRightEye: refraction_[0].va,
+      vaLeftEye: refraction_[1].va,
+      additionRightEye: refraction_[2].addition,
+      additionLeftEye: refraction_[2].addition,
+      comments: comment_[0].comment,
     });
 
     try {
@@ -2418,10 +2700,14 @@ export default function VisitDetails() {
     fetchPreviousVisits2();
   }, [currentPage2]);
 
+  useEffect(() => {
+    addVisualAcuity();
+  }, [visualAcuity, currentGlasses]);
+
   return (
     <Fragment>
       {visualAcuity.length > 0 &&
-        // medicalActs.length > 0 &&
+        location.state?.data?.visitStatus === "TRANSFER_TO_DOCTOR" &&
         roles.includes("Doctor") && (
           <Button
             onClick={() => {
@@ -2538,7 +2824,9 @@ export default function VisitDetails() {
                       Names: {location.state?.data?.patient?.names}
                     </p>
                     <p>Sex: {location.state?.data?.patient?.gender}</p>
-                    <p>DOB: {location.state?.data?.patient?.dob}</p>
+                    <p>
+                      DOB: {location.state?.data?.patient?.dob?.slice(0, 4)}
+                    </p>
                     <p style={{ fontSize: "15px" }}>
                       Doctor: Dr {location.state?.data?.doctor}
                     </p>
@@ -2578,7 +2866,7 @@ export default function VisitDetails() {
                       Sex: {location.state?.data?.patient?.gender}
                     </p>
                     <p style={{ marginBottom: 5 }}>
-                      DOB: {location.state?.data?.patient?.dob}
+                      DOB: {location.state?.data?.patient?.dob?.slice(0, 4)}
                     </p>
                     <p style={{ fontSize: "15px", marginBottom: 5 }}>
                       Doctor: Dr {location.state?.data?.doctor}
@@ -2688,7 +2976,7 @@ export default function VisitDetails() {
                       customStyles={customStyles}
                     />
 
-                    {roles.includes("Nurse") &&
+                    {/* {roles.includes("Nurse") &&
                       location.state?.data?.visitStatus ===
                         "TRANSFER_TO_NURSE" &&
                       !isVaSaved && (
@@ -2700,7 +2988,7 @@ export default function VisitDetails() {
                             Save
                           </Button>
                         </>
-                      )}
+                      )} */}
                   </Col>
                 )}
 
@@ -2765,23 +3053,6 @@ export default function VisitDetails() {
                           !isReSaved && <></>}
                       </Col>
                     </>
-
-                    <Col xl={4}>
-                      {(roles.includes("Nurse") ||
-                        roles.includes("Optometrist")) &&
-                        location.state?.data?.visitStatus ===
-                          "TRANSFER_TO_NURSE" &&
-                        !isOptReSaved && (
-                          <>
-                            <Button
-                              onClick={() => addOptRefraction()}
-                              style={{ marginTop: 20 }}
-                            >
-                              Save
-                            </Button>
-                          </>
-                        )}
-                    </Col>
                   </>
                 )}
 
@@ -2794,47 +3065,26 @@ export default function VisitDetails() {
                     <Card.Body style={{ margin: 0, padding: 0 }}>
                       <Row style={{ paddingRight: 20 }}>
                         <Col
-                          lg={6}
+                          lg={4}
                           style={{
                             marginBottom: "100px",
                             marginTop: 20,
-                            paddingLeft: 18,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
                           }}
                         >
-                          {(roles.includes("Doctor") ||
-                            roles.includes("Administrator")) && (
-                            <>
-                              <Form.Group className="form-group">
-                                <Form.Label>Symptoms/Signs</Form.Label>
-                                <CreatableSelect
-                                  isMulti
-                                  options={rightOptions}
-                                  value={[]}
-                                  onCreateOption={handleCreate}
-                                  onChange={(e) => setValues([...values, ...e])}
-                                  placeholder="Select"
-                                />
-                              </Form.Group>
-                            </>
-                          )}
-                        </Col>
-                        <Col
-                          lg={6}
-                          style={{
-                            marginBottom: "100px",
-                            marginTop: 20,
-                            paddingLeft: 18,
-                          }}
-                        >
-                          <h2>Selected symptoms/signs</h2>
-                          {values.length > 0 ? (
-                            values.map((v, index) => (
-                              <p>
-                                &#9679;
-                                <input
+                          <h2>Selected OD</h2>
+                          {rightValues.length > 0 ? (
+                            rightValues.map((v, index) => (
+                              <div style={{ display: "flex" }}>
+                                <p>
+                                  &#9679;
+                                  {v.value}
+                                  {/* <input
                                   value={v.value}
                                   onChange={(e) => {
-                                    setValues((prevData) =>
+                                    setRightValues((prevData) =>
                                       prevData.map((item, i) =>
                                         i === index
                                           ? {
@@ -2853,22 +3103,202 @@ export default function VisitDetails() {
                                     border: "none",
                                     outline: "none",
                                   }}
-                                />
-                              </p>
+                                /> */}
+                                </p>
+                                <i
+                                  className="fa fa-trash"
+                                  title="Delete"
+                                  onClick={() => {
+                                    const newValues = rightValues.filter(
+                                      (val) => val.value !== v.value
+                                    );
+                                    setRightValues(newValues);
+                                    addOdSymptoms(newValues);
+                                  }}
+                                  style={{
+                                    color: "red",
+                                    fontSize: 15,
+                                    marginLeft: 10,
+                                    marginTop: 3,
+                                  }}
+                                ></i>
+                              </div>
                             ))
                           ) : (
                             <p>No symptoms yet...</p>
                           )}
-                          <Button
-                            onClick={(e) => {
-                              if (values.length > 0) {
-                                addSymptoms(e);
-                              }
-                            }}
-                            style={{ marginTop: 20, width: 100 }}
-                          >
-                            Save
-                          </Button>
+                        </Col>
+                        <Col
+                          lg={4}
+                          style={{
+                            marginBottom: "100px",
+                            marginTop: 20,
+                            display: "flex",
+                            flexDirection: "column",
+                            borderRightColor: "gray",
+                            borderRightWidth: 0.2,
+                            borderRightStyle: "solid",
+                            borderLeftColor: "gray",
+                            borderLeftWidth: 0.2,
+                            borderLeftStyle: "solid",
+                            // alignItems:'center'
+                          }}
+                        >
+                          <h2 style={{ textAlign: "center" }}>
+                            Symptoms/Signs
+                          </h2>
+                          {(roles.includes("Doctor") ||
+                            roles.includes("Administrator")) && (
+                            <>
+                              <Form.Group className="form-group">
+                                <Select
+                                  isMulti
+                                  options={rightOptions}
+                                  value={[]}
+                                  onChange={(e) => setSelectedValue(e)}
+                                  placeholder="Select"
+                                />
+                              </Form.Group>
+                              {selectedValue.length > 0 && (
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <div>
+                                    <button
+                                      onClick={() => {
+                                        const value_ = rightValues.find(
+                                          (v) =>
+                                            v.value === selectedValue[0].value
+                                        );
+                                        if (!value_) {
+                                          setRightValues([
+                                            ...rightValues,
+                                            ...selectedValue,
+                                          ]);
+                                          addOdSymptoms([
+                                            ...rightValues,
+                                            ...selectedValue,
+                                          ]);
+                                        }
+                                      }}
+                                      className="btn btn-primary"
+                                    >
+                                      <i className="fa fa-arrow-left"></i>
+                                    </button>
+                                  </div>
+                                  <div>
+                                    <div
+                                      style={{
+                                        background: "#f5f5f5",
+                                        paddingRight: 20,
+                                        paddingLeft: 20,
+                                        height: 35,
+                                        borderRadius: 5,
+                                        display: "flex",
+                                        flexDirection: "row", // Changed to 'row' for horizontal alignment
+                                        justifyContent: "center", // Centers horizontally
+                                        alignItems: "center", // Centers vertically
+                                      }}
+                                    >
+                                      <p style={{ margin: 0 }}>
+                                        {selectedValue[0].value}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <button
+                                      onClick={() => {
+                                        const value_ = leftValues.find(
+                                          (v) =>
+                                            v.value === selectedValue[0].value
+                                        );
+                                        if (!value_) {
+                                          setLeftValues([
+                                            ...leftValues,
+                                            ...selectedValue,
+                                          ]);
+                                          addOsSymptoms([
+                                            ...leftValues,
+                                            ...selectedValue,
+                                          ]);
+                                        }
+                                      }}
+                                      className="btn btn-primary"
+                                    >
+                                      <i className="fa fa-arrow-right"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </Col>
+                        <Col
+                          lg={4}
+                          style={{
+                            marginBottom: "100px",
+                            marginTop: 20,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                          }}
+                        >
+                          <h2>Selected OS</h2>
+                          {leftValues.length > 0 ? (
+                            leftValues.map((v, index) => (
+                              <div style={{ display: "flex" }}>
+                                <p>
+                                  &#9679;
+                                  {v.value}
+                                  {/* <input
+                                  value={v.value}
+                                  onChange={(e) => {
+                                    setLeftValues((prevData) =>
+                                      prevData.map((item, i) =>
+                                        i === index
+                                          ? {
+                                              ...item,
+                                              ...{
+                                                label: e.target.value,
+                                                value: e.target.value,
+                                              },
+                                            }
+                                          : item
+                                      )
+                                    );
+                                  }}
+                                  style={{
+                                    width: "50%",
+                                    border: "none",
+                                    outline: "none",
+                                  }}
+                                /> */}
+                                </p>
+                                <i
+                                  className="fa fa-trash"
+                                  title="Delete"
+                                  onClick={() => {
+                                    const newValues = leftValues.filter(
+                                      (val) => val.value !== v.value
+                                    );
+                                    setLeftValues(newValues);
+                                    addOsSymptoms(newValues);
+                                  }}
+                                  style={{
+                                    color: "red",
+                                    fontSize: 15,
+                                    marginLeft: 10,
+                                    marginTop: 3,
+                                  }}
+                                ></i>
+                              </div>
+                            ))
+                          ) : (
+                            <p>No symptoms yet...</p>
+                          )}
                         </Col>
                       </Row>
                     </Card.Body>
@@ -2878,7 +3308,6 @@ export default function VisitDetails() {
 
               {roles.includes("Doctor") && (
                 <div style={{ marginTop: 40 }}>
-                  <h1 style={{ marginBottom: 0 }}>Dr Procedures</h1>
                   <Card style={{ padding: 0 }}>
                     <Card.Body style={{ margin: 0, padding: 0 }}>
                       <Row style={{ paddingRight: 20 }}>
@@ -2893,6 +3322,7 @@ export default function VisitDetails() {
                           {(roles.includes("Doctor") ||
                             roles.includes("Administrator")) && (
                             <>
+                              <h1 style={{ marginBottom: 0 }}>Dr Procedures</h1>
                               <Form.Group className="form-group">
                                 <Form.Label>Select procedure</Form.Label>
                                 <CreatableSelect
@@ -2905,24 +3335,66 @@ export default function VisitDetails() {
                                 />
                               </Form.Group>
 
-                              {proceduresValues.length > 0 ? (
-                                proceduresValues.map((s) => (
-                                  <p>&#9679; {s.label}</p>
-                                ))
-                              ) : (
-                                <p>No procedure yet...</p>
-                              )}
+                              <Row>
+                                {proceduresOptions.length > 0 ? (
+                                  proceduresOptions.map((s) => (
+                                    <Col lg={3}>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          style={{ marginRight: "8px" }}
+                                          value={s.value}
+                                          onChange={(e) => {
+                                            const index =
+                                              proceduresValues.findIndex(
+                                                (item) => item.value === s.value
+                                              );
 
-                              <Button
-                                onClick={(e) => {
-                                  if (proceduresValues.length > 0) {
-                                    addProcedures(e);
-                                  }
-                                }}
-                                style={{ marginTop: 20, width: 100 }}
-                              >
-                                Save
-                              </Button>
+                                            if (index !== -1) {
+                                              setProceduresValues(
+                                                proceduresValues.filter(
+                                                  (v) => v.value !== s.value
+                                                )
+                                              );
+                                              if (
+                                                proceduresValues.filter(
+                                                  (v) => v.value !== s.value
+                                                ).length > 0
+                                              ) {
+                                                addProcedures(
+                                                  proceduresValues.filter(
+                                                    (v) => v.value !== s.value
+                                                  )
+                                                );
+                                              }
+                                            } else {
+                                              setProceduresValues([
+                                                ...proceduresValues,
+                                                s,
+                                              ]);
+                                              addProcedures([
+                                                ...proceduresValues,
+                                                s,
+                                              ]);
+                                            }
+                                          }}
+                                          checked={proceduresValues.some(
+                                            (item) => item.value === s.value
+                                          )}
+                                        />
+                                        <p style={{ margin: 0 }}>{s.label}</p>
+                                      </div>
+                                    </Col>
+                                  ))
+                                ) : (
+                                  <p>No procedure yet...</p>
+                                )}
+                              </Row>
                             </>
                           )}
                         </Col>
@@ -2938,13 +3410,22 @@ export default function VisitDetails() {
                           {(roles.includes("Doctor") ||
                             roles.includes("Administrator")) && (
                             <>
+                              <h1 style={{ marginBottom: 0 }}>Lab tests</h1>
                               <Form.Group className="form-group">
                                 <Form.Label>Select labs</Form.Label>
                                 <CreatableSelect
                                   isMulti
                                   options={labsOptions}
                                   value={labsValues}
-                                  onChange={(e) => setLabsValues(e)}
+                                  onChange={(e) => {
+                                    setLabsValues(e);
+                                    if (
+                                      e.length > 0 &&
+                                      roles.includes("Doctor")
+                                    ) {
+                                      addLabs(e);
+                                    }
+                                  }}
                                   onCreateOption={handleCreateLab}
                                   placeholder="Select or create"
                                 />
@@ -2955,17 +3436,6 @@ export default function VisitDetails() {
                               ) : (
                                 <p>No lab test yet...</p>
                               )}
-
-                              <Button
-                                onClick={(e) => {
-                                  if (labsValues.length > 0) {
-                                    addLabs(e);
-                                  }
-                                }}
-                                style={{ marginTop: 20, width: 100 }}
-                              >
-                                Save
-                              </Button>
                             </>
                           )}
                         </Col>
@@ -2992,7 +3462,7 @@ export default function VisitDetails() {
                       <DataTable
                         columns={reColumns}
                         data={refraction}
-                        customStyles={customStyles}
+                        customStyles={customStyles2}
                       />
                     </Col>
                     <Col md={6} xl={6} style={{ marginTop: 20 }}>
@@ -3006,7 +3476,14 @@ export default function VisitDetails() {
                                 style={{ marginBottom: 15 }}
                                 value={act.value}
                                 checked={lensType === act.value}
-                                onChange={(e) => setLensType(e.target.value)}
+                                onChange={(e) => {
+                                  setLensType(e.target.value);
+                                  addRefraction(
+                                    refraction,
+                                    e.target.value,
+                                    lensAttribute
+                                  );
+                                }}
                               />{" "}
                               {act.label}
                               <br />
@@ -3053,14 +3530,6 @@ export default function VisitDetails() {
                       ))}
                     </Col>
                   </Row>
-                  {roles.includes("Doctor") && !isReSaved && (
-                    <Button
-                      onClick={() => addRefraction()}
-                      style={{ marginTop: 5, width: 100 }}
-                    >
-                      Save
-                    </Button>
-                  )}
                 </>
               )}
 
@@ -3089,7 +3558,10 @@ export default function VisitDetails() {
                                   styles={selectStyles}
                                   options={treatments}
                                   value={treatment}
-                                  onChange={(e) => setTreatment(e)}
+                                  onChange={(e) => {
+                                    setTreatment(e);
+                                    addTreatment(e);
+                                  }}
                                   classNamePrefix="Select2"
                                   placeholder="Select..."
                                   required
@@ -3101,13 +3573,6 @@ export default function VisitDetails() {
                               ) : (
                                 <p>No treatment yet...</p>
                               )}
-
-                              <Button
-                                onClick={(e) => addTreatment(e)}
-                                style={{ marginTop: 20, width: 100 }}
-                              >
-                                Save
-                              </Button>
                             </>
                           )}
                         </Col>
@@ -3174,6 +3639,7 @@ export default function VisitDetails() {
                       onChange={(e) => setMedicalActs(e)}
                       classNamePrefix="Select2"
                       placeholder="Select..."
+                      menuPortalTarget={document.body} // Ensures the menu is rendered outside of its container
                       required
                     />
 
@@ -3312,9 +3778,9 @@ export default function VisitDetails() {
                       <Form.Label>Copay</Form.Label>
                       <Form.Control
                         type="number"
-                        value={
-                          Math.round((insuranceAmount * parseInt(invoice?.ticket)) / 100)
-                        }
+                        value={Math.round(
+                          (insuranceAmount * parseInt(invoice?.ticket)) / 100
+                        )}
                         className="form-control"
                         name="example-text-input"
                         // placeholder="names"
@@ -3342,13 +3808,14 @@ export default function VisitDetails() {
                       <Form.Label>Amount to pay</Form.Label>
                       <Form.Control
                         type="number"
-                        value={
-                          Math.round(parseFloat(invoice?.totalAmount) -
-                          parseFloat(insuranceAmount) +
-                          parseFloat(
-                            (insuranceAmount * parseInt(invoice?.ticket)) / 100
-                          ))
-                        }
+                        value={Math.round(
+                          parseFloat(invoice?.totalAmount) -
+                            parseFloat(insuranceAmount) +
+                            parseFloat(
+                              (insuranceAmount * parseInt(invoice?.ticket)) /
+                                100
+                            )
+                        )}
                         className="form-control"
                         name="example-text-input"
                         // placeholder="names"
@@ -3560,7 +4027,7 @@ export default function VisitDetails() {
         <Modal.Body>
           <Form>
             <Row>
-              <Col md={12}>
+              <Col md={3}>
                 <h2 style={{ textAlign: "center" }}>Sphere</h2>
                 <Form.Check
                   key={"Plano"}
@@ -3624,7 +4091,7 @@ export default function VisitDetails() {
                   </Col>
                 </Row>
               </Col>
-              <Col md={12}>
+              <Col md={3}>
                 <h2 style={{ textAlign: "center" }}>Cylinder</h2>
                 {cylinderArray.map((value) => (
                   <Form.Check
@@ -3642,7 +4109,7 @@ export default function VisitDetails() {
                   />
                 ))}
               </Col>
-              <Col md={12}>
+              <Col md={3}>
                 <h2 style={{ textAlign: "center" }}>Axis</h2>
                 <Row>
                   <Col
@@ -3688,7 +4155,7 @@ export default function VisitDetails() {
                 </Row>
               </Col>
 
-              <Col md={12}>
+              <Col md={3}>
                 <h2 style={{ textAlign: "center" }}>VA</h2>
                 {vaArray.map((value) => (
                   <Form.Check
@@ -3740,8 +4207,8 @@ export default function VisitDetails() {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Col>
-              <Col md={12}>
+            <Row>
+              <Col md={3}>
                 <h2 style={{ textAlign: "center" }}>Sphere</h2>
                 <Form.Check
                   key={"Plano"}
@@ -3805,7 +4272,7 @@ export default function VisitDetails() {
                   </Col>
                 </Row>
               </Col>
-              <Col md={12}>
+              <Col md={3}>
                 <h2 style={{ textAlign: "center" }}>Cylinder</h2>
                 {cylinderArray.map((value) => (
                   <Form.Check
@@ -3823,7 +4290,7 @@ export default function VisitDetails() {
                   />
                 ))}
               </Col>
-              <Col md={12}>
+              <Col md={3}>
                 <h2 style={{ textAlign: "center" }}>Axis</h2>
                 <Row>
                   <Col
@@ -3869,7 +4336,7 @@ export default function VisitDetails() {
                 </Row>
               </Col>
 
-              <Col md={12}>
+              <Col md={3}>
                 <h2 style={{ textAlign: "center" }}>VA</h2>
                 {vaArray.map((value) => (
                   <Form.Check
@@ -3887,7 +4354,7 @@ export default function VisitDetails() {
                   />
                 ))}
               </Col>
-            </Col>
+            </Row>
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -3903,8 +4370,8 @@ export default function VisitDetails() {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Col>
-              <Col md={12}>
+            <Row>
+              <Col md={3}>
                 <h2 style={{ textAlign: "center" }}>Sphere</h2>
                 <Form.Check
                   key={"Plano"}
@@ -3968,7 +4435,7 @@ export default function VisitDetails() {
                   </Col>
                 </Row>
               </Col>
-              <Col md={12}>
+              <Col md={3}>
                 <h2 style={{ textAlign: "center" }}>Cylinder</h2>
                 {cylinderArray.map((value) => (
                   <Form.Check
@@ -3986,7 +4453,7 @@ export default function VisitDetails() {
                   />
                 ))}
               </Col>
-              <Col md={12}>
+              <Col md={3}>
                 <h2 style={{ textAlign: "center" }}>Axis</h2>
                 <Row>
                   <Col
@@ -4031,8 +4498,7 @@ export default function VisitDetails() {
                   </Col>
                 </Row>
               </Col>
-
-              <Col md={12}>
+              <Col md={3}>
                 <h2 style={{ textAlign: "center" }}>Addition</h2>
                 {additionsArray.map((value) => (
                   <Form.Check
@@ -4050,7 +4516,7 @@ export default function VisitDetails() {
                   />
                 ))}
               </Col>
-            </Col>
+            </Row>
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -4118,7 +4584,11 @@ export default function VisitDetails() {
                         handleInputChange(value, vaEye, vaType);
                       }
                     }}
-                    // checked={}
+                    checked={
+                      vaEye === "Right Eye"
+                        ? visualAcuity[0][vaType] === value
+                        : visualAcuity[1][vaType] === value
+                    }
                   />
                 ))}
               </Col>

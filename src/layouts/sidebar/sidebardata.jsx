@@ -2,20 +2,6 @@ import React from "react";
 
 const MenuItems = [
   {
-    icon: <i class="side-menu__icon fa fa-user-plus"></i>,
-    type: "sub",
-    Name: "",
-    active: false,
-    selected: false,
-    title: "Patients",
-    class: "",
-    color: "",
-    badgetxt: "",
-    path: `${import.meta.env.BASE_URL}patients`,
-    roles: ['Administrator', 'Nurse','Doctor','Receptionist','Optometrist','Optic'],
-    condition: false,
-  },  
-  {
     icon: <i class="side-menu__icon fa fa-map-signs"></i>,
     type: "sub",
     Name: "",
@@ -29,6 +15,20 @@ const MenuItems = [
     roles: ['Administrator', 'Nurse','Doctor','Receptionist','Optometrist'],
     condition: false,
   },
+  {
+    icon: <i class="side-menu__icon fa fa-user-plus"></i>,
+    type: "sub",
+    Name: "",
+    active: false,
+    selected: false,
+    title: "Patients",
+    class: "",
+    color: "",
+    badgetxt: "",
+    path: `${import.meta.env.BASE_URL}patients`,
+    roles: ['Administrator', 'Nurse','Doctor','Receptionist','Optometrist','Optic'],
+    condition: false,
+  },  
   {
     icon: <i class="side-menu__icon fa fa-heartbeat"></i>,
     type: "sub",

@@ -134,7 +134,7 @@ export default function Sidebar() {
     <Fragment>
       <div className="sticky">
         <div
-          className="app-sidebar backgrounds"
+          className="app-sidebar"
           onMouseOver={() => Onhover()}
           onMouseOut={() => Outhover()}
           // style={{backgroundColor:'#000000'}}

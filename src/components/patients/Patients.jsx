@@ -102,7 +102,7 @@ function Patients() {
 
     {
       name: "Date of Birth",
-      selector: (row) => [row.dob],
+      selector: (row) => [row.dob?.slice(0,4)],
       sortable: true,
     },
 
